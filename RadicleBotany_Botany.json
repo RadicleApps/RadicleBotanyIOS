@@ -1,0 +1,2786 @@
+[
+  {
+    "term": "Simple",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/tFytw9kstBxM0VpUQMAg.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Compound",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/jThe1TPkhfhSAbZht5OI.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pinnately Compound",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/ndB9AVvp955FeoAXdR4G.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Palmately Compound",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/CjC00A1UEWPX8WiX6DvC.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bipinnately Compound",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/kYtzZak28sTAs2tyjm4s.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Trifoliate",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/rCnSABdihCp5vMlHMrq4.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Sessile",
+    "category": "Flower Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/ivGHIjudWLKdKrzpJHAA.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Petiolate",
+    "category": "Leaf Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Ai842UdPXNwHQvKLIltj.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Perfoliate",
+    "category": "Leaf Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/FEoap1PjuSH2xe41FnK4.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Peltate",
+    "category": "Leaf Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/bQkniRaTmigMfJrnTzzV.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Clasping",
+    "category": "Leaf Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/mK3F4fwGZrxiJhATjZ7t.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Alternate",
+    "category": "Leaf Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/kI7WDH2HXugeE9KEGVwx.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Opposite",
+    "category": "Leaf Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/DK5lBQ4iac2yOiqeGNBN.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Whorled",
+    "category": "Leaf Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/FTLEzz2XkKO1lVaEGtI7.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Ovate",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/k7Jx1IVYxHLwSplnM4XN.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lanceolate",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/zJcfij05hRHHzDXABaPs.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Elliptic",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/nj63C1MVil3FjgXlABcv.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Cordate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/76NqWYP39tqWOYjQlvUJ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Oblong",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/0l6UA3hGUwH24zXwnQwQ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Linear",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/vmwrH7wo7kvaJFECuvyO.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spatulate",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/GA2PZM2Z35NwEqm54v5o.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Obovate",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/BzVvpwc6wcqddunTo9ag.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Reniform",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/VuSN0dXVvweJ3yjD1pcb.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Sagittate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/UqRZLukGP1J6fCqiKHLr.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Hastate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/H32VH0PxIiQbahEZu2Cu.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Deltoid",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/I8y5gWYl5sknnNpnxXLi.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Acicular",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/4z2Ano2UD4QlP6kj4C6r.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Falcate",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/OfDl6LJjyHKXM4yRrJR0.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lyrate",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Kjc9rQ8En4Lvgv2JUph0.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Obcordate",
+    "category": "Leaf Apex",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/vVfqlKi5AXq6CTY1xqBP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Oblanceolate",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/zJ7RizOm0w2wh29eMD6d.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Orbicular",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/40i33LKeGBQg1xcoRawk.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Oval",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/IH9MxPJjtQ9IBxf34I8P.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Runcinate",
+    "category": "Leaf Shape",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/wJ5Madf1LeeN4xgonjN0.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Entire",
+    "category": "Leaf Margin",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/wbL1zMk6tWjjmViNY74F.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Serrate",
+    "category": "Leaf Margin",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/K1WfgHSy9jxRPMvvwgYY.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Dentate",
+    "category": "Leaf Margin",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/1VRMjKi4Y9L6itunH77n.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Crenate",
+    "category": "Leaf Margin",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/5KjnLBHbemlbStIcotUy.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lobed",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/kul9PQ3ToQjGOzVK5LNu.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Revolute",
+    "category": "Marginal Deflection",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/LFz5Qb4xLbEjDm3Mdi9Z.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Involute",
+    "category": "Marginal Deflection",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Z1uTQlbQD9hOVmUiBRnX.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Undulate",
+    "category": "Marginal Deflection",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/1eK2eWYOs6ZTrxVbzacK.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Acute",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/OvUT9TlFXdKe6XlvnxUF.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Acuminate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/4RGSI1envMdGk6tzfOQc.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Obtuse",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/FkvdThpcXfN1RhFBMqzp.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Mucronate",
+    "category": "Leaf Apex",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/CC9oXmJPHFFN5VYYXJyl.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Cuspidate",
+    "category": "Leaf Apex",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/9ven6WDUlgZglb5pmAO4.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Cordate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/8apcOXV6fvKSFnRwapae.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Truncate",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/V2UKkyLUiiDHzmTiAHZJ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Cuneate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/1B0yQ1DmbGy2zzfiPYvw.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Sagittate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/d3mA0kO52T2OJx0TUjRZ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pinnate",
+    "category": "Leaf Venation",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/YSgVZHPlIQ6XVWgSy75d.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Palmate",
+    "category": "Leaf Venation",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/dL5Kem3wr0ifXu6GSpmB.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Parallel",
+    "category": "Leaf Venation",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/IGr5IQNNTXUdC5YlHnki.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Reticulate",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/K6RvbpP34M3ph2LsWUhg.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Dichotomous",
+    "category": "Leaf Venation",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/kxYQ4uT3g2yEhZBqhZpM.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Glabrous",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pubescent",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tomentose",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Villous",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Hispid",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Scabrous",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Strigose",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Glandular",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Aromatic",
+    "category": "Olfaction",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Latex",
+    "category": "Exudate",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Glaucous",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Prickles",
+    "category": "Growth Modification",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/b2Nr12GiUtjQoREVah1U.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Thorns",
+    "category": "Growth Modification",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spines",
+    "category": "Growth Modification",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/D6B1AySG5hZ1lVsBELqP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tendrils",
+    "category": "Stem Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/3VTg9uOu22pJPjei5qff.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Winged stem",
+    "category": "Stem Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/OpAn5OwY8I8dDEIIx1vL.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lenticels",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Nodes",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Internodes",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Stolon",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Rhizome",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tuber",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Corm",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Bulb",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Pseudostem",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Scape",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Armed stem",
+    "category": "Stem Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/U26RzJ0Rzl6XaG1xzwmw.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Unarmed stem",
+    "category": "Stem Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/YffhPK4msjj6GQSt56ir.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Actinomorphic",
+    "category": "Floral Symmetry",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/77o96YsGgz8uWoGeOFmo.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Zygomorphic",
+    "category": "Floral Symmetry",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/TCxuTyoJ6fHjBZa504FV.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Asymmetric",
+    "category": "Floral Symmetry",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/efTO9S6fuiRazJNz4QYo.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "3 petals",
+    "category": "Petal Count",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/N5gmu9IBwAaWnF40Jyq3.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "4 petals",
+    "category": "Petal Count",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/dA2ce0Dzf6nFxn8FAdw1.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "5 petals",
+    "category": "Petal Count",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/XTRUmB2uhISc17kaLvQO.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Many petals",
+    "category": "Petal Count",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Z2MBEQBtvB0H4114CNIa.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Absent petals",
+    "category": "Petal Count",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Fused petals",
+    "category": "Petal Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/adX25oQUuZvl5Gy8GM4D.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Free petals",
+    "category": "Petal Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/4Th12wrrVMm1wOIBIxlE.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Sepals present",
+    "category": "Sepal Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/h3IsGbC9oPS0CMMH6CNs.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Sepals absent",
+    "category": "Sepal Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/wNFgdnpp6BUXBlZICwVm.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Fused sepals",
+    "category": "Sepal Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/8ijTUm5zdteLXfoceoFD.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Free sepals",
+    "category": "Sepal Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/5NBWlADwVH8gStzPYD5Y.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "White Petals",
+    "category": "Petal Color",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/byYSQ86c1b08W3s3DEdc.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Yellow Petals",
+    "category": "Petal Color",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/DeKxpP0qoi0tDfiEi46S.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pink Petals",
+    "category": "Petal Color",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/HjCLN1tTGKqlf6mxQ6ch.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Red Petals",
+    "category": "Petal Color",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/6x3Ky4KRlGNHc0gD2LSj.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Purple Petals",
+    "category": "Petal Color",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/cAY37pYH8hP6wHTlTluN.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Blue Petals",
+    "category": "Petal Color",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/UyMX2Jqd2eSFmN5Dwxb2.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Orange Petals",
+    "category": "Petal Color",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/wO4Ih21OsubYVxPcU12q.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Green Petals",
+    "category": "Petal Color",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/2X2utHS2IB0SQVNuVbMm.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Variegated Petals",
+    "category": "Petal Color",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Solitary",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/oP6Eaps2aPTo9WMA1EAK.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spike",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/lwbpiMTd63M30ZrEP08Z.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Raceme",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/WhfQtu9ECSv43vb8xaLP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Panicle",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/qnYlmmaqiQrqFWqAV88H.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Umbel",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/nDdXb6MUxKWlweyO4Zli.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Corymb",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Wr4Gb7R7siW7nve6vJB7.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Head",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/e45VgVzuJa41wCJmlUVT.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Cyme",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/TTO4NrmSmGAli6ETEGgl.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Dichasium",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/QxwVtEB7Jo9eFfNTKOLC.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Monochasium",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/3GOwFIx8LRlIpFPxCQde.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Helicoid cyme",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/YvSQwWa1ZFSsC9PxNEHo.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spadix",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/so6Sy7zYtnbIK3KbtcNP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Catkin",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/KzmsZ4bWK6O8EDKF5aQO.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Glomerule",
+    "category": "Inflorescence Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/DvMraD0Z3oPHdKPC0SGh.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Axillary",
+    "category": "Flower Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/DOXCyq32q2hTfutpfiv1.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Terminal",
+    "category": "Style Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/W6Qni7sS4M36LsBQc8FM.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Epigynous",
+    "category": "Ovary Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/hjoOebgcHw8elbdSesri.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Hypogynous",
+    "category": "Ovary Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/JocRVAgqdnhbuLTjFKyi.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Perigynous",
+    "category": "Ovary Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/bYSPWjSAfNT1CSg3N0mD.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Unisexual",
+    "category": "Floral Sex",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/GR5zCVronHVPmzJ9wtQe.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bisexual",
+    "category": "Floral Sex",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/ggcKjFJQMZQAEqafujmR.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Staminode",
+    "category": "Floral Part",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Stylopodium",
+    "category": "Floral Part",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Corona",
+    "category": "Floral Part",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Labellum",
+    "category": "Floral Part",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Ligule",
+    "category": "Leaf Structure",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bract",
+    "category": "Floral Part",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Bracteole",
+    "category": "Leaf-like Structure",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spathe",
+    "category": "Floral Part",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Involucre",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Achene",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/eho6D6E98c8TgCTDDe8T.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Samara",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/soPvougWvDZzUkE2TSWZ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Nut",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/DnCIIXJAOVymJ2zoQWBV.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Drupe",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/ea6kcOrMvbCKXYE25ETF.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Berry",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/lktXxwylD6JNP8blQR9s.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pome",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/WCOm7Vr16ZFtpaUkCwri.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Hesperidium",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/9u2uqBpdrqvrw2MaPnDe.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pepos",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/p3u0lE3ELXNs8vwNPvWF.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Legume",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Ux91p56MN2doCyZWqRHw.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Follicle",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Z0hBmRpc6hDptAsjcgYa.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Capsule",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/16R0htFOv57XkZFbMsJQ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Silique",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/aGp73ieEaQT1XkwsPFIf.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Schizocarp",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/UTzA4f2wnLproKUT2RIP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Loment",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Ou9XwqOtVUaRcA8NMCJm.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Caryopsis",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/4FUocVX6ZQhyU4Fb2Quy.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Utricle",
+    "category": "Fruit Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Nutlet",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/mqqsrR6J16CqrT8gPCPA.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Multiple fruit",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/x0UXxtLBXFBXFmzZcc5z.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Aggregate fruit",
+    "category": "Fruit Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/eNWUGeia07wjmYxjKezT.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Seed wing",
+    "category": "Seed Trait",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/5vJwFTTKJUhP7kadj9sa.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Aril",
+    "category": "Seed Trait",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/dGuF0Tpv0CHefJBqnIRb.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Caruncle",
+    "category": "Seed Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Elaiosome",
+    "category": "Seed Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Endosperm",
+    "category": "Seed Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Testa",
+    "category": "Seed Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Hilum",
+    "category": "Seed Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Micropyle",
+    "category": "Seed Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Raphe",
+    "category": "Seed Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Funiculus",
+    "category": "Seed Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Pericarp",
+    "category": "Structural Part",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Mesocarp",
+    "category": "Structural Part",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Exocarp",
+    "category": "Structural Part",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Endocarp",
+    "category": "Structural Part",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Dehiscent",
+    "category": "Characteristic",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Indehiscent",
+    "category": "Characteristic",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Taproot",
+    "category": "Root Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/7ip7amrJr2DWNePAy23t.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Fibrous root",
+    "category": "Root Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/jkaX0lah70XQDneEzHd2.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Adventitious root",
+    "category": "Root Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/MYvN4AfvYRhpWx7kDrB3.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Rhizome",
+    "category": "Stem Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/g5IStAp5dl9BbExup9ZP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Contractile root",
+    "category": "Root Type",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Buttress root",
+    "category": "Root Type",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Prop root",
+    "category": "Root Type",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Aerial root",
+    "category": "Root Type",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Pneumatophore",
+    "category": "Root Type",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Haustorium",
+    "category": "Root Type",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Mycorrhiza",
+    "category": "Root Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Nodule",
+    "category": "Root Trait",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Prickle",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Thorn",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Tendril",
+    "category": "Stem Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Bracteole",
+    "category": "Leaf-like Structure",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stipulate",
+    "category": "Stipule Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/njTrRLmBvuwyvVKjfzU0.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stipel",
+    "category": "Stipule Arrangement",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Pulvinus",
+    "category": "Leaf-like Structure",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Trichome",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Papillae",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Striate",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Inequilateral",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/97CPtWSE4dWvHbRdOx7o.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Acuminate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/oLPaSiUpObHsKZpNfZTM.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Acute",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Y9r23PGEk6Lu7DZ56cWH.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Obtuse",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/egEznu0a6AAonNiR2zrq.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Round",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/1Rxbl9Hiid5wANIoF8BC.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Hastate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/9S0k9VHCBjD6eUo2o2vj.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Auriculate",
+    "category": "Leaf Base",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/dFCxqNf6PNnywMLj9m47.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Forest understory",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Open field",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Wetland",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Riparian zone",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Edge habitat",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Rocky outcrop",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Alpine zone",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Disturbed soil",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Desert habitat",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Marsh",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Fen",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bog",
+    "category": "Habitat",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Epiphyte",
+    "category": "Growth Habit",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lithophyte",
+    "category": "Ecological Adaptation",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Halophyte",
+    "category": "Ecological Adaptation",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Xerophyte",
+    "category": "Ecological Adaptation",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Hydrophyte",
+    "category": "Ecological Adaptation",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Mesophyte",
+    "category": "Ecological Adaptation",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Erect",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/9YoCztGZEKrPUHEWN8dr.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Ascending",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/6G2v9MQZX15jqrlFW33H.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Virgately",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Q7Cxhv5cgA8jq5seMOPo.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Intricate",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/MuDJF1mWgMGF6wFbAjnP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Divaricate",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/zcUHSs85iEGb9qJOF05u.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Suckers",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/uWAMZaMbJy0gUWAFZ114.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Coppice shoots",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/1a9vgxgIuiuAhB5TwlwQ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lignotuber",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/GlBEoCS1QZaIr9pRMeVR.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Epiphyte",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/kmKS2jGjdn6SlRlcoZBz.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Decumbent",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/qj360008ll64FAjEPCjY.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Procumbent",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/YbAlQn1qXSvNcO0XFCci.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Prostrate",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/5h9iO4pHLvq9IdwOg3nE.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stoloniferous",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/PGBETBDXZkPZtgufEnUv.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Rhizomatous",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/lbnJ7SJnShyFdUy9bcQq.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pendent",
+    "category": "Growth Habit",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/58jm8dgxKwMiQWLTbF9d.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Trailing",
+    "category": "Growth Habit",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Climbing",
+    "category": "Growth Habit",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Scandent",
+    "category": "Growth Habit",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lianas",
+    "category": "Growth Habit",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Caespitose",
+    "category": "Growth Habit",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Woody",
+    "category": "Growth Habit",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Herbaceous",
+    "category": "Growth Habit",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tripinnate Compound",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/T7IhLGiGzJHsQ8m7hrcE.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bifoliate",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/3mUmULk4ntsnAsEx059D.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Paripinnate Compound",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/ICXMe7hMh5T1Ypx6iQTL.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Imparipinnate Compound",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/0V7gEvSjPBGzOUx4bUAH.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Unifoliate",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/fgiadbeaxjPaTWuZuElK.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Connate",
+    "category": "Leaf Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/9NxcBsLiB5EoDldRAU65.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Sheathing",
+    "category": "Leaf Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/9pouqEQxmBjQ7rp34wex.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Free Stipule",
+    "category": "Stipule Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/WNLEOHazvgEKsLM0SEi0.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Adnate Stipule",
+    "category": "Stipule Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/eFW4S4gJgLKaqV6CUF1S.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Ochreate Stipule",
+    "category": "Stipule Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/uMooOxCCmYbeyLu8bUkd.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Encircling Petiole Stipule",
+    "category": "Stipule Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/6hpHTFXtCvaYf8VcZkiI.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Intrapetiolar Stipule",
+    "category": "Stipule Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/y1eKrL0zN3cGl3RFy5Sk.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Interpetiolar Stipule",
+    "category": "Stipule Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/FMnD5CIDY2fEXq6bxDGc.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Twining Stems",
+    "category": "Stem Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/TgVp22wiENnPwGzmKBaF.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Twining Petioles",
+    "category": "Leaf Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/3JQVdP3LUNhfvGs5eYNn.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Basal",
+    "category": "Style Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Pvp4YMpIvmw7zUhMJKLh.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Equitant",
+    "category": "Leaf Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/9Fa0M37bur9fzDeYY1j9.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Emarginate",
+    "category": "Leaf Apex",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/MzGFpJIZxnoNlNhQ4y8q.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Obcordate",
+    "category": "Leaf Apex",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/qllPnHQ3fh05onkF0I4f.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Flat",
+    "category": "Marginal Deflection",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/M8KSkkkMbW0g3p2zWEOP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Exstipulate",
+    "category": "Stipule Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/yFrpVwOABZbeoV4zVxuw.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Scale",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/H1X7Bs1qzu8w1Ti4UAgV.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Needle-like",
+    "category": "Leaf Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/1VjjVhGMu5kceVGU7BY2.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Abaxial",
+    "category": "Position",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Bisex",
+    "category": "Floral Sex",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Cone",
+    "category": "Cone Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Deciduous",
+    "category": "Persistence",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Dioecious",
+    "category": "Sexuality",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Haustorial",
+    "category": "Parasitism",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Evergreen",
+    "category": "Persistence",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Floating",
+    "category": "Aquatic",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Rhizoids",
+    "category": "Bryophyte Structure",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Sorus",
+    "category": "Fern Reproduction",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Spiral",
+    "category": "Leaf Morphology",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Sporangium",
+    "category": "Spore Production",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Shrubs",
+    "category": "Form",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Spreading",
+    "category": "Form",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Annual",
+    "category": "Annual/Biennial",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Biennial",
+    "category": "Annual/Biennial",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Perennial",
+    "category": "Annual/Biennial",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Dorsifixed (versatile)",
+    "category": "Anther Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/TYYL9LRjZ1ZNfJKPxmBZ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Dorsifixed (not versatile)",
+    "category": "Anther Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/p00HJb5c5toeHbcWqyd6.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Basifixed",
+    "category": "Anther Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/g6RX0jip4mGB5uVBF98e.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Apical",
+    "category": "Anther Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/7lKchDGCMZvjKVCNPJdu.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pores",
+    "category": "Anther Dehiscence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/EL8VkfAfA8HMmwnPKynT.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Short Slits",
+    "category": "Anther Dehiscence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/41R9vtfASPhmq3zValXQ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Longitudinal Slits",
+    "category": "Anther Dehiscence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/HZDrBfdMNo2H3qn0f6XO.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Transverse Slits",
+    "category": "Anther Dehiscence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/QMIqBbRdntea55Xv68NP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Valves",
+    "category": "Anther Dehiscence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/UjM05fVb9jsO1Di5snZ1.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Dehiscence Irregular",
+    "category": "Anther Dehiscence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/8Jrc7WZqmlgyZLjJCUX3.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bracts Absent",
+    "category": "Bract Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/tcofhoqZsECyKBBLLEM0.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bracts Present",
+    "category": "Bract Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/qjspxp0h6MCqs2kkj8q2.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bracts without Bracteoles",
+    "category": "Bracteoles Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/vUTs2ySWRgvpFnfTbjy7.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bracts with Bracteoles Above",
+    "category": "Bracteoles Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/TIMTQ6rhP0WnOCNjBtHl.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Intrapetiolar Colleter",
+    "category": "Stem Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/tgh2KGIEacofKBrME1Py.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Interpetiolar Colleter",
+    "category": "Stem Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/0LCV0nST2MsThrTjKyjT.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Corolla Spurs Absent",
+    "category": "Corolla Spurs",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/ccHtazB1nzoq45PDcQYX.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Corolla Spurs Present",
+    "category": "Corolla Spurs",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/7zXdBA63R8ljH7JortfP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Extrorse",
+    "category": "Anther Dehiscence Direction",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Latrorse",
+    "category": "Anther Dehiscence Direction",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Introrse",
+    "category": "Anther Dehiscence Direction",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Terminal",
+    "category": "Style Position",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stamens Free",
+    "category": "Stamen Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/J7kPrzXpOTk1Kh43O90J.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stamens United by Tube",
+    "category": "Stamen Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/AcIJlJKfl3mYS4AXlai4.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stamens Grouped into Bundles",
+    "category": "Stamen Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/vD5feKnqElH8I0Ow5ufM.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stamens Fused by Anthers",
+    "category": "Stamen Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/YxV1pwXdH4G8TasFQIK9.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Simple Hairs",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/GXfCHkqCOl1IgSzXcgVx.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Simple and Glandular Hairs",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/o8cGrDWvPJrGXIXyV8oP.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Entire Petal Incision",
+    "category": "Petal Incision",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/XYWn5j4H8HHh3a2VLHY2.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Emarginate Petal Incision",
+    "category": "Petal Incision",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/3GhS8r7Q5eYj3gYfPgCO.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Bifid Petal Incision",
+    "category": "Petal Incision",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/LFJ5Z2NSPejfHYhc3QcY.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Trifid Petal Incision",
+    "category": "Petal Incision",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/XQpf8aIZBqPmTBWJgQQ7.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Dendritic Hairs",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/dpFq72W6NH9gWhMA3Yn2.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stellate Hairs",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/j98DzaBJgqoqX222PdKr.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Peltrate Scales",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Zhz4eAOHmwj6B1MClLEw.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Capitate Hairs",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/8mZGV74lGyQBULF3AIvj.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Clavate Hairs",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/zMVnI0dR8OY3SSZ1ItiA.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Vesicular Hairs",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/nxKENaJWglylmC6ozBvO.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Indumentum",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": false
+  },
+  {
+    "term": "Leaf Opposed Inflorescence",
+    "category": "Inflorescence Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/bod4sXTHuwN3IAAk0euR.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Intercalary Inflorescence",
+    "category": "Inflorescence Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/U68TGFHD5d4kuiDszZaH.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Cauliforous Inflorescence",
+    "category": "Inflorescence Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/uVCh3k6XzVFdyUioZ5C6.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spiny",
+    "category": "Leaf Margin",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/xKMjfhC81d0QrVY92rDr.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Venation Not Visible",
+    "category": "Leaf Venation",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/5ErucWcKhfWzdtqKQhPU.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "I-Veined",
+    "category": "Leaf Venation",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/DaZVPqjRG9eu80iXrcvz.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Ligule Absent",
+    "category": "Leaf Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/dy3j5ZoFKF3ZuOToLB08.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Ligule Present",
+    "category": "Leaf Morphology",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/XkmPQpyVaFMWj8kop15g.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spathe Absent",
+    "category": "Spathe Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/UkIuwpMwwEF8Sx7071aM.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spathe Present",
+    "category": "Spathe Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/RFSkUHG2YsgILO7ljpWI.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Colliculate",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/e6qxl7hfS1xyQVZehetm.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Echinate",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/6rYVSaROgaYvnpUqvYTK.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Muricate",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/pw6e0OAOq2vdQFqMY2B1.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Papillate",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/v5S3Yvp0GgMVkyYicUZT.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Reticulate",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/eYnCAhEm6PxhQ5zEyhQn.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Smooth",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/j7cmNftwmK9D4UdTn9ku.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spinulose",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/orlkLg5GfMylcIQO5rmd.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Striations",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Nd57uA5F0hzisu8KbCcN.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tuberculate",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/pWldzp9mG84jjuwC4dGb.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Wrinkles",
+    "category": "Surface Texture",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/RQPu2Vt1RK1U9q7Mvgwq.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Terminal",
+    "category": "Style Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/BfFeCqVTfntINNr0K6O2.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Basal",
+    "category": "Style Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Uw5eKM0WOlaBp4SPByL0.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lateral",
+    "category": "Style Position",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/7QYZEUi9zCk3ksSYwiLu.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Beaked",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Vjm3l3GJrUybpMvh33DF.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Club-Shaped",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/DCjrFi1UWXu9fKCF7n1d.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Comb-Like",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/jjxWLwpOcMm1HAYSrihH.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Conical",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/3BKlyc3yrp8UEMpy41Lg.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Disc-Shaped",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/OZ0nCouejI15yOaY5q9y.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Fan-Shaped",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/3mK8GgssoYBnuaOHGpMT.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Feathery",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/9WtsJuE41GTohn3fwEWc.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Filiform",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/zfUAgw7Zcni5O6Til70i.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Hairy",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/8GCvniU9yDUuOWm5qB2c.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lobed",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/KdRyaEfaK3zLUUtMkTfw.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Petal-Like",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/pui1kIADOSP4utquO6cZ.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Truncate",
+    "category": "Style-End Type",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/3zs3JwJPA49TyGtflayE.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stipellae Absent",
+    "category": "Stipellae Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/7cmCmR4NUgJUQNOdHN2Z.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stipellae Present",
+    "category": "Stipellae Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/JcJOesj8mF0n7OAkWKBs.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Staminodes Absent",
+    "category": "Staminodes Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Wb3xScJv4dcFPUop1zFE.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Staminodes Present",
+    "category": "Staminodes Presence",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/C6suLzwHgHLj4ZuOWPKB.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Campanulate",
+    "category": "Perianth Tube",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Cupuliform",
+    "category": "Perianth Tube",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Funnel-Shaped",
+    "category": "Perianth Tube",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Rotate",
+    "category": "Perianth Tube",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Salverform",
+    "category": "Perianth Tube",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tubular",
+    "category": "Perianth Tube",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Urceolate",
+    "category": "Perianth Tube",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pedicellate",
+    "category": "Flower Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/jpy9pbNK8vVDc7dxUVQS.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Sessile",
+    "category": "Flower Attachment",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/g1hePWJAyDK7PaaIT9xa.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Syncarpous",
+    "category": "Carpel Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/6KCHM1sT27EzyLjBNnYc.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Apocarpous",
+    "category": "Carpel Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/Ak3kU7qCZ424ve2S7Ids.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Monocarpous",
+    "category": "Carpel Fusion",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/TulvgLUph1hvGu8IExsj.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Apetalous",
+    "category": "Petal Fusion",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Polypetalous",
+    "category": "Petal Fusion",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Sympetalous",
+    "category": "Petal Fusion",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Didymous",
+    "category": "Stamen Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/ZM9hSr6XpMhUsUKMEqXD.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Didynamous",
+    "category": "Stamen Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/d8lKfOwwrgw8WuJ3FZei.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tetradynamous",
+    "category": "Stamen Arrangement",
+    "image_url": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/VZt3guwYvGSGHLJW4lZC.png",
+    "show_in_plant_id": true
+  },
+  {
+    "term": "6 petals",
+    "category": "Petal Count",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "7 petals",
+    "category": "Petal Count",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "8 petals",
+    "category": "Petal Count",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "9 petals",
+    "category": "Petal Count",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "10 petals",
+    "category": "Petal Count",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Coriaceous",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Arcuate",
+    "category": "Leaf Venation",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Ensiform",
+    "category": "Leaf Shape",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Adventitious",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Aerenchymatous",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Aerial Root",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Apiculate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Aquatic",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Arching",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Areolate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Aromatic",
+    "category": "Olfaction",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Axillary",
+    "category": "Flower Position",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Biennial",
+    "category": "Annual/Biennial",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Branched",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Caespitose",
+    "category": "Growth Habit",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Caryopsis",
+    "category": "Fruit Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Compound Umbel",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Coriaceous",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Cucullate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Dissected",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Distichous",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Doubly Serrate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Emergent",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Fascicle",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Fascicled",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Filiform",
+    "category": "Style-End Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Flabellate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Glaucous",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Hesperidium",
+    "category": "Fruit Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Hispid",
+    "category": "Surface Texture",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lactiferous",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lanate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Lepidote",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Ligulate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Loment",
+    "category": "Fruit Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Modified Root",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Mucilaginous",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Nodulated",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Nut",
+    "category": "Fruit Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Nutlet",
+    "category": "Fruit Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Oblique",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Palmately Lobed",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Parasitic",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pepo",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pinnately Lobed",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pitcher-shaped",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Prop Root",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Pulvinate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Reduced",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Repent",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Resinous",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Rosette",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Rounded",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Scale-like",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Scorpioid Cyme",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Sericeous",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Shrub",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Silicle",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Silique",
+    "category": "Fruit Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Solitary",
+    "category": "Inflorescence Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Spinose",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Submerged",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Subopposite",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Subshrub",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Subulate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Succulent",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Terete",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Terminal",
+    "category": "Style Position",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Thyrse",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tree",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tripinnately Compound",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tristichous",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Tubular",
+    "category": "Perianth Tube",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Unbranched",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Utricle",
+    "category": "Fruit Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Variable",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Vine",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Viscid",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Compressed",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Cone",
+    "category": "Cone Type",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Stellate",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  },
+  {
+    "term": "Syconium",
+    "category": "",
+    "image_url": null,
+    "show_in_plant_id": true
+  }
+]
