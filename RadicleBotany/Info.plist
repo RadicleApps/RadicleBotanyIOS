@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSCameraUsageDescription</key>
+    <string>Radicle Botany needs camera access to take photos of plants for identification.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Radicle Botany needs photo library access to select plant photos for identification.</string>
+</dict>
+</plist>
