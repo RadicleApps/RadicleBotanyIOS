@@ -108,7 +108,7 @@ struct PlantDetailView: View {
                 .font(AppFont.sectionHeader())
                 .foregroundStyle(Color.textPrimary)
 
-            Text(plant.plantDescription)
+            Text(markdownToAttributed(plant.plantDescription))
                 .font(AppFont.body())
                 .foregroundStyle(Color.textSecondary)
                 .lineSpacing(4)

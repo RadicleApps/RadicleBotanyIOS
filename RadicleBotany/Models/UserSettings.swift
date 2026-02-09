@@ -37,7 +37,7 @@ enum UserTier: String, Codable {
     }
 
     var canUseCapture: Bool {
-        self == .pro
+        self == .pro || self == .lifetime
     }
 
     var canUseiCloud: Bool {

@@ -25,30 +25,30 @@ enum PlantOrgan: String, CaseIterable, Identifiable {
         switch self {
         case .leaf:
             return [
-                TraitQuestion(title: "Leaf Type", category: "Leaf_Type", keyPath: \.leafType),
-                TraitQuestion(title: "Leaf Shape", category: "Leaf_Shape", keyPath: \.leafShape),
-                TraitQuestion(title: "Leaf Margin", category: "Leaf_Margin", keyPath: \.leafMargin),
-                TraitQuestion(title: "Leaf Arrangement", category: "Leaf_Arrangement", keyPath: \.leafArrangement),
-                TraitQuestion(title: "Leaf Venation", category: "Leaf_Venation", keyPath: \.leafVenation),
-                TraitQuestion(title: "Leaf Texture", category: "Leaf_Texture", keyPath: \.leafTexture)
+                TraitQuestion(title: "Leaf Type", category: "Leaf Type", keyPath: \.leafType),
+                TraitQuestion(title: "Leaf Shape", category: "Leaf Shape", keyPath: \.leafShape),
+                TraitQuestion(title: "Leaf Margin", category: "Leaf Margin", keyPath: \.leafMargin),
+                TraitQuestion(title: "Leaf Arrangement", category: "Leaf Arrangement", keyPath: \.leafArrangement),
+                TraitQuestion(title: "Leaf Venation", category: "Leaf Venation", keyPath: \.leafVenation),
+                TraitQuestion(title: "Leaf Texture", category: "Leaf Texture", keyPath: \.leafTexture)
             ]
         case .flower:
             return [
-                TraitQuestion(title: "Flower Symmetry", category: "Flower_Symmetry", keyPath: \.flowerSymmetry),
-                TraitQuestion(title: "Flower Color", category: "Flower_Color", keyPath: \.flowerColor),
-                TraitQuestion(title: "Petal Count", category: "Flower_Petal Count", keyPath: \.flowerPetalCount),
-                TraitQuestion(title: "Inflorescence", category: "Flower_Inflorescence", keyPath: \.flowerInflorescence),
-                TraitQuestion(title: "Flower Position", category: "Flower_Position", keyPath: \.flowerPosition)
+                TraitQuestion(title: "Flower Symmetry", category: "Flower Symmetry", keyPath: \.flowerSymmetry),
+                TraitQuestion(title: "Flower Color", category: "Flower Color", keyPath: \.flowerColor),
+                TraitQuestion(title: "Petal Count", category: "Flower Petal Count", keyPath: \.flowerPetalCount),
+                TraitQuestion(title: "Inflorescence", category: "Flower Inflorescence", keyPath: \.flowerInflorescence),
+                TraitQuestion(title: "Flower Position", category: "Flower Position", keyPath: \.flowerPosition)
             ]
         case .fruit:
             return [
-                TraitQuestion(title: "Fruit Type", category: "Fruit_Type", keyPath: \.fruitType),
-                TraitQuestion(title: "Seed Trait", category: "Fruit_Seed Trait", keyPath: \.fruitSeedTrait)
+                TraitQuestion(title: "Fruit Type", category: "Fruit Type", keyPath: \.fruitType),
+                TraitQuestion(title: "Seed Trait", category: "Fruit Seed Trait", keyPath: \.fruitSeedTrait)
             ]
         case .bark:
             return [
-                TraitQuestion(title: "Stem Habit", category: "Stem_Habit", keyPath: \.stemHabit),
-                TraitQuestion(title: "Stem Structure", category: "Stem_Structure", keyPath: \.stemStructure)
+                TraitQuestion(title: "Stem Habit", category: "Stem Habit", keyPath: \.stemHabit),
+                TraitQuestion(title: "Stem Structure", category: "Stem Structure", keyPath: \.stemStructure)
             ]
         }
     }

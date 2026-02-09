@@ -90,7 +90,7 @@ struct FamilyDetailView: View {
                 .font(AppFont.sectionHeader())
                 .foregroundStyle(Color.textPrimary)
 
-            Text(family.familyDescription)
+            Text(markdownToAttributed(family.familyDescription))
                 .font(AppFont.body())
                 .foregroundStyle(Color.textSecondary)
                 .lineSpacing(4)

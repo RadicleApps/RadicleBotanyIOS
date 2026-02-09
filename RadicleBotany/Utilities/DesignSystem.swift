@@ -219,3 +219,14 @@ struct AtRiskBadge: View {
         .clipShape(Capsule())
     }
 }
+
+// MARK: - Markdown Helper
+
+/// Converts a markdown string to an AttributedString for SwiftUI Text rendering.
+func markdownToAttributed(_ text: String) -> AttributedString {
+    do {
+        return try AttributedString(markdown: text, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))
+    } catch {
+        return AttributedString(text)
+    }
+}
