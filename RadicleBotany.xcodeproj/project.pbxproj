@@ -88,6 +88,7 @@
 		C20003 /* Families.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Families.json; sourceTree = "<group>"; };
 		C20004 /* Plants.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Plants.json; sourceTree = "<group>"; };
 		C20005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C20006 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +123,7 @@
 			children = (
 				B10001 /* RadicleBotanyApp.swift */,
 				C20005 /* Info.plist */,
+				C20006 /* Configuration.storekit */,
 				C20001 /* Assets.xcassets */,
 				C20002 /* Botany.json */,
 				C20003 /* Families.json */,
