@@ -14,15 +14,27 @@ final class DataLoader {
 
     @MainActor
     func loadAllDataIfNeeded(modelContext: ModelContext) {
+        print("[DataLoader] ========== STARTING DATA LOAD CHECK ==========")
+
         // Verify data actually exists in DB (UserDefaults can persist across simulator reinstalls)
-        let plantCount = (try? modelContext.fetchCount(FetchDescriptor<Plant>())) ?? 0
+        let plantCount: Int
+        do {
+            plantCount = try modelContext.fetchCount(FetchDescriptor<Plant>())
+            print("[DataLoader] Current plant count in DB: \(plantCount)")
+        } catch {
+            print("[DataLoader] ⚠️ fetchCount failed: \(error)")
+            // If we can't even query, the DB might not be working — proceed to load anyway
+            loadFreshData(modelContext: modelContext)
+            return
+        }
+
         let isLoaded = UserDefaults.standard.bool(forKey: dataLoadedKey) &&
             UserDefaults.standard.integer(forKey: dataVersionKey) == currentDataVersion
 
         print("[DataLoader] Check: isLoaded=\(isLoaded), plantCount=\(plantCount)")
 
         if isLoaded && plantCount > 0 {
-            print("[DataLoader] Data already loaded (\(plantCount) plants). Skipping.")
+            print("[DataLoader] ✅ Data already loaded (\(plantCount) plants). Skipping.")
             return
         }
 
@@ -33,8 +45,18 @@ final class DataLoader {
             try? modelContext.delete(model: Family.self)
             try? modelContext.delete(model: BotanyTerm.self)
             try? modelContext.delete(model: Achievement.self)
+            try? modelContext.save()
         }
 
+        // Reset the UserDefaults flag so we get a clean load
+        UserDefaults.standard.removeObject(forKey: dataLoadedKey)
+        UserDefaults.standard.removeObject(forKey: dataVersionKey)
+
+        loadFreshData(modelContext: modelContext)
+    }
+
+    @MainActor
+    private func loadFreshData(modelContext: ModelContext) {
         print("[DataLoader] Loading data from JSON files...")
         let startTime = Date()
 
@@ -50,9 +72,13 @@ final class DataLoader {
             UserDefaults.standard.set(currentDataVersion, forKey: dataVersionKey)
             let elapsed = Date().timeIntervalSince(startTime)
             let finalCount = (try? modelContext.fetchCount(FetchDescriptor<Plant>())) ?? 0
-            print("[DataLoader] All data loaded and saved in \(String(format: "%.2f", elapsed))s — \(finalCount) plants in DB")
+            let familyCount = (try? modelContext.fetchCount(FetchDescriptor<Family>())) ?? 0
+            let termCount = (try? modelContext.fetchCount(FetchDescriptor<BotanyTerm>())) ?? 0
+            print("[DataLoader] ✅ All data loaded and saved in \(String(format: "%.2f", elapsed))s")
+            print("[DataLoader]    Plants: \(finalCount), Families: \(familyCount), Terms: \(termCount)")
         } catch {
             print("[DataLoader] ❌ Failed to save data: \(error)")
+            print("[DataLoader] ❌ Error details: \(String(describing: error))")
         }
     }
 
