@@ -14,44 +14,18 @@ final class DataLoader {
 
     @MainActor
     func loadAllDataIfNeeded(modelContext: ModelContext) {
-        print("[DataLoader] ========== STARTING DATA LOAD CHECK ==========")
+        print("[DataLoader] ========== STARTING DATA LOAD ==========")
 
-        // Verify data actually exists in DB (UserDefaults can persist across simulator reinstalls)
-        let plantCount: Int
-        do {
-            plantCount = try modelContext.fetchCount(FetchDescriptor<Plant>())
-            print("[DataLoader] Current plant count in DB: \(plantCount)")
-        } catch {
-            print("[DataLoader] ⚠️ fetchCount failed: \(error)")
-            // If we can't even query, the DB might not be working — proceed to load anyway
-            loadFreshData(modelContext: modelContext)
-            return
-        }
+        // With in-memory storage, check if data is already loaded this session
+        let plantCount = (try? modelContext.fetchCount(FetchDescriptor<Plant>())) ?? 0
+        print("[DataLoader] Current plant count in DB: \(plantCount)")
 
-        let isLoaded = UserDefaults.standard.bool(forKey: dataLoadedKey) &&
-            UserDefaults.standard.integer(forKey: dataVersionKey) == currentDataVersion
-
-        print("[DataLoader] Check: isLoaded=\(isLoaded), plantCount=\(plantCount)")
-
-        if isLoaded && plantCount > 0 {
-            print("[DataLoader] ✅ Data already loaded (\(plantCount) plants). Skipping.")
-            return
-        }
-
-        // Clear any stale partial data before reloading
         if plantCount > 0 {
-            print("[DataLoader] Clearing stale data...")
-            try? modelContext.delete(model: Plant.self)
-            try? modelContext.delete(model: Family.self)
-            try? modelContext.delete(model: BotanyTerm.self)
-            try? modelContext.delete(model: Achievement.self)
-            try? modelContext.save()
+            print("[DataLoader] ✅ Data already in memory (\(plantCount) plants). Skipping.")
+            return
         }
 
-        // Reset the UserDefaults flag so we get a clean load
-        UserDefaults.standard.removeObject(forKey: dataLoadedKey)
-        UserDefaults.standard.removeObject(forKey: dataVersionKey)
-
+        // Load fresh data — in-memory store starts empty each launch
         loadFreshData(modelContext: modelContext)
     }
 
