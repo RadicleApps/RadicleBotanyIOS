@@ -24,6 +24,15 @@ final class StoreManager: ObservableObject {
         Task {
             await fetchProducts()
             await checkEntitlements()
+
+            #if targetEnvironment(simulator)
+            // Auto-unlock all features in Simulator for testing
+            if self.userTier == .free {
+                self.userTier = .lifetime
+                self.purchasedProductIDs = [StoreManager.lifetimeID]
+                print("[StoreManager] Simulator detected — auto-unlocked lifetime for testing")
+            }
+            #endif
         }
     }
 
