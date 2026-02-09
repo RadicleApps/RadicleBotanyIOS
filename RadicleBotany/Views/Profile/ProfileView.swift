@@ -5,7 +5,7 @@ struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var storeManager: StoreManager
 
-    @Query private var observations: [Observation]
+    @Query private var observations: [PlantObservation]
     @Query private var achievements: [Achievement]
     @Query private var userSettingsResults: [UserSettings]
 
@@ -361,6 +361,6 @@ struct ProfileView: View {
     NavigationStack {
         ProfileView()
             .environmentObject(StoreManager())
-            .modelContainer(for: [Observation.self, Achievement.self, UserSettings.self], inMemory: true)
+            .modelContainer(for: [PlantObservation.self, Achievement.self, UserSettings.self], inMemory: true)
     }
 }

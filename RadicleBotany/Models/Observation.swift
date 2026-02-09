@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Observation {
+final class PlantObservation {
     var plantScientificName: String?
     var photoData: Data?
     var latitude: Double?

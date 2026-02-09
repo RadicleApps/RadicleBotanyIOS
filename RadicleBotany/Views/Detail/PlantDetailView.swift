@@ -9,7 +9,7 @@ struct PlantDetailView: View {
 
     @Query private var allPlants: [Plant]
     @Query private var allFamilies: [Family]
-    @Query private var allObservations: [Observation]
+    @Query private var allObservations: [PlantObservation]
 
     @State private var showPaywall = false
 
@@ -354,7 +354,7 @@ struct PlantDetailView: View {
     }
 
     private func saveToJournal() {
-        let observation = Observation(
+        let observation = PlantObservation(
             plantScientificName: plant.scientificName,
             date: .now,
             notes: "Saved from plant profile: \(plant.commonName)"

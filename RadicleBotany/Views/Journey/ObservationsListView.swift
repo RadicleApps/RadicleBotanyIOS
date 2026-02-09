@@ -4,8 +4,8 @@ import SwiftData
 struct ObservationsListView: View {
     @Environment(\.modelContext) private var modelContext
 
-    @Query(sort: \Observation.date, order: .reverse)
-    private var allObservations: [Observation]
+    @Query(sort: \PlantObservation.date, order: .reverse)
+    private var allObservations: [PlantObservation]
 
     @State private var sortOption: SortOption = .date
     @State private var filterOption: FilterOption = .all
@@ -26,8 +26,8 @@ struct ObservationsListView: View {
         var id: String { rawValue }
     }
 
-    private var filteredObservations: [Observation] {
-        let filtered: [Observation]
+    private var filteredObservations: [PlantObservation] {
+        let filtered: [PlantObservation]
         switch filterOption {
         case .all:
             filtered = allObservations
@@ -145,7 +145,7 @@ struct ObservationsListView: View {
 
     // MARK: - Observation Row
 
-    private func observationRow(_ observation: Observation) -> some View {
+    private func observationRow(_ observation: PlantObservation) -> some View {
         HStack(spacing: 12) {
             // Thumbnail
             if let photoData = observation.photoData,
@@ -231,6 +231,6 @@ struct ObservationsListView: View {
 #Preview {
     NavigationStack {
         ObservationsListView()
-            .modelContainer(for: Observation.self, inMemory: true)
+            .modelContainer(for: PlantObservation.self, inMemory: true)
     }
 }

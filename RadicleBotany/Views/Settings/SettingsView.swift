@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject private var storeManager: StoreManager
@@ -411,7 +412,7 @@ struct SettingsView: View {
 
     private func clearLocalData() {
         do {
-            try modelContext.delete(model: Observation.self)
+            try modelContext.delete(model: PlantObservation.self)
             try modelContext.delete(model: Achievement.self)
         } catch {
             print("[SettingsView] Failed to clear local data: \(error)")
@@ -449,6 +450,6 @@ enum AppTheme: String, CaseIterable, Identifiable {
     NavigationStack {
         SettingsView()
             .environmentObject(StoreManager())
-            .modelContainer(for: [Observation.self, Achievement.self], inMemory: true)
+            .modelContainer(for: [PlantObservation.self, Achievement.self], inMemory: true)
     }
 }

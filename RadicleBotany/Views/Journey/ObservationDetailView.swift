@@ -5,7 +5,7 @@ struct ObservationDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @Bindable var observation: Observation
+    @Bindable var observation: PlantObservation
 
     @Query private var allPlants: [Plant]
 
@@ -328,7 +328,7 @@ struct FlowLayout: Layout {
 #Preview {
     NavigationStack {
         ObservationDetailView(
-            observation: Observation(
+            observation: PlantObservation(
                 plantScientificName: "Rosa canina",
                 latitude: 51.5074,
                 longitude: -0.1278,
@@ -338,5 +338,5 @@ struct FlowLayout: Layout {
             )
         )
     }
-    .modelContainer(for: [Observation.self, Plant.self], inMemory: true)
+    .modelContainer(for: [PlantObservation.self, Plant.self], inMemory: true)
 }

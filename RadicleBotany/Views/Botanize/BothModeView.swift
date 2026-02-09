@@ -820,7 +820,7 @@ struct BothModeView: View {
         let adjustedResults = computeAdjustedResults(from: result)
         let topAdjusted = adjustedResults.first
 
-        let observation = Observation(
+        let observation = PlantObservation(
             plantScientificName: topAdjusted?.match.scientificName ?? bestMatch.scientificName,
             photoData: capturedImage?.jpegData(compressionQuality: 0.7),
             date: .now,
@@ -838,6 +838,6 @@ struct BothModeView: View {
         BothModeView()
     }
     .environmentObject(StoreManager())
-    .modelContainer(for: [Plant.self, BotanyTerm.self, Observation.self], inMemory: true)
+    .modelContainer(for: [Plant.self, BotanyTerm.self, PlantObservation.self], inMemory: true)
     .preferredColorScheme(.dark)
 }

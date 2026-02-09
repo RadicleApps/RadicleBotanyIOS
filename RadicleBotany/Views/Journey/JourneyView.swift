@@ -5,8 +5,8 @@ struct JourneyView: View {
     @EnvironmentObject private var storeManager: StoreManager
     @Environment(\.modelContext) private var modelContext
 
-    @Query(sort: \Observation.date, order: .reverse)
-    private var observations: [Observation]
+    @Query(sort: \PlantObservation.date, order: .reverse)
+    private var observations: [PlantObservation]
 
     @Query private var userSettingsResults: [UserSettings]
 
@@ -20,11 +20,11 @@ struct JourneyView: View {
         userSettings?.streakCount ?? 0
     }
 
-    private var mostRecentObservation: Observation? {
+    private var mostRecentObservation: PlantObservation? {
         observations.first
     }
 
-    private var earlierObservations: [Observation] {
+    private var earlierObservations: [PlantObservation] {
         Array(observations.dropFirst().prefix(10))
     }
 
@@ -38,7 +38,7 @@ struct JourneyView: View {
         }
         .background(Color.appBackground)
         .navigationTitle("Journey")
-        .navigationDestination(for: Observation.self) { observation in
+        .navigationDestination(for: PlantObservation.self) { observation in
             ObservationDetailView(observation: observation)
         }
         .sheet(isPresented: $showPaywall) {
@@ -316,7 +316,7 @@ struct JourneyView: View {
         }
     }
 
-    private func earlierObservationCard(_ observation: Observation) -> some View {
+    private func earlierObservationCard(_ observation: PlantObservation) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if let photoData = observation.photoData,
                let uiImage = UIImage(data: photoData) {
@@ -434,6 +434,6 @@ struct JourneyView: View {
     NavigationStack {
         JourneyView()
             .environmentObject(StoreManager())
-            .modelContainer(for: [Observation.self, UserSettings.self], inMemory: true)
+            .modelContainer(for: [PlantObservation.self, UserSettings.self], inMemory: true)
     }
 }

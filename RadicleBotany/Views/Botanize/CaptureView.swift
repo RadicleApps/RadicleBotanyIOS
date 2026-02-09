@@ -547,7 +547,7 @@ struct CaptureView: View {
     private func saveToJournal() {
         guard let bestMatch = identificationResult?.bestMatch else { return }
 
-        let observation = Observation(
+        let observation = PlantObservation(
             plantScientificName: bestMatch.scientificName,
             photoData: capturedImage?.jpegData(compressionQuality: 0.7),
             date: .now,
@@ -564,6 +564,6 @@ struct CaptureView: View {
         CaptureView()
     }
     .environmentObject(StoreManager())
-    .modelContainer(for: [Plant.self, Observation.self], inMemory: true)
+    .modelContainer(for: [Plant.self, PlantObservation.self], inMemory: true)
     .preferredColorScheme(.dark)
 }

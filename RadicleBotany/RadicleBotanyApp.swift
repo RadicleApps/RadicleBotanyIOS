@@ -11,7 +11,7 @@ struct RadicleBotanyApp: App {
             Plant.self,
             Family.self,
             BotanyTerm.self,
-            Observation.self,
+            PlantObservation.self,
             Achievement.self,
             UserSettings.self
         ])
