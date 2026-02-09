@@ -30,25 +30,25 @@ enum PlantOrgan: String, CaseIterable, Identifiable {
                 TraitQuestion(title: "Leaf Margin", category: "Leaf Margin", keyPath: \.leafMargin),
                 TraitQuestion(title: "Leaf Arrangement", category: "Leaf Arrangement", keyPath: \.leafArrangement),
                 TraitQuestion(title: "Leaf Venation", category: "Leaf Venation", keyPath: \.leafVenation),
-                TraitQuestion(title: "Leaf Texture", category: "Leaf Texture", keyPath: \.leafTexture)
+                TraitQuestion(title: "Leaf Texture", category: "Surface Texture", keyPath: \.leafTexture)
             ]
         case .flower:
             return [
-                TraitQuestion(title: "Flower Symmetry", category: "Flower Symmetry", keyPath: \.flowerSymmetry),
-                TraitQuestion(title: "Flower Color", category: "Flower Color", keyPath: \.flowerColor),
-                TraitQuestion(title: "Petal Count", category: "Flower Petal Count", keyPath: \.flowerPetalCount),
-                TraitQuestion(title: "Inflorescence", category: "Flower Inflorescence", keyPath: \.flowerInflorescence),
+                TraitQuestion(title: "Flower Symmetry", category: "Floral Symmetry", keyPath: \.flowerSymmetry),
+                TraitQuestion(title: "Flower Color", category: "Petal Color", keyPath: \.flowerColor),
+                TraitQuestion(title: "Petal Count", category: "Petal Count", keyPath: \.flowerPetalCount),
+                TraitQuestion(title: "Inflorescence", category: "Inflorescence Type", keyPath: \.flowerInflorescence),
                 TraitQuestion(title: "Flower Position", category: "Flower Position", keyPath: \.flowerPosition)
             ]
         case .fruit:
             return [
                 TraitQuestion(title: "Fruit Type", category: "Fruit Type", keyPath: \.fruitType),
-                TraitQuestion(title: "Seed Trait", category: "Fruit Seed Trait", keyPath: \.fruitSeedTrait)
+                TraitQuestion(title: "Seed Trait", category: "Seed Trait", keyPath: \.fruitSeedTrait)
             ]
         case .bark:
             return [
-                TraitQuestion(title: "Stem Habit", category: "Stem Habit", keyPath: \.stemHabit),
-                TraitQuestion(title: "Stem Structure", category: "Stem Structure", keyPath: \.stemStructure)
+                TraitQuestion(title: "Growth Habit", category: "Growth Habit", keyPath: \.stemHabit),
+                TraitQuestion(title: "Stem Morphology", category: "Stem Morphology", keyPath: \.stemStructure)
             ]
         }
     }
