@@ -126,7 +126,7 @@ final class StoreManager: ObservableObject {
         Task.detached { [weak self] in
             for await result in Transaction.updates {
                 guard let self else { break }
-                if let transaction = try? await self.checkVerified(result) {
+                if let transaction = try? self.checkVerified(result) {
                     await transaction.finish()
                     await self.checkEntitlements()
                 }
@@ -142,7 +142,7 @@ final class StoreManager: ObservableObject {
 
     // MARK: - Helpers
 
-    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+    private nonisolated func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
         case .unverified(_, let error):
             throw error
