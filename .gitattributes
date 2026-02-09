@@ -1,0 +1,7 @@
+# Force LF line endings for all files on checkout
+* text=auto eol=lf
+
+# Ensure asset catalog JSON files always use LF
+*.json text eol=lf
+*.plist text eol=lf
+*.pbxproj text eol=lf
