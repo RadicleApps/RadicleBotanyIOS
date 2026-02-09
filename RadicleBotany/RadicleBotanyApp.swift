@@ -5,7 +5,6 @@ import SwiftData
 struct RadicleBotanyApp: App {
     @StateObject private var storeManager = StoreManager()
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
-    @State private var dataLoaded = false
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -23,41 +22,61 @@ struct RadicleBotanyApp: App {
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            // If schema migration fails, delete the old store and retry
+            print("[RadicleBotanyApp] ModelContainer failed: \(error). Deleting old store...")
+            let url = URL.applicationSupportDirectory.appending(path: "default.store")
+            try? FileManager.default.removeItem(at: url)
+            do {
+                return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            } catch {
+                fatalError("Could not create ModelContainer after reset: \(error)")
+            }
         }
     }()
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if !dataLoaded {
-                    // Show loading while data imports
-                    ZStack {
-                        Color.black.ignoresSafeArea()
-                        VStack(spacing: 16) {
-                            Image(systemName: "leaf.fill")
-                                .font(.system(size: 48))
-                                .foregroundStyle(.orange)
-                            Text("Loading RadicleBotany...")
-                                .foregroundStyle(.white)
-                            ProgressView()
-                                .tint(.orange)
-                        }
-                    }
-                } else if hasCompletedOnboarding {
-                    MainTabView()
-                } else {
-                    OnboardingView()
-                }
-            }
-            .environmentObject(storeManager)
-            .preferredColorScheme(.dark)
-            .onAppear {
-                let context = sharedModelContainer.mainContext
-                DataLoader.shared.loadAllDataIfNeeded(modelContext: context)
-                dataLoaded = true
-            }
+            RootView()
+                .environmentObject(storeManager)
+                .preferredColorScheme(.dark)
         }
         .modelContainer(sharedModelContainer)
+    }
+}
+
+// Separate view so @Environment(\.modelContext) is available from .modelContainer
+struct RootView: View {
+    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var storeManager: StoreManager
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @State private var dataLoaded = false
+
+    var body: some View {
+        Group {
+            if !dataLoaded {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+                    VStack(spacing: 16) {
+                        Image(systemName: "leaf.fill")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.orange)
+                        Text("Loading RadicleBotany...")
+                            .foregroundStyle(.white)
+                        ProgressView()
+                            .tint(.orange)
+                    }
+                }
+            } else if hasCompletedOnboarding {
+                MainTabView()
+            } else {
+                OnboardingView()
+            }
+        }
+        .onAppear {
+            print("[RootView] onAppear fired, loading data...")
+            DataLoader.shared.loadAllDataIfNeeded(modelContext: modelContext)
+            dataLoaded = true
+            print("[RootView] dataLoaded set to true")
+        }
     }
 }
