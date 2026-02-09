@@ -1,7 +1,6 @@
 import Foundation
 import SwiftData
 
-@MainActor
 final class DataLoader {
 
     static let shared = DataLoader()
@@ -11,24 +10,25 @@ final class DataLoader {
     private let dataVersionKey = "com.radicle.radiclebotany.dataVersion"
     private let currentDataVersion = 1
 
-    var isDataLoaded: Bool {
-        UserDefaults.standard.bool(forKey: dataLoadedKey) &&
-        UserDefaults.standard.integer(forKey: dataVersionKey) == currentDataVersion
-    }
-
     // MARK: - Main Load
 
+    @MainActor
     func loadAllDataIfNeeded(modelContext: ModelContext) {
         // Verify data actually exists in DB (UserDefaults can persist across simulator reinstalls)
         let plantCount = (try? modelContext.fetchCount(FetchDescriptor<Plant>())) ?? 0
+        let isLoaded = UserDefaults.standard.bool(forKey: dataLoadedKey) &&
+            UserDefaults.standard.integer(forKey: dataVersionKey) == currentDataVersion
 
-        if isDataLoaded && plantCount > 0 {
+        print("[DataLoader] Check: isLoaded=\(isLoaded), plantCount=\(plantCount)")
+
+        if isLoaded && plantCount > 0 {
             print("[DataLoader] Data already loaded (\(plantCount) plants). Skipping.")
             return
         }
 
         // Clear any stale partial data before reloading
         if plantCount > 0 {
+            print("[DataLoader] Clearing stale data...")
             try? modelContext.delete(model: Plant.self)
             try? modelContext.delete(model: Family.self)
             try? modelContext.delete(model: BotanyTerm.self)
@@ -49,9 +49,10 @@ final class DataLoader {
             UserDefaults.standard.set(true, forKey: dataLoadedKey)
             UserDefaults.standard.set(currentDataVersion, forKey: dataVersionKey)
             let elapsed = Date().timeIntervalSince(startTime)
-            print("[DataLoader] All data loaded and saved in \(String(format: "%.2f", elapsed))s")
+            let finalCount = (try? modelContext.fetchCount(FetchDescriptor<Plant>())) ?? 0
+            print("[DataLoader] All data loaded and saved in \(String(format: "%.2f", elapsed))s — \(finalCount) plants in DB")
         } catch {
-            print("[DataLoader] Failed to save data: \(error)")
+            print("[DataLoader] ❌ Failed to save data: \(error)")
         }
     }
 

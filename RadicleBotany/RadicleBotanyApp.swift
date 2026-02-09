@@ -5,6 +5,7 @@ import SwiftData
 struct RadicleBotanyApp: App {
     @StateObject private var storeManager = StoreManager()
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @State private var dataLoaded = false
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
@@ -29,7 +30,21 @@ struct RadicleBotanyApp: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                if hasCompletedOnboarding {
+                if !dataLoaded {
+                    // Show loading while data imports
+                    ZStack {
+                        Color.black.ignoresSafeArea()
+                        VStack(spacing: 16) {
+                            Image(systemName: "leaf.fill")
+                                .font(.system(size: 48))
+                                .foregroundStyle(.orange)
+                            Text("Loading RadicleBotany...")
+                                .foregroundStyle(.white)
+                            ProgressView()
+                                .tint(.orange)
+                        }
+                    }
+                } else if hasCompletedOnboarding {
                     MainTabView()
                 } else {
                     OnboardingView()
@@ -38,14 +53,11 @@ struct RadicleBotanyApp: App {
             .environmentObject(storeManager)
             .preferredColorScheme(.dark)
             .onAppear {
-                loadDataIfNeeded()
+                let context = sharedModelContainer.mainContext
+                DataLoader.shared.loadAllDataIfNeeded(modelContext: context)
+                dataLoaded = true
             }
         }
         .modelContainer(sharedModelContainer)
-    }
-
-    private func loadDataIfNeeded() {
-        let context = sharedModelContainer.mainContext
-        DataLoader.shared.loadAllDataIfNeeded(modelContext: context)
     }
 }
