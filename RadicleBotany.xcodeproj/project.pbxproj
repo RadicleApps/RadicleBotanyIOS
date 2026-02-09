@@ -45,6 +45,7 @@
 		A20002 /* Botany.json in Resources */ = {isa = PBXBuildFile; fileRef = C20002; };
 		A20003 /* Families.json in Resources */ = {isa = PBXBuildFile; fileRef = C20003; };
 		A20004 /* Plants.json in Resources */ = {isa = PBXBuildFile; fileRef = C20004; };
+		A30001 /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30001 /* SwiftData.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -89,6 +90,7 @@
 		C20004 /* Plants.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Plants.json; sourceTree = "<group>"; };
 		C20005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C20006 /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
+		B30001 /* SwiftData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftData.framework; path = System/Library/Frameworks/SwiftData.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A30001 /* SwiftData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,7 +110,16 @@
 			children = (
 				F10001 /* RadicleBotany */,
 				F10099 /* Products */,
+				F10100 /* Frameworks */,
 			);
+			sourceTree = "<group>";
+		};
+		F10100 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B30001 /* SwiftData.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		F10099 /* Products */ = {
