@@ -8,7 +8,7 @@ final class DataLoader {
 
     private let dataLoadedKey = "com.radicle.radiclebotany.dataLoaded"
     private let dataVersionKey = "com.radicle.radiclebotany.dataVersion"
-    private let currentDataVersion = 1
+    private let currentDataVersion = 2
 
     // MARK: - Main Load
 
@@ -248,14 +248,15 @@ final class DataLoader {
             let decoded = try JSONDecoder().decode([BotanyTermJSON].self, from: data)
             print("[DataLoader] Decoded \(decoded.count) botany terms")
 
-            // First 50 terms are free
-            for (index, json) in decoded.enumerated() {
+            for json in decoded {
                 let term = BotanyTerm(
                     term: json.term,
                     category: json.category,
+                    descriptionShort: json.descriptionShort ?? "",
+                    descriptionLong: json.descriptionLong ?? "",
                     imageURL: json.imageURL,
-                    showPlantID: json.showInPlantID,
-                    isFree: index < 50
+                    showPlantID: json.showPlantID,
+                    isFree: json.isFree ?? false
                 )
                 modelContext.insert(term)
             }

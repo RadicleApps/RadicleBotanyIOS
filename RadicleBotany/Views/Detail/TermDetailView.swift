@@ -120,15 +120,31 @@ struct TermDetailView: View {
     // MARK: - Description
 
     private var descriptionSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("About")
                 .font(AppFont.sectionHeader())
                 .foregroundStyle(Color.textPrimary)
 
-            Text("Botanical term in the \(term.category) category.")
-                .font(AppFont.body())
-                .foregroundStyle(Color.textSecondary)
-                .lineSpacing(4)
+            if !term.descriptionShort.isEmpty {
+                Text(term.descriptionShort)
+                    .font(AppFont.body())
+                    .foregroundStyle(Color.textPrimary)
+                    .lineSpacing(4)
+            }
+
+            if !term.descriptionLong.isEmpty {
+                Text(term.descriptionLong)
+                    .font(AppFont.body())
+                    .foregroundStyle(Color.textSecondary)
+                    .lineSpacing(4)
+            }
+
+            if term.descriptionShort.isEmpty && term.descriptionLong.isEmpty {
+                Text("Botanical term in the \(term.category) category.")
+                    .font(AppFont.body())
+                    .foregroundStyle(Color.textSecondary)
+                    .lineSpacing(4)
+            }
         }
         .cardStyle()
     }
