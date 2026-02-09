@@ -126,14 +126,14 @@ struct TermDetailView: View {
                 .foregroundStyle(Color.textPrimary)
 
             if !term.descriptionShort.isEmpty {
-                Text(term.descriptionShort)
+                Text(markdownToAttributed(term.descriptionShort))
                     .font(AppFont.body())
                     .foregroundStyle(Color.textPrimary)
                     .lineSpacing(4)
             }
 
             if !term.descriptionLong.isEmpty {
-                Text(term.descriptionLong)
+                Text(markdownToAttributed(term.descriptionLong))
                     .font(AppFont.body())
                     .foregroundStyle(Color.textSecondary)
                     .lineSpacing(4)
