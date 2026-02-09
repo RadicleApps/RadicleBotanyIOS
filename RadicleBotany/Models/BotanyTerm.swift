@@ -3,7 +3,7 @@ import SwiftData
 
 @Model
 final class BotanyTerm {
-    @Attribute(.unique) var term: String
+    var term: String
     var category: String
     var imageURL: String?
     var showPlantID: Bool

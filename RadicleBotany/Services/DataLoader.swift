@@ -19,7 +19,21 @@ final class DataLoader {
     // MARK: - Main Load
 
     func loadAllDataIfNeeded(modelContext: ModelContext) {
-        guard !isDataLoaded else { return }
+        // Verify data actually exists in DB (UserDefaults can persist across simulator reinstalls)
+        let plantCount = (try? modelContext.fetchCount(FetchDescriptor<Plant>())) ?? 0
+
+        if isDataLoaded && plantCount > 0 {
+            print("[DataLoader] Data already loaded (\(plantCount) plants). Skipping.")
+            return
+        }
+
+        // Clear any stale partial data before reloading
+        if plantCount > 0 {
+            try? modelContext.delete(model: Plant.self)
+            try? modelContext.delete(model: Family.self)
+            try? modelContext.delete(model: BotanyTerm.self)
+            try? modelContext.delete(model: Achievement.self)
+        }
 
         print("[DataLoader] Loading data from JSON files...")
         let startTime = Date()
