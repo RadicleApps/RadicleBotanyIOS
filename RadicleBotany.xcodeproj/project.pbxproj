@@ -1,0 +1,591 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10001 /* RadicleBotanyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001; };
+		A10002 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002; };
+		A10003 /* BotanyTerm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003; };
+		A10004 /* Family.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004; };
+		A10005 /* Plant.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005; };
+		A10006 /* PlantIdentificationResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006; };
+		A10007 /* PlantObservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007; };
+		A10008 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008; };
+		A10009 /* DataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009; };
+		A10010 /* PlantNetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010; };
+		A10011 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011; };
+		A10012 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10012; };
+		A10013 /* BotanizeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013; };
+		A10014 /* BothModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10014; };
+		A10015 /* CaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10015; };
+		A10016 /* ObserveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10016; };
+		A10017 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10017; };
+		A10018 /* FamilyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10018; };
+		A10019 /* PlantDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10019; };
+		A10020 /* TermDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10020; };
+		A10021 /* JourneyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10021; };
+		A10022 /* ObservationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10022; };
+		A10023 /* ObservationsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10023; };
+		A10024 /* FamiliesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024; };
+		A10025 /* LearnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10025; };
+		A10026 /* SpeciesGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10026; };
+		A10027 /* TermsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10027; };
+		A10028 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10028; };
+		A10029 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10029; };
+		A10030 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10030; };
+		A10031 /* PhotoPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10031; };
+		A10032 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10032; };
+		A10033 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10033; };
+		A10034 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10034; };
+		A20001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C20001; };
+		A20002 /* Botany.json in Resources */ = {isa = PBXBuildFile; fileRef = C20002; };
+		A20003 /* Families.json in Resources */ = {isa = PBXBuildFile; fileRef = C20003; };
+		A20004 /* Plants.json in Resources */ = {isa = PBXBuildFile; fileRef = C20004; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D10000 /* RadicleBotany.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RadicleBotany.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10001 /* RadicleBotanyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadicleBotanyApp.swift; sourceTree = "<group>"; };
+		B10002 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
+		B10003 /* BotanyTerm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotanyTerm.swift; sourceTree = "<group>"; };
+		B10004 /* Family.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Family.swift; sourceTree = "<group>"; };
+		B10005 /* Plant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Plant.swift; sourceTree = "<group>"; };
+		B10006 /* PlantIdentificationResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantIdentificationResult.swift; sourceTree = "<group>"; };
+		B10007 /* PlantObservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantObservation.swift; sourceTree = "<group>"; };
+		B10008 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
+		B10009 /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
+		B10010 /* PlantNetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantNetService.swift; sourceTree = "<group>"; };
+		B10011 /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
+		B10012 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		B10013 /* BotanizeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotanizeView.swift; sourceTree = "<group>"; };
+		B10014 /* BothModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BothModeView.swift; sourceTree = "<group>"; };
+		B10015 /* CaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureView.swift; sourceTree = "<group>"; };
+		B10016 /* ObserveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObserveView.swift; sourceTree = "<group>"; };
+		B10017 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		B10018 /* FamilyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyDetailView.swift; sourceTree = "<group>"; };
+		B10019 /* PlantDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlantDetailView.swift; sourceTree = "<group>"; };
+		B10020 /* TermDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermDetailView.swift; sourceTree = "<group>"; };
+		B10021 /* JourneyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyView.swift; sourceTree = "<group>"; };
+		B10022 /* ObservationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationDetailView.swift; sourceTree = "<group>"; };
+		B10023 /* ObservationsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationsListView.swift; sourceTree = "<group>"; };
+		B10024 /* FamiliesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamiliesListView.swift; sourceTree = "<group>"; };
+		B10025 /* LearnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnView.swift; sourceTree = "<group>"; };
+		B10026 /* SpeciesGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeciesGridView.swift; sourceTree = "<group>"; };
+		B10027 /* TermsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsListView.swift; sourceTree = "<group>"; };
+		B10028 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		B10029 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		B10030 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		B10031 /* PhotoPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerView.swift; sourceTree = "<group>"; };
+		B10032 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		B10033 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		B10034 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		C20001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C20002 /* Botany.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Botany.json; sourceTree = "<group>"; };
+		C20003 /* Families.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Families.json; sourceTree = "<group>"; };
+		C20004 /* Plants.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Plants.json; sourceTree = "<group>"; };
+		C20005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E10001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F10000 = {
+			isa = PBXGroup;
+			children = (
+				F10001 /* RadicleBotany */,
+				F10099 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F10099 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D10000 /* RadicleBotany.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F10001 /* RadicleBotany */ = {
+			isa = PBXGroup;
+			children = (
+				B10001 /* RadicleBotanyApp.swift */,
+				C20005 /* Info.plist */,
+				C20001 /* Assets.xcassets */,
+				C20002 /* Botany.json */,
+				C20003 /* Families.json */,
+				C20004 /* Plants.json */,
+				F10002 /* Models */,
+				F10003 /* Services */,
+				F10004 /* Utilities */,
+				F10005 /* Views */,
+			);
+			path = RadicleBotany;
+			sourceTree = "<group>";
+		};
+		F10002 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10002 /* Achievement.swift */,
+				B10003 /* BotanyTerm.swift */,
+				B10004 /* Family.swift */,
+				B10005 /* Plant.swift */,
+				B10006 /* PlantIdentificationResult.swift */,
+				B10007 /* PlantObservation.swift */,
+				B10008 /* UserSettings.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F10003 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10009 /* DataLoader.swift */,
+				B10010 /* PlantNetService.swift */,
+				B10011 /* StoreManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F10004 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B10012 /* DesignSystem.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		F10005 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B10017 /* CameraView.swift */,
+				B10028 /* MainTabView.swift */,
+				B10031 /* PhotoPickerView.swift */,
+				F10006 /* Botanize */,
+				F10007 /* Detail */,
+				F10008 /* Journey */,
+				F10009 /* Learn */,
+				F10010 /* Onboarding */,
+				F10011 /* Paywall */,
+				F10012 /* Profile */,
+				F10013 /* Search */,
+				F10014 /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F10006 /* Botanize */ = {
+			isa = PBXGroup;
+			children = (
+				B10013 /* BotanizeView.swift */,
+				B10014 /* BothModeView.swift */,
+				B10015 /* CaptureView.swift */,
+				B10016 /* ObserveView.swift */,
+			);
+			path = Botanize;
+			sourceTree = "<group>";
+		};
+		F10007 /* Detail */ = {
+			isa = PBXGroup;
+			children = (
+				B10018 /* FamilyDetailView.swift */,
+				B10019 /* PlantDetailView.swift */,
+				B10020 /* TermDetailView.swift */,
+			);
+			path = Detail;
+			sourceTree = "<group>";
+		};
+		F10008 /* Journey */ = {
+			isa = PBXGroup;
+			children = (
+				B10021 /* JourneyView.swift */,
+				B10022 /* ObservationDetailView.swift */,
+				B10023 /* ObservationsListView.swift */,
+			);
+			path = Journey;
+			sourceTree = "<group>";
+		};
+		F10009 /* Learn */ = {
+			isa = PBXGroup;
+			children = (
+				B10024 /* FamiliesListView.swift */,
+				B10025 /* LearnView.swift */,
+				B10026 /* SpeciesGridView.swift */,
+				B10027 /* TermsListView.swift */,
+			);
+			path = Learn;
+			sourceTree = "<group>";
+		};
+		F10010 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				B10029 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		F10011 /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				B10030 /* PaywallView.swift */,
+			);
+			path = Paywall;
+			sourceTree = "<group>";
+		};
+		F10012 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				B10032 /* ProfileView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		F10013 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				B10033 /* SearchView.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		F10014 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				B10034 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E20001 /* RadicleBotany */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E30001 /* Build configuration list for PBXNativeTarget "RadicleBotany" */;
+			buildPhases = (
+				E40001 /* Sources */,
+				E10001 /* Frameworks */,
+				E50001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RadicleBotany;
+			productName = RadicleBotany;
+			productReference = D10000 /* RadicleBotany.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F00000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					E20001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = E30000 /* Build configuration list for PBXProject "RadicleBotany" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F10000;
+			productRefGroup = F10099 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E20001 /* RadicleBotany */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E50001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A20001 /* Assets.xcassets in Resources */,
+				A20002 /* Botany.json in Resources */,
+				A20003 /* Families.json in Resources */,
+				A20004 /* Plants.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E40001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001 /* RadicleBotanyApp.swift in Sources */,
+				A10002 /* Achievement.swift in Sources */,
+				A10003 /* BotanyTerm.swift in Sources */,
+				A10004 /* Family.swift in Sources */,
+				A10005 /* Plant.swift in Sources */,
+				A10006 /* PlantIdentificationResult.swift in Sources */,
+				A10007 /* PlantObservation.swift in Sources */,
+				A10008 /* UserSettings.swift in Sources */,
+				A10009 /* DataLoader.swift in Sources */,
+				A10010 /* PlantNetService.swift in Sources */,
+				A10011 /* StoreManager.swift in Sources */,
+				A10012 /* DesignSystem.swift in Sources */,
+				A10013 /* BotanizeView.swift in Sources */,
+				A10014 /* BothModeView.swift in Sources */,
+				A10015 /* CaptureView.swift in Sources */,
+				A10016 /* ObserveView.swift in Sources */,
+				A10017 /* CameraView.swift in Sources */,
+				A10018 /* FamilyDetailView.swift in Sources */,
+				A10019 /* PlantDetailView.swift in Sources */,
+				A10020 /* TermDetailView.swift in Sources */,
+				A10021 /* JourneyView.swift in Sources */,
+				A10022 /* ObservationDetailView.swift in Sources */,
+				A10023 /* ObservationsListView.swift in Sources */,
+				A10024 /* FamiliesListView.swift in Sources */,
+				A10025 /* LearnView.swift in Sources */,
+				A10026 /* SpeciesGridView.swift in Sources */,
+				A10027 /* TermsListView.swift in Sources */,
+				A10028 /* MainTabView.swift in Sources */,
+				A10029 /* OnboardingView.swift in Sources */,
+				A10030 /* PaywallView.swift in Sources */,
+				A10031 /* PhotoPickerView.swift in Sources */,
+				A10032 /* ProfileView.swift in Sources */,
+				A10033 /* SearchView.swift in Sources */,
+				A10034 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E60001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		E60002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E70001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RadicleBotany/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RadicleBotany;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_NSCameraUsageDescription = "RadicleBotany needs camera access to identify plants";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "RadicleBotany needs photo library access to identify plants from your photos";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.radicle.radiclebotany;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E70002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RadicleBotany/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RadicleBotany;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_NSCameraUsageDescription = "RadicleBotany needs camera access to identify plants";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "RadicleBotany needs photo library access to identify plants from your photos";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.radicle.radiclebotany;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E30000 /* Build configuration list for PBXProject "RadicleBotany" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E60001 /* Debug */,
+				E60002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E30001 /* Build configuration list for PBXNativeTarget "RadicleBotany" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E70001 /* Debug */,
+				E70002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F00000 /* Project object */;
+}
