@@ -17,9 +17,8 @@ struct BothModeView: View {
     @EnvironmentObject private var storeManager: StoreManager
     @Environment(\.modelContext) private var modelContext
 
-    @Query private var plants: [Plant]
-    @Query(filter: #Predicate<BotanyTerm> { $0.showPlantID == true })
-    private var botanyTerms: [BotanyTerm]
+    @State private var plants: [Plant] = []
+    @State private var botanyTerms: [BotanyTerm] = []
 
     // Capture state
     @State private var capturedImage: UIImage?
@@ -73,6 +72,7 @@ struct BothModeView: View {
         .sheet(isPresented: $showFinalResults) {
             finalResultsModal
         }
+        .onAppear { loadData() }
         .alert("Identification Error", isPresented: $showError) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -828,6 +828,12 @@ struct BothModeView: View {
             verifiedTraits: Array(verifiedTraits.values)
         )
         modelContext.insert(observation)
+    }
+
+    private func loadData() {
+        plants = (try? modelContext.fetch(FetchDescriptor<Plant>())) ?? []
+        let allTerms = (try? modelContext.fetch(FetchDescriptor<BotanyTerm>())) ?? []
+        botanyTerms = allTerms.filter { $0.showPlantID }
     }
 }
 

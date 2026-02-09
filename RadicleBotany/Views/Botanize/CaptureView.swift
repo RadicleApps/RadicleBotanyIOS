@@ -36,7 +36,7 @@ struct CaptureView: View {
     @EnvironmentObject private var storeManager: StoreManager
     @Environment(\.modelContext) private var modelContext
 
-    @Query private var plants: [Plant]
+    @State private var plants: [Plant] = []
 
     @State private var capturedImage: UIImage?
     @State private var showCamera = false
@@ -102,6 +102,7 @@ struct CaptureView: View {
         } message: {
             Text(errorMessage ?? "An unknown error occurred.")
         }
+        .onAppear { loadData() }
     }
 
     // MARK: - Capture Area
@@ -542,6 +543,10 @@ struct CaptureView: View {
 
     private func isInLocalDatabase(_ scientificName: String) -> Bool {
         plants.contains { $0.scientificName.lowercased() == scientificName.lowercased() }
+    }
+
+    private func loadData() {
+        plants = (try? modelContext.fetch(FetchDescriptor<Plant>())) ?? []
     }
 
     private func saveToJournal() {

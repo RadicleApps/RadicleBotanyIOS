@@ -5,10 +5,8 @@ struct JourneyView: View {
     @EnvironmentObject private var storeManager: StoreManager
     @Environment(\.modelContext) private var modelContext
 
-    @Query(sort: \PlantObservation.date, order: .reverse)
-    private var observations: [PlantObservation]
-
-    @Query private var userSettingsResults: [UserSettings]
+    @State private var observations: [PlantObservation] = []
+    @State private var userSettingsResults: [UserSettings] = []
 
     @State private var showPaywall = false
 
@@ -45,6 +43,7 @@ struct JourneyView: View {
             PaywallView()
                 .environmentObject(storeManager)
         }
+        .onAppear { loadData() }
     }
 
     // MARK: - Free User Teaser
@@ -427,6 +426,11 @@ struct JourneyView: View {
                 .foregroundStyle(Color.textMuted)
         }
         .cardStyle(padding: 12)
+    }
+
+    private func loadData() {
+        observations = (try? modelContext.fetch(FetchDescriptor<PlantObservation>(sortBy: [SortDescriptor(\PlantObservation.date, order: .reverse)]))) ?? []
+        userSettingsResults = (try? modelContext.fetch(FetchDescriptor<UserSettings>())) ?? []
     }
 }
 

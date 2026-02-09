@@ -7,7 +7,7 @@ struct ObservationDetailView: View {
 
     @Bindable var observation: PlantObservation
 
-    @Query private var allPlants: [Plant]
+    @State private var allPlants: [Plant] = []
 
     @State private var editableNotes: String = ""
     @State private var showDeleteConfirmation = false
@@ -36,6 +36,7 @@ struct ObservationDetailView: View {
         .navigationTitle("Observation")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            loadData()
             editableNotes = observation.notes ?? ""
         }
         .alert("Delete Observation", isPresented: $showDeleteConfirmation) {
@@ -274,6 +275,10 @@ struct ObservationDetailView: View {
     private func deleteObservation() {
         modelContext.delete(observation)
         dismiss()
+    }
+
+    private func loadData() {
+        allPlants = (try? modelContext.fetch(FetchDescriptor<Plant>())) ?? []
     }
 }
 

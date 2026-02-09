@@ -3,7 +3,8 @@ import SwiftData
 
 struct SpeciesGridView: View {
     @EnvironmentObject var storeManager: StoreManager
-    @Query(sort: \Plant.scientificName) private var allPlants: [Plant]
+    @Environment(\.modelContext) private var modelContext
+    @State private var allPlants: [Plant] = []
 
     var filterCategory: String? = nil
 
@@ -72,6 +73,7 @@ struct SpeciesGridView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
+        .onAppear { loadData() }
     }
 
     // MARK: - Navigation Title
@@ -84,6 +86,10 @@ struct SpeciesGridView: View {
     }
 
     // MARK: - Plant Cell
+
+    private func loadData() {
+        allPlants = (try? modelContext.fetch(FetchDescriptor<Plant>(sortBy: [SortDescriptor(\Plant.scientificName)]))) ?? []
+    }
 
     private func plantCell(_ plant: Plant) -> some View {
         let isUnlocked = plant.isFree || storeManager.isFeatureUnlocked(.fullSpeciesAccess)

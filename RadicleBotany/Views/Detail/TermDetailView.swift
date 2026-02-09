@@ -4,8 +4,10 @@ import SwiftData
 struct TermDetailView: View {
     let term: BotanyTerm
 
-    @Query private var allPlants: [Plant]
-    @Query private var allTerms: [BotanyTerm]
+    @Environment(\.modelContext) private var modelContext
+
+    @State private var allPlants: [Plant] = []
+    @State private var allTerms: [BotanyTerm] = []
 
     // MARK: - Filtered Data
 
@@ -43,6 +45,7 @@ struct TermDetailView: View {
         .navigationDestination(for: BotanyTerm.self) { botanyTerm in
             TermDetailView(term: botanyTerm)
         }
+        .onAppear { loadData() }
     }
 
     // MARK: - Header
@@ -335,6 +338,11 @@ struct TermDetailView: View {
             guard let field = field else { return false }
             return field.localizedCaseInsensitiveContains(value)
         }
+    }
+
+    private func loadData() {
+        allPlants = (try? modelContext.fetch(FetchDescriptor<Plant>())) ?? []
+        allTerms = (try? modelContext.fetch(FetchDescriptor<BotanyTerm>())) ?? []
     }
 }
 

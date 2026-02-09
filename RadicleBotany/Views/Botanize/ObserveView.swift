@@ -79,9 +79,8 @@ struct ObserveView: View {
     @EnvironmentObject private var storeManager: StoreManager
     @Environment(\.modelContext) private var modelContext
 
-    @Query private var plants: [Plant]
-    @Query(filter: #Predicate<BotanyTerm> { $0.showPlantID == true })
-    private var botanyTerms: [BotanyTerm]
+    @State private var plants: [Plant] = []
+    @State private var botanyTerms: [BotanyTerm] = []
 
     @State private var selectedOrgan: PlantOrgan = .leaf
     @State private var currentQuestionIndex: Int = 0
@@ -142,6 +141,7 @@ struct ObserveView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView(contextText: "Upgrade to unlock unlimited Observe mode questions.")
         }
+        .onAppear { loadData() }
         .onChange(of: selectedOrgan) { _, _ in
             resetSession()
         }
@@ -728,6 +728,12 @@ struct ObserveView: View {
         } else {
             return .lowConfidence
         }
+    }
+
+    private func loadData() {
+        plants = (try? modelContext.fetch(FetchDescriptor<Plant>())) ?? []
+        let allTerms = (try? modelContext.fetch(FetchDescriptor<BotanyTerm>())) ?? []
+        botanyTerms = allTerms.filter { $0.showPlantID }
     }
 }
 

@@ -4,8 +4,7 @@ import SwiftData
 struct ObservationsListView: View {
     @Environment(\.modelContext) private var modelContext
 
-    @Query(sort: \PlantObservation.date, order: .reverse)
-    private var allObservations: [PlantObservation]
+    @State private var allObservations: [PlantObservation] = []
 
     @State private var sortOption: SortOption = .date
     @State private var filterOption: FilterOption = .all
@@ -62,6 +61,7 @@ struct ObservationsListView: View {
         .background(Color.appBackground)
         .navigationTitle("Observations")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear { loadData() }
     }
 
     // MARK: - Filter Bar
@@ -199,6 +199,10 @@ struct ObservationsListView: View {
     }
 
     // MARK: - Empty State
+
+    private func loadData() {
+        allObservations = (try? modelContext.fetch(FetchDescriptor<PlantObservation>(sortBy: [SortDescriptor(\PlantObservation.date, order: .reverse)]))) ?? []
+    }
 
     private var emptyState: some View {
         VStack(spacing: 16) {

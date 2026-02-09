@@ -3,11 +3,12 @@ import SwiftData
 
 struct SearchView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var storeManager: StoreManager
 
-    @Query(sort: \Plant.scientificName) private var allPlants: [Plant]
-    @Query(sort: \Family.familyLatin) private var allFamilies: [Family]
-    @Query(sort: \BotanyTerm.term) private var allTerms: [BotanyTerm]
+    @State private var allPlants: [Plant] = []
+    @State private var allFamilies: [Family] = []
+    @State private var allTerms: [BotanyTerm] = []
 
     @State private var searchText = ""
     @State private var scope: SearchScope = .all
@@ -75,6 +76,7 @@ struct SearchView: View {
                 }
             }
         }
+        .onAppear { loadData() }
         .navigationTitle("Search")
         .navigationBarTitleDisplayMode(.inline)
         .searchable(text: $searchText, prompt: "Search plants, families, terms...")
@@ -335,6 +337,12 @@ struct SearchView: View {
 
             Spacer()
         }
+    }
+
+    private func loadData() {
+        allPlants = (try? modelContext.fetch(FetchDescriptor<Plant>(sortBy: [SortDescriptor(\Plant.scientificName)]))) ?? []
+        allFamilies = (try? modelContext.fetch(FetchDescriptor<Family>(sortBy: [SortDescriptor(\Family.familyLatin)]))) ?? []
+        allTerms = (try? modelContext.fetch(FetchDescriptor<BotanyTerm>(sortBy: [SortDescriptor(\BotanyTerm.term)]))) ?? []
     }
 }
 

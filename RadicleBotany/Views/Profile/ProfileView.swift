@@ -3,11 +3,12 @@ import SwiftData
 
 struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var storeManager: StoreManager
 
-    @Query private var observations: [PlantObservation]
-    @Query private var achievements: [Achievement]
-    @Query private var userSettingsResults: [UserSettings]
+    @State private var observations: [PlantObservation] = []
+    @State private var achievements: [Achievement] = []
+    @State private var userSettingsResults: [UserSettings] = []
 
     @State private var showPaywall = false
 
@@ -56,6 +57,7 @@ struct ProfileView: View {
             .padding(.bottom, 32)
         }
         .background(Color.appBackground)
+        .onAppear { loadData() }
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -354,6 +356,12 @@ struct ProfileView: View {
             .cardStyle()
         }
         .buttonStyle(.plain)
+    }
+
+    private func loadData() {
+        observations = (try? modelContext.fetch(FetchDescriptor<PlantObservation>())) ?? []
+        achievements = (try? modelContext.fetch(FetchDescriptor<Achievement>())) ?? []
+        userSettingsResults = (try? modelContext.fetch(FetchDescriptor<UserSettings>())) ?? []
     }
 }
 

@@ -3,9 +3,10 @@ import SwiftData
 
 struct LearnView: View {
     @EnvironmentObject var storeManager: StoreManager
-    @Query(sort: \Plant.scientificName) private var plants: [Plant]
-    @Query(sort: \Family.familyLatin) private var families: [Family]
-    @Query(sort: \BotanyTerm.term) private var terms: [BotanyTerm]
+    @Environment(\.modelContext) private var modelContext
+    @State private var plants: [Plant] = []
+    @State private var families: [Family] = []
+    @State private var terms: [BotanyTerm] = []
 
     @State private var showPaywall = false
 
@@ -26,6 +27,7 @@ struct LearnView: View {
             .padding(.bottom, 32)
         }
         .background(Color.appBackground)
+        .onAppear { loadData() }
         .navigationTitle("Learn")
         .navigationDestination(for: Plant.self) { plant in
             PlantDetailView(plant: plant)
@@ -194,6 +196,12 @@ struct LearnView: View {
                 .foregroundStyle(Color.textMuted)
         }
         .cardStyle()
+    }
+
+    private func loadData() {
+        plants = (try? modelContext.fetch(FetchDescriptor<Plant>(sortBy: [SortDescriptor(\Plant.scientificName)]))) ?? []
+        families = (try? modelContext.fetch(FetchDescriptor<Family>(sortBy: [SortDescriptor(\Family.familyLatin)]))) ?? []
+        terms = (try? modelContext.fetch(FetchDescriptor<BotanyTerm>(sortBy: [SortDescriptor(\BotanyTerm.term)]))) ?? []
     }
 }
 

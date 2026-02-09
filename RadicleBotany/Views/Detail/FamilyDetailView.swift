@@ -4,8 +4,10 @@ import SwiftData
 struct FamilyDetailView: View {
     let family: Family
 
-    @Query private var allPlants: [Plant]
-    @Query private var allFamilies: [Family]
+    @Environment(\.modelContext) private var modelContext
+
+    @State private var allPlants: [Plant] = []
+    @State private var allFamilies: [Family] = []
 
     // MARK: - Filtered Data
 
@@ -49,6 +51,7 @@ struct FamilyDetailView: View {
         .navigationDestination(for: Family.self) { family in
             FamilyDetailView(family: family)
         }
+        .onAppear { loadData() }
     }
 
     // MARK: - Header
@@ -379,6 +382,11 @@ struct FamilyDetailView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.borderSubtle, lineWidth: 0.5)
         )
+    }
+
+    private func loadData() {
+        allPlants = (try? modelContext.fetch(FetchDescriptor<Plant>())) ?? []
+        allFamilies = (try? modelContext.fetch(FetchDescriptor<Family>())) ?? []
     }
 }
 

@@ -3,7 +3,8 @@ import SwiftData
 
 struct FamiliesListView: View {
     @EnvironmentObject var storeManager: StoreManager
-    @Query(sort: \Family.familyLatin) private var families: [Family]
+    @Environment(\.modelContext) private var modelContext
+    @State private var families: [Family] = []
 
     @State private var showPaywall = false
     @State private var searchText = ""
@@ -60,6 +61,7 @@ struct FamiliesListView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
+        .onAppear { loadData() }
     }
 
     // MARK: - Family Row
@@ -119,6 +121,10 @@ struct FamiliesListView: View {
     }
 
     // MARK: - Helpers
+
+    private func loadData() {
+        families = (try? modelContext.fetch(FetchDescriptor<Family>(sortBy: [SortDescriptor(\Family.familyLatin)]))) ?? []
+    }
 
     private func generaCount(for family: Family) -> Int {
         guard !family.genera.isEmpty else { return 0 }

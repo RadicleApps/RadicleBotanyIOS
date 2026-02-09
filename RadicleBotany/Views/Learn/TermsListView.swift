@@ -3,7 +3,8 @@ import SwiftData
 
 struct TermsListView: View {
     @EnvironmentObject var storeManager: StoreManager
-    @Query(sort: \BotanyTerm.term) private var terms: [BotanyTerm]
+    @Environment(\.modelContext) private var modelContext
+    @State private var terms: [BotanyTerm] = []
 
     @State private var showPaywall = false
     @State private var searchText = ""
@@ -63,6 +64,7 @@ struct TermsListView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
+        .onAppear { loadData() }
     }
 
     // MARK: - Term Row
@@ -114,6 +116,10 @@ struct TermsListView: View {
     }
 
     // MARK: - Helpers
+
+    private func loadData() {
+        terms = (try? modelContext.fetch(FetchDescriptor<BotanyTerm>(sortBy: [SortDescriptor(\BotanyTerm.term)]))) ?? []
+    }
 
     private func categoryColor(for category: String) -> Color {
         switch category.lowercased() {

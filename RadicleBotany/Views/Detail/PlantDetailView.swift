@@ -7,9 +7,9 @@ struct PlantDetailView: View {
     @EnvironmentObject private var storeManager: StoreManager
     @Environment(\.modelContext) private var modelContext
 
-    @Query private var allPlants: [Plant]
-    @Query private var allFamilies: [Family]
-    @Query private var allObservations: [PlantObservation]
+    @State private var allPlants: [Plant] = []
+    @State private var allFamilies: [Family] = []
+    @State private var allObservations: [PlantObservation] = []
 
     @State private var showPaywall = false
 
@@ -48,6 +48,7 @@ struct PlantDetailView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }
+        .onAppear { loadData() }
     }
 
     // MARK: - Hero Image
@@ -360,6 +361,12 @@ struct PlantDetailView: View {
             notes: "Saved from plant profile: \(plant.commonName)"
         )
         modelContext.insert(observation)
+    }
+
+    private func loadData() {
+        allPlants = (try? modelContext.fetch(FetchDescriptor<Plant>())) ?? []
+        allFamilies = (try? modelContext.fetch(FetchDescriptor<Family>())) ?? []
+        allObservations = (try? modelContext.fetch(FetchDescriptor<PlantObservation>())) ?? []
     }
 }
 
