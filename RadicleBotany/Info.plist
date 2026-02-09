@@ -6,5 +6,7 @@
     <string>Radicle Botany needs camera access to take photos of plants for identification.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Radicle Botany needs photo library access to select plant photos for identification.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Radicle Botany uses your location to tag plant observations with geographic coordinates.</string>
 </dict>
 </plist>
