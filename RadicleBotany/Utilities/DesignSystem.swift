@@ -202,12 +202,25 @@ struct AtRiskBadge: View {
     let status: String
 
     var badgeColor: Color {
-        status == "Critical" ? .errorRed : .warningAmber
+        switch status {
+        case "Critical": return .errorRed
+        case "At-Risk": return .warningAmber
+        case "In Review": return .purpleSecondary
+        default: return .warningAmber
+        }
+    }
+
+    var badgeIcon: String {
+        switch status {
+        case "Critical": return "exclamationmark.triangle.fill"
+        case "In Review": return "eye.fill"
+        default: return "exclamationmark.triangle.fill"
+        }
     }
 
     var body: some View {
         HStack(spacing: 4) {
-            Image(systemName: "exclamationmark.triangle.fill")
+            Image(systemName: badgeIcon)
                 .font(.system(size: 10))
             Text(status)
                 .font(AppFont.caption())

@@ -16,17 +16,37 @@ struct LearnView: View {
     ]
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
-                nowBloomingSection
-                browseByCategorySection
-                browseAllSection
+        ZStack(alignment: .bottomTrailing) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 28) {
+                    plantsNearMeSection
+                    browseByCategorySection
+                    browseAllSection
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 100)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 32)
+            .background(Color.appBackground)
+
+            // Floating Flashcards button
+            NavigationLink(destination: FlashcardsView()) {
+                HStack(spacing: 8) {
+                    Image(systemName: "rectangle.on.rectangle.angled")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text("Flashcards")
+                        .font(AppFont.sectionHeader())
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 12)
+                .background(Color.purpleSecondary)
+                .clipShape(Capsule())
+                .shadow(color: Color.purpleSecondary.opacity(0.4), radius: 8, y: 4)
+            }
+            .padding(.trailing, 16)
+            .padding(.bottom, 16)
         }
-        .background(Color.appBackground)
         .onAppear { loadData() }
         .navigationTitle("Learn")
         .navigationDestination(for: Plant.self) { plant in
@@ -43,45 +63,81 @@ struct LearnView: View {
         }
     }
 
-    // MARK: - Now Blooming Section
+    // MARK: - Plants Near Me Section
 
-    private var nowBloomingSection: some View {
+    private var plantsNearMeSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Now Blooming")
-                .font(AppFont.sectionHeader())
-                .foregroundStyle(Color.textSecondary)
-                .textCase(.uppercase)
-                .tracking(1.2)
+            HStack {
+                Text("Plants Near Me")
+                    .font(AppFont.sectionHeader())
+                    .foregroundStyle(Color.textSecondary)
+                    .textCase(.uppercase)
+                    .tracking(1.2)
+
+                Spacer()
+
+                Image(systemName: "location.fill")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Color.greenSecondary)
+
+                Text("Common species")
+                    .font(AppFont.caption(10))
+                    .foregroundStyle(Color.textMuted)
+            }
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(0..<5, id: \.self) { index in
-                        nowBloomingCard(index: index)
+                    ForEach(nearMePlants) { plant in
+                        NavigationLink(value: plant) {
+                            nearMeCard(plant)
+                        }
                     }
                 }
             }
         }
     }
 
-    private func nowBloomingCard(index: Int) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.surfaceElevated)
-                .frame(width: 150, height: 110)
-                .overlay {
-                    Image(systemName: "camera.macro")
-                        .font(.title2)
-                        .foregroundStyle(Color.greenSecondary.opacity(0.5))
-                }
+    private var nearMePlants: [Plant] {
+        plants.filter { $0.isFree && $0.habitat != nil && !($0.habitat?.isEmpty ?? true) }
+            .prefix(8)
+            .map { $0 }
+    }
 
-            Text("Seasonal Plant")
+    private func nearMeCard(_ plant: Plant) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.surfaceElevated)
+                    .frame(width: 150, height: 110)
+                    .overlay {
+                        Image(systemName: "leaf.fill")
+                            .font(.title2)
+                            .foregroundStyle(Color.greenSecondary.opacity(0.3))
+                    }
+
+                if plant.isAtRisk, let status = plant.atRiskStatus {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            AtRiskBadge(status: status)
+                                .scaleEffect(0.8)
+                        }
+                        Spacer()
+                    }
+                    .padding(6)
+                }
+            }
+
+            Text(plant.commonName)
                 .font(AppFont.caption())
                 .foregroundStyle(Color.textPrimary)
+                .lineLimit(1)
 
-            Text("Check back for seasonal blooms")
-                .font(.system(size: 11))
+            Text(plant.scientificName)
+                .font(AppFont.caption(10))
                 .foregroundStyle(Color.textMuted)
-                .lineLimit(2)
+                .italic()
+                .lineLimit(1)
         }
         .frame(width: 150)
         .cardStyle(padding: 10)
@@ -147,6 +203,15 @@ struct LearnView: View {
                 .textCase(.uppercase)
                 .tracking(1.2)
 
+            NavigationLink(destination: TermsListView()) {
+                browseAllRow(
+                    icon: "text.book.closed.fill",
+                    title: "All Terms",
+                    count: terms.count,
+                    color: .orangePrimary
+                )
+            }
+
             NavigationLink(destination: SpeciesGridView()) {
                 browseAllRow(
                     icon: "leaf.fill",
@@ -165,12 +230,12 @@ struct LearnView: View {
                 )
             }
 
-            NavigationLink(destination: TermsListView()) {
+            NavigationLink(destination: ConservationView()) {
                 browseAllRow(
-                    icon: "text.book.closed.fill",
-                    title: "All Terms",
-                    count: terms.count,
-                    color: .orangePrimary
+                    icon: "leaf.arrow.triangle.circlepath",
+                    title: "Conservation",
+                    count: UPSData.allSpecies.count,
+                    color: .successGreen
                 )
             }
         }

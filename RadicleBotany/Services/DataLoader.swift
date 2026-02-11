@@ -127,6 +127,18 @@ final class DataLoader {
                 plant.soil = json.environmentSoil
                 plant.growthHabit = json.environmentGrowthHabit
 
+                // Set UPS conservation status for matching species
+                let upsMatch = UPSData.allSpecies.first { ups in
+                    if ups.scientificName == json.plantNameLatin { return true }
+                    let upsGenus = ups.scientificName.components(separatedBy: " ").first ?? ""
+                    let plantGenus = json.plantNameLatin.components(separatedBy: " ").first ?? ""
+                    return ups.scientificName.hasSuffix("spp.") && upsGenus == plantGenus
+                }
+                if let match = upsMatch {
+                    plant.isAtRisk = true
+                    plant.atRiskStatus = match.status.rawValue
+                }
+
                 modelContext.insert(plant)
             }
         } catch {

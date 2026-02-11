@@ -8,6 +8,7 @@ struct FamilyDetailView: View {
 
     @State private var allPlants: [Plant] = []
     @State private var allFamilies: [Family] = []
+    @State private var isDescriptionExpanded = false
 
     // MARK: - Filtered Data
 
@@ -91,6 +92,19 @@ struct FamilyDetailView: View {
                 .font(AppFont.body())
                 .foregroundStyle(Color.textSecondary)
                 .lineSpacing(4)
+                .lineLimit(isDescriptionExpanded ? nil : 4)
+
+            if family.familyDescription.count > 150 {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isDescriptionExpanded.toggle()
+                    }
+                } label: {
+                    Text(isDescriptionExpanded ? "Show less" : "Show more")
+                        .font(AppFont.caption())
+                        .foregroundStyle(Color.orangePrimary)
+                }
+            }
         }
         .cardStyle()
     }
