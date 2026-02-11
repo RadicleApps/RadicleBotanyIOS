@@ -66,7 +66,7 @@ struct FamiliesListView: View {
     private func familyRow(_ family: Family) -> some View {
         Group {
             if isUnlocked {
-                NavigationLink(value: family) {
+                NavigationLink(destination: FamilyDetailView(family: family)) {
                     familyRowContent(family)
                 }
             } else {

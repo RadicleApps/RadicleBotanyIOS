@@ -71,7 +71,7 @@ struct TermsListView: View {
 
         return Group {
             if isUnlocked {
-                NavigationLink(value: term) {
+                NavigationLink(destination: TermDetailView(term: term)) {
                     termRowContent(term)
                 }
             } else {
