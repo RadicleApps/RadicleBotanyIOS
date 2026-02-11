@@ -9,6 +9,7 @@ struct ProfileView: View {
     @State private var observations: [PlantObservation] = []
     @State private var achievements: [Achievement] = []
     @State private var userSettingsResults: [UserSettings] = []
+    @State private var allPlants: [Plant] = []
 
     @State private var showPaywall = false
 
@@ -21,9 +22,9 @@ struct ProfileView: View {
     }
 
     private var uniqueFamiliesCount: Int {
-        // Families explored derived from species - placeholder based on observation count
-        // In a full implementation this would cross-reference Plant model
-        Set(observations.compactMap { $0.plantScientificName }).count
+        let observedNames = Set(observations.compactMap { $0.plantScientificName })
+        let families = Set(allPlants.filter { observedNames.contains($0.scientificName) }.map { $0.familyLatin })
+        return families.count
     }
 
     private var streakCount: Int {
@@ -288,18 +289,16 @@ struct ProfileView: View {
 
     private func achievementIcon(for category: String) -> String {
         switch category.lowercased() {
-        case "observation", "observations":
+        case "observe":
             return "camera.fill"
-        case "identification", "species":
-            return "leaf.fill"
+        case "learn":
+            return "book.fill"
         case "streak":
             return "flame.fill"
-        case "collection", "collections":
+        case "capture":
+            return "leaf.fill"
+        case "journal":
             return "folder.fill"
-        case "learning", "terms":
-            return "book.fill"
-        case "family", "families":
-            return "tree.fill"
         default:
             return "trophy.fill"
         }
@@ -307,18 +306,16 @@ struct ProfileView: View {
 
     private func achievementColor(for category: String) -> Color {
         switch category.lowercased() {
-        case "observation", "observations":
+        case "observe":
             return .orangePrimary
-        case "identification", "species":
-            return .greenSecondary
+        case "learn":
+            return .purpleLight
         case "streak":
             return .orangeLight
-        case "collection", "collections":
+        case "capture":
+            return .greenSecondary
+        case "journal":
             return .purpleSecondary
-        case "learning", "terms":
-            return .purpleLight
-        case "family", "families":
-            return .greenLight
         default:
             return .orangePrimary
         }
@@ -362,6 +359,7 @@ struct ProfileView: View {
         observations = (try? modelContext.fetch(FetchDescriptor<PlantObservation>())) ?? []
         achievements = (try? modelContext.fetch(FetchDescriptor<Achievement>())) ?? []
         userSettingsResults = (try? modelContext.fetch(FetchDescriptor<UserSettings>())) ?? []
+        allPlants = (try? modelContext.fetch(FetchDescriptor<Plant>())) ?? []
     }
 }
 

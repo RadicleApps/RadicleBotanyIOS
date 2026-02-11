@@ -58,9 +58,6 @@ struct TermsListView: View {
         .background(Color.appBackground)
         .navigationTitle("Botanical Terms")
         .searchable(text: $searchText, prompt: "Search terms...")
-        .navigationDestination(for: BotanyTerm.self) { term in
-            TermDetailView(term: term)
-        }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }

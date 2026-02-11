@@ -45,12 +45,6 @@ struct FamilyDetailView: View {
         .background(Color.appBackground)
         .navigationTitle(family.familyLatin)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(for: Plant.self) { plant in
-            PlantDetailView(plant: plant)
-        }
-        .navigationDestination(for: Family.self) { family in
-            FamilyDetailView(family: family)
-        }
         .onAppear { loadData() }
     }
 

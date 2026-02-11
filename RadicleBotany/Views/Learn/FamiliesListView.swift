@@ -55,9 +55,6 @@ struct FamiliesListView: View {
         .background(Color.appBackground)
         .navigationTitle("Families")
         .searchable(text: $searchText, prompt: "Search families...")
-        .navigationDestination(for: Family.self) { family in
-            FamilyDetailView(family: family)
-        }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }

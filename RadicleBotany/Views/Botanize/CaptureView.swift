@@ -109,6 +109,7 @@ struct CaptureView: View {
             }
         }
         .alert("Identification Error", isPresented: $viewModel.showError) {
+            Button("Retry") { viewModel.identifyImage() }
             Button("OK", role: .cancel) {}
         } message: {
             Text(viewModel.errorMessage ?? "An unknown error occurred.")

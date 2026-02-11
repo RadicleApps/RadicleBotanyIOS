@@ -39,12 +39,6 @@ struct TermDetailView: View {
         .background(Color.appBackground)
         .navigationTitle(term.term)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(for: Plant.self) { plant in
-            PlantDetailView(plant: plant)
-        }
-        .navigationDestination(for: BotanyTerm.self) { botanyTerm in
-            TermDetailView(term: botanyTerm)
-        }
         .onAppear { loadData() }
     }
 

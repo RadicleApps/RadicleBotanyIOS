@@ -26,14 +26,14 @@ class PlantNetService {
 
     private let baseURL = "https://my-api.plantnet.org/v2/identify/all"
 
-    private var apiKey: String {
+    private lazy var apiKey: String = {
         guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
               let config = NSDictionary(contentsOfFile: path),
               let key = config["PLANTNET_API_KEY"] as? String else {
             fatalError("Missing PLANTNET_API_KEY in Config.plist")
         }
         return key
-    }
+    }()
 
     func identifyPlant(image: UIImage, organ: String = "auto") async throws -> PlantIdentificationResult {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {

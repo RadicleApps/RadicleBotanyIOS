@@ -67,9 +67,6 @@ struct SpeciesGridView: View {
         .background(Color.appBackground)
         .navigationTitle(navigationTitle)
         .searchable(text: $searchText, prompt: "Search species...")
-        .navigationDestination(for: Plant.self) { plant in
-            PlantDetailView(plant: plant)
-        }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
         }

@@ -129,8 +129,8 @@ RadicleBotanyIOS/
 | Observe mode (3/day) | ✅ | ✅ | ✅ |
 | Unlimited Observe | ❌ | ✅ | ✅ |
 | Journal & Collections | ❌ | ✅ | ✅ |
-| Capture mode (AI) | ❌ | ❌ | ✅ |
-| Both mode | ❌ | ❌ | ✅ |
+| Capture mode (AI) | ❌ | ✅ | ✅ |
+| Both mode | ❌ | ✅ | ✅ |
 | iCloud sync | ❌ | ❌ | ✅ |
 
 ## App Flow
