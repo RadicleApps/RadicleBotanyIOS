@@ -35,7 +35,7 @@ class PlantNetService {
         return key
     }
 
-    func identifyPlant(image: UIImage) async throws -> PlantIdentificationResult {
+    func identifyPlant(image: UIImage, organ: String = "auto") async throws -> PlantIdentificationResult {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             throw PlantNetError.invalidImage
         }
@@ -65,7 +65,7 @@ class PlantNetService {
         // Add organ type
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"organs\"\r\n\r\n".data(using: .utf8)!)
-        body.append("auto\r\n".data(using: .utf8)!)
+        body.append("\(organ)\r\n".data(using: .utf8)!)
 
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
 
