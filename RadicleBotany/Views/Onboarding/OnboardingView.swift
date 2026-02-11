@@ -20,29 +20,45 @@ struct OnboardingView: View {
                 collectPage.tag(3)
                 pricingPage.tag(4)
             }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
+            .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut(duration: 0.3), value: currentPage)
 
-            // Skip button on pages 0-3
-            if currentPage < totalPages - 1 {
-                VStack {
-                    HStack {
-                        Spacer()
+            // Progress dots + Skip overlay
+            VStack {
+                HStack {
+                    progressDots
+
+                    Spacer()
+
+                    if currentPage < totalPages - 1 {
                         Button {
-                            completeOnboarding()
+                            withAnimation { currentPage = totalPages - 1 }
                         } label: {
                             Text("Skip")
-                                .font(AppFont.sectionHeader())
-                                .foregroundStyle(Color.textSecondary)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
+                                .font(AppFont.caption())
+                                .foregroundStyle(Color.textMuted)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
                         }
                     }
-                    .padding(.top, 8)
-                    .padding(.trailing, 8)
-                    Spacer()
                 }
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+
+                Spacer()
+            }
+        }
+    }
+
+    // MARK: - Progress Dots
+
+    private var progressDots: some View {
+        HStack(spacing: 6) {
+            ForEach(0..<totalPages, id: \.self) { index in
+                Capsule()
+                    .fill(index == currentPage ? Color.orangePrimary : Color.borderSubtle)
+                    .frame(width: index == currentPage ? 20 : 6, height: 6)
+                    .animation(.easeInOut(duration: 0.2), value: currentPage)
             }
         }
     }
@@ -50,79 +66,87 @@ struct OnboardingView: View {
     // MARK: - Page 1: Welcome
 
     private var welcomePage: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 0) {
             Spacer()
 
+            // App Icon
             ZStack {
                 Circle()
-                    .fill(Color.orangePrimary.opacity(0.15))
-                    .frame(width: 140, height: 140)
+                    .fill(Color.orangePrimary.opacity(0.1))
+                    .frame(width: 180, height: 180)
 
                 Circle()
-                    .fill(Color.orangePrimary.opacity(0.08))
-                    .frame(width: 180, height: 180)
+                    .fill(Color.orangePrimary.opacity(0.06))
+                    .frame(width: 220, height: 220)
 
                 ZStack {
                     Circle()
                         .fill(Color.orangePrimary)
-                        .frame(width: 100, height: 100)
+                        .frame(width: 110, height: 110)
+                        .shadow(color: Color.orangePrimary.opacity(0.3), radius: 20, y: 4)
 
                     Image(systemName: "leaf.fill")
-                        .font(.system(size: 44))
+                        .font(.system(size: 48))
                         .foregroundStyle(.white)
                 }
             }
 
-            VStack(spacing: 10) {
+            Spacer()
+                .frame(height: 36)
+
+            VStack(spacing: 12) {
                 Text("RadicleBotany")
-                    .font(AppFont.title(32))
+                    .font(AppFont.title(34))
                     .foregroundStyle(Color.textPrimary)
 
-                Text("Learn plants. Know nature.")
+                Text("Identify, learn, and journal\nthe plants around you.")
                     .font(AppFont.bodyLarge())
                     .foregroundStyle(Color.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(4)
             }
 
             Spacer()
-            Spacer()
+
+            Button {
+                withAnimation { currentPage = 1 }
+            } label: {
+                Text("Get Started")
+            }
+            .buttonStyle(PrimaryButtonStyle(color: .orangePrimary))
+            .padding(.horizontal, 32)
+            .padding(.bottom, 60)
         }
-        .padding(.horizontal, 32)
     }
 
-    // MARK: - Page 2: Botanize
+    // MARK: - Page 2: Botanize (Flower Anatomy Image)
 
     private var botanizePage: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 0) {
             Spacer()
+                .frame(height: 60)
 
-            ZStack {
-                Circle()
-                    .fill(Color.greenSecondary.opacity(0.12))
-                    .frame(width: 140, height: 140)
+            // Botanical illustration
+            onboardingImage("OnboardingFlower", fallbackIcon: "camera.macro", fallbackColor: .orangePrimary)
 
-                ZStack {
-                    Image(systemName: "leaf.fill")
-                        .font(.system(size: 50))
-                        .foregroundStyle(Color.greenSecondary)
+            Spacer()
+                .frame(height: 28)
 
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundStyle(Color.greenLight)
-                        .offset(x: 20, y: -18)
-                }
-            }
-
-            VStack(spacing: 10) {
-                Text("Three Ways to Identify")
-                    .font(AppFont.title(24))
+            VStack(spacing: 12) {
+                Text("Identify Any Plant")
+                    .font(AppFont.title(26))
                     .foregroundStyle(Color.textPrimary)
 
-                Text("Use Observe mode to learn morphological traits through guided questions. Use Capture mode for instant AI identification. Or combine Both for the best results.")
+                Text("Use guided trait questions, AI-powered camera identification, or combine both for the most accurate results.")
                     .font(AppFont.body())
                     .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
+            .padding(.horizontal, 32)
+
+            Spacer()
+                .frame(height: 24)
 
             HStack(spacing: 16) {
                 onboardingFeatureChip(icon: "eye.fill", text: "Observe", color: .orangePrimary)
@@ -131,38 +155,40 @@ struct OnboardingView: View {
             }
 
             Spacer()
-            Spacer()
+
+            nextButton(page: 2)
+                .padding(.bottom, 60)
         }
-        .padding(.horizontal, 32)
     }
 
-    // MARK: - Page 3: Learn
+    // MARK: - Page 3: Learn (Leaf Anatomy Image)
 
     private var learnPage: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 0) {
             Spacer()
+                .frame(height: 60)
 
-            ZStack {
-                Circle()
-                    .fill(Color.purpleSecondary.opacity(0.12))
-                    .frame(width: 140, height: 140)
+            // Botanical illustration
+            onboardingImage("OnboardingLeaf", fallbackIcon: "leaf.fill", fallbackColor: .greenSecondary)
 
-                Image(systemName: "book.fill")
-                    .font(.system(size: 50))
-                    .foregroundStyle(Color.purpleSecondary)
-            }
+            Spacer()
+                .frame(height: 28)
 
-            VStack(spacing: 10) {
-                Text("179 Species. 183 Families.")
-                    .font(AppFont.title(24))
+            VStack(spacing: 12) {
+                Text("Master Plant Morphology")
+                    .font(AppFont.title(26))
                     .foregroundStyle(Color.textPrimary)
 
-                Text("Explore a curated botanical database with detailed morphological traits, cross-referenced families, and hundreds of botanical terms. Every species links to its family and relevant terminology.")
+                Text("Explore 179 species, 183 families, and 464 botanical terms — all cross-referenced and richly detailed.")
                     .font(AppFont.body())
                     .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
+            .padding(.horizontal, 32)
+
+            Spacer()
+                .frame(height: 24)
 
             HStack(spacing: 16) {
                 onboardingFeatureChip(icon: "leaf.fill", text: "Species", color: .greenSecondary)
@@ -171,135 +197,188 @@ struct OnboardingView: View {
             }
 
             Spacer()
-            Spacer()
+
+            nextButton(page: 3)
+                .padding(.bottom, 60)
         }
-        .padding(.horizontal, 32)
     }
 
-    // MARK: - Page 4: Collect
+    // MARK: - Page 4: Journal (Fruit Types Image)
 
     private var collectPage: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 0) {
             Spacer()
+                .frame(height: 60)
 
-            ZStack {
-                Circle()
-                    .fill(Color.orangePrimary.opacity(0.12))
-                    .frame(width: 140, height: 140)
+            // Botanical illustration
+            onboardingImage("OnboardingFruit", fallbackIcon: "book.closed.fill", fallbackColor: .purpleSecondary)
 
-                Image(systemName: "book.closed.fill")
-                    .font(.system(size: 50))
-                    .foregroundStyle(Color.orangePrimary)
-            }
+            Spacer()
+                .frame(height: 28)
 
-            VStack(spacing: 10) {
-                Text("Your Botanical Journal")
-                    .font(AppFont.title(24))
+            VStack(spacing: 12) {
+                Text("Build Your Field Journal")
+                    .font(AppFont.title(26))
                     .foregroundStyle(Color.textPrimary)
 
-                Text("Log every plant you encounter with photos, location, and verified traits. Build collections, track your streak, and watch your botanical knowledge grow over time.")
+                Text("Log every plant you encounter with photos, location, and verified traits. Track your streak and watch your knowledge grow.")
                     .font(AppFont.body())
                     .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
+            .padding(.horizontal, 32)
+
+            Spacer()
+                .frame(height: 24)
 
             HStack(spacing: 16) {
-                onboardingFeatureChip(icon: "camera.fill", text: "Observe", color: .orangePrimary)
-                onboardingFeatureChip(icon: "folder.fill", text: "Collect", color: .purpleSecondary)
-                onboardingFeatureChip(icon: "flame.fill", text: "Streak", color: .orangeLight)
+                onboardingFeatureChip(icon: "camera.fill", text: "Photo", color: .orangePrimary)
+                onboardingFeatureChip(icon: "mappin.circle.fill", text: "Location", color: .greenSecondary)
+                onboardingFeatureChip(icon: "flame.fill", text: "Streaks", color: .orangeLight)
             }
 
             Spacer()
-            Spacer()
+
+            nextButton(page: 4)
+                .padding(.bottom, 60)
         }
-        .padding(.horizontal, 32)
     }
 
     // MARK: - Page 5: Pricing
 
     private var pricingPage: some View {
-        VStack(spacing: 20) {
-            Spacer()
-                .frame(height: 20)
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 16) {
+                Spacer()
+                    .frame(height: 48)
 
-            Text("Choose Your Path")
-                .font(AppFont.title(24))
-                .foregroundStyle(Color.textPrimary)
+                // Stem illustration as accent
+                Image("OnboardingStem")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 80)
+                    .opacity(0.6)
 
-            Text("Start free, go further when you're ready.")
-                .font(AppFont.body())
-                .foregroundStyle(Color.textSecondary)
+                Text("Unlock Everything")
+                    .font(AppFont.title(26))
+                    .foregroundStyle(Color.textPrimary)
 
-            VStack(spacing: 12) {
-                // Lifetime Tier Card
-                pricingCard(
-                    tier: "Lifetime",
-                    price: storeManager.lifetimeProduct?.displayPrice ?? "$29.99",
-                    subtitle: "One-time purchase",
-                    features: [
-                        "All 179 species & 183 families",
-                        "Full botanical journal",
-                        "Collections & achievements"
-                    ],
-                    accentColor: .orangePrimary,
-                    isHighlighted: true
-                )
+                Text("One price. Lifetime access. No subscriptions.")
+                    .font(AppFont.body())
+                    .foregroundStyle(Color.textSecondary)
 
-                // Pro Tier Card
-                pricingCard(
-                    tier: "Pro",
-                    price: storeManager.proMonthlyProduct?.displayPrice ?? "$2.99/mo",
-                    subtitle: "or \(storeManager.proYearlyProduct?.displayPrice ?? "$19.99/yr")",
-                    features: [
-                        "Everything in Lifetime",
-                        "AI-powered Capture mode",
-                        "iCloud sync across devices"
-                    ],
-                    accentColor: .greenSecondary,
-                    isHighlighted: false
-                )
-            }
-            .padding(.horizontal, 8)
+                VStack(spacing: 12) {
+                    // Lifetime Tier Card (highlighted — best value)
+                    pricingCard(
+                        tier: "Lifetime",
+                        price: storeManager.lifetimeProduct?.displayPrice ?? "$24.99",
+                        subtitle: "Pay once, yours forever",
+                        badge: "Best Value",
+                        features: [
+                            "All 179 species & 183 families",
+                            "AI-powered Capture & Both modes",
+                            "Full botanical journal & collections",
+                            "All achievements & streaks"
+                        ],
+                        accentColor: .orangePrimary,
+                        isHighlighted: true
+                    )
 
-            VStack(spacing: 10) {
-                Button {
-                    if let product = storeManager.lifetimeProduct {
-                        Task {
-                            let success = await storeManager.purchase(product)
-                            if success { completeOnboarding() }
+                    // Pro Tier Card
+                    pricingCard(
+                        tier: "Pro",
+                        price: storeManager.proYearlyProduct?.displayPrice ?? "$19.99/yr",
+                        subtitle: proSubtitle,
+                        badge: nil,
+                        features: [
+                            "Everything in Lifetime",
+                            "iCloud sync across devices",
+                            "Priority future updates"
+                        ],
+                        accentColor: .greenSecondary,
+                        isHighlighted: false
+                    )
+                }
+                .padding(.horizontal, 4)
+
+                VStack(spacing: 10) {
+                    Button {
+                        if let product = storeManager.lifetimeProduct {
+                            Task {
+                                let success = await storeManager.purchase(product)
+                                if success { completeOnboarding() }
+                            }
                         }
+                    } label: {
+                        Text("Get Lifetime Access")
                     }
-                } label: {
-                    Text("Get Lifetime Access")
-                }
-                .buttonStyle(PrimaryButtonStyle(color: .orangePrimary))
+                    .buttonStyle(PrimaryButtonStyle(color: .orangePrimary))
 
-                Button {
-                    if let product = storeManager.proMonthlyProduct {
-                        Task {
-                            let success = await storeManager.purchase(product)
-                            if success { completeOnboarding() }
+                    Button {
+                        if let product = storeManager.proYearlyProduct {
+                            Task {
+                                let success = await storeManager.purchase(product)
+                                if success { completeOnboarding() }
+                            }
                         }
+                    } label: {
+                        Text("Start Pro — Yearly")
                     }
-                } label: {
-                    Text("Start Free Trial")
-                }
-                .buttonStyle(SecondaryButtonStyle(color: .greenSecondary))
+                    .buttonStyle(SecondaryButtonStyle(color: .greenSecondary))
 
-                Button {
-                    completeOnboarding()
-                } label: {
-                    Text("Continue Free")
+                    Button {
+                        completeOnboarding()
+                    } label: {
+                        Text("Continue with Free")
+                            .font(AppFont.caption())
+                            .foregroundStyle(Color.textMuted)
+                            .padding(.vertical, 8)
+                    }
                 }
-                .buttonStyle(GhostButtonStyle(color: .textSecondary))
+                .padding(.horizontal, 4)
+
+                // Value framing
+                Text("Less than the cost of a single field guide.")
+                    .font(AppFont.caption(11))
+                    .foregroundStyle(Color.textMuted)
+                    .italic()
+                    .padding(.top, 4)
+
+                // Terms
+                HStack(spacing: 16) {
+                    Button("Restore Purchases") {
+                        Task { await storeManager.restorePurchases() }
+                    }
+                    .font(AppFont.caption(10))
+                    .foregroundStyle(Color.textMuted)
+
+                    Text("·")
+                        .foregroundStyle(Color.textMuted)
+
+                    Button("Terms of Use") {}
+                        .font(AppFont.caption(10))
+                        .foregroundStyle(Color.textMuted)
+
+                    Text("·")
+                        .foregroundStyle(Color.textMuted)
+
+                    Button("Privacy") {}
+                        .font(AppFont.caption(10))
+                        .foregroundStyle(Color.textMuted)
+                }
+                .padding(.top, 8)
+                .padding(.bottom, 32)
             }
-            .padding(.horizontal, 8)
-
-            Spacer()
-                .frame(height: 20)
+            .padding(.horizontal, 24)
         }
-        .padding(.horizontal, 24)
+    }
+
+    // MARK: - Pro Subtitle (Savings Framing)
+
+    private var proSubtitle: String {
+        let monthly = storeManager.proMonthlyProduct?.displayPrice ?? "$2.99/mo"
+        return "or \(monthly) · Save 44% yearly"
     }
 
     // MARK: - Pricing Card
@@ -308,33 +387,46 @@ struct OnboardingView: View {
         tier: String,
         price: String,
         subtitle: String,
+        badge: String?,
         features: [String],
         accentColor: Color,
         isHighlighted: Bool
     ) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text(tier)
-                    .font(AppFont.sectionHeader(16))
-                    .foregroundStyle(Color.textPrimary)
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 8) {
+                        Text(tier)
+                            .font(AppFont.sectionHeader(16))
+                            .foregroundStyle(Color.textPrimary)
 
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 1) {
-                    Text(price)
-                        .font(AppFont.sectionHeader(16))
-                        .foregroundStyle(accentColor)
+                        if let badge = badge {
+                            Text(badge)
+                                .font(AppFont.caption(10))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(accentColor)
+                                .clipShape(Capsule())
+                        }
+                    }
 
                     Text(subtitle)
                         .font(AppFont.caption(10))
                         .foregroundStyle(Color.textMuted)
                 }
+
+                Spacer()
+
+                Text(price)
+                    .font(AppFont.title(20))
+                    .foregroundStyle(accentColor)
             }
 
             ForEach(features, id: \.self) { feature in
                 HStack(spacing: 8) {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 10, weight: .bold))
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 12))
                         .foregroundStyle(accentColor)
 
                     Text(feature)
@@ -345,14 +437,29 @@ struct OnboardingView: View {
         }
         .padding(16)
         .background(Color.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 14)
                 .stroke(
-                    isHighlighted ? accentColor.opacity(0.5) : Color.borderSubtle,
+                    isHighlighted ? accentColor.opacity(0.6) : Color.borderSubtle,
                     lineWidth: isHighlighted ? 1.5 : 0.5
                 )
         )
+    }
+
+    // MARK: - Onboarding Image
+
+    private func onboardingImage(_ name: String, fallbackIcon: String, fallbackColor: Color) -> some View {
+        Image(name)
+            .resizable()
+            .scaledToFit()
+            .frame(maxWidth: 280, maxHeight: 220)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.borderSubtle, lineWidth: 0.5)
+            )
+            .shadow(color: .black.opacity(0.3), radius: 12, y: 4)
     }
 
     // MARK: - Onboarding Feature Chip
@@ -370,6 +477,22 @@ struct OnboardingView: View {
                 .font(AppFont.caption())
                 .foregroundStyle(Color.textSecondary)
         }
+    }
+
+    // MARK: - Next Button
+
+    private func nextButton(page: Int) -> some View {
+        Button {
+            withAnimation { currentPage = page }
+        } label: {
+            HStack(spacing: 6) {
+                Text("Next")
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 12, weight: .semibold))
+            }
+        }
+        .buttonStyle(PrimaryButtonStyle(color: .orangePrimary))
+        .padding(.horizontal, 32)
     }
 
     // MARK: - Actions
