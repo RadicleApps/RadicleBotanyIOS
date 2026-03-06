@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-RadicleBotany is a native iOS botanical learning and plant identification app. Users can identify plants through trait-based keying (Observe mode), AI camera identification via PlantNet API (Capture mode), or a hybrid approach (Both mode). The app includes a curated database of 179 species, 183 families, and 464 botanical terms with full cross-referencing. A freemium model gates content behind Lifetime ($24.99) and Pro ($2.99/mo or $19.99/yr) tiers.
+RadicleBotany is a native iOS botanical learning and plant identification app. Users can identify plants through trait-based keying (Observe mode), photo identification via PlantNet API (Capture mode), or a hybrid approach (Both mode). The app includes a curated database of 2,311 species, 183 families, and 461 botanical terms with full cross-referencing. A freemium model gates content behind two annual subscription tiers: RadicleBotany ($33.99/yr) and RadicleBotany Path ($63.99/yr), both with 7-day free trials.
 
 **Repo:** https://github.com/RadicleApps/RadicleBotanyIOS
 
@@ -26,8 +26,8 @@ RadicleBotanyIOS/
 ├── CLAUDE.md
 ├── .gitignore
 ├── Families.json                          # Source data (183 families)
-├── RadicleBotany_Plants.json              # Source data (179 species)
-├── RadicleBotany_Botany.json              # Source data (464 terms)
+├── RadicleBotany_Plants.json              # Source data (2,311 species)
+├── RadicleBotany_Botany.json              # Source data (461 terms)
 └── RadicleBotany/
     ├── RadicleBotanyApp.swift             # @main entry, SwiftData container, onboarding gate
     ├── Config.plist                       # API keys (gitignored)
@@ -52,7 +52,7 @@ RadicleBotanyIOS/
     ├── Utilities/
     │   └── DesignSystem.swift             # Colors, typography, button styles, reusable components
     └── Views/
-        ├── MainTabView.swift              # 3-tab navigation (Journey/Botanize/Learn)
+        ├── MainTabView.swift              # 3-tab navigation (Journal/Botanize/Learn)
         ├── ContentView.swift              # Legacy (unused, kept for reference)
         ├── CameraView.swift               # UIImagePickerController wrapper
         ├── PhotoPickerView.swift          # PHPickerViewController wrapper
@@ -74,7 +74,7 @@ RadicleBotanyIOS/
         │   ├── FamilyDetailView.swift     # Family profile with related species
         │   └── TermDetailView.swift       # Term definition with related species/terms
         ├── Journey/
-        │   ├── JourneyView.swift          # Streak, observations, collections
+        │   ├── JournalView.swift          # Streak, observations, collections
         │   ├── ObservationDetailView.swift
         │   └── ObservationsListView.swift
         ├── Paywall/
@@ -91,7 +91,7 @@ RadicleBotanyIOS/
 
 | Model | Key Fields | Notes |
 |-------|-----------|-------|
-| Plant | scientificName (unique), commonName, familyLatin, 20+ trait fields | isFree: first 30 species |
+| Plant | scientificName (unique), commonName, familyLatin, 20+ trait fields, cachedImageData | isFree: first 30 species |
 | Family | familyLatin (unique), familyEnglish, genera, 20+ trait fields | All locked for free users |
 | BotanyTerm | term (unique), category, imageURL, showPlantID | isFree: first 50 terms |
 | Observation | plantScientificName, photoData, lat/lng, date, verifiedTraits | User-created |
@@ -111,33 +111,34 @@ RadicleBotanyIOS/
 
 ## StoreKit 2 Products
 
-| ID | Type | Price |
-|----|------|-------|
-| com.radicle.radiclebotany.lifetime | Non-consumable | $24.99 |
-| com.radicle.radiclebotany.pro.monthly | Auto-renewable | $2.99/mo |
-| com.radicle.radiclebotany.pro.yearly | Auto-renewable | $19.99/yr |
+| ID | Type | Price | Trial |
+|----|------|-------|-------|
+| com.radicle.radiclebotany.annual | Auto-renewable | $33.99/yr | 7-day free |
+| com.radicle.radiclebotany.path.annual | Auto-renewable | $63.99/yr | 7-day free |
 
 ## Feature Gating
 
-| Feature | Free | Lifetime | Pro |
-|---------|------|----------|-----|
+| Feature | Free | RadicleBotany | RadicleBotany Path |
+|---------|------|---------------|-------------------|
 | First 30 species | ✅ | ✅ | ✅ |
-| All 179 species | ❌ | ✅ | ✅ |
+| All 2,311 species | ❌ | ✅ | ✅ |
 | All 183 families | ❌ | ✅ | ✅ |
 | First 50 terms | ✅ | ✅ | ✅ |
-| All 464 terms | ❌ | ✅ | ✅ |
-| Observe mode (3/day) | ✅ | ✅ | ✅ |
-| Unlimited Observe | ❌ | ✅ | ✅ |
+| All 461 terms | ❌ | ✅ | ✅ |
+| Observe mode (unlimited) | ✅ | ✅ | ✅ |
 | Journal & Collections | ❌ | ✅ | ✅ |
-| Capture mode (AI) | ❌ | ❌ | ✅ |
+| Flashcards & Study Streaks | ❌ | ✅ | ✅ |
+| Plants Near Me | ✅ | ✅ | ✅ |
+| Photo Identification (Capture) | ❌ | ❌ | ✅ |
 | Both mode | ❌ | ❌ | ✅ |
+| Plant Assistant | ❌ | ❌ | ✅ |
 | iCloud sync | ❌ | ❌ | ✅ |
 
 ## App Flow
 
 1. **First Launch** → OnboardingView (5 pages) → hasCompletedOnboarding = true
 2. **Main App** → MainTabView with 3 tabs:
-   - **Journey** (left): Streak, observations, collections (Lifetime+ required)
+   - **Journal** (left): Streak, observations, collections (Lifetime+ required)
    - **Botanize** (center, elevated): Observe/Capture/Both modes
    - **Learn** (right): Browse species, families, terms
 3. **Header**: Profile button → ProfileView, Search bar → SearchView, Notifications
@@ -167,4 +168,6 @@ RadicleBotanyIOS/
 - UIKit bridging via UIViewControllerRepresentable + Coordinator pattern
 - Navigation: Tab-based main, NavigationStack per tab, sheets for modals/paywall
 - DataLoader runs once on first launch, version-checked
-- Free content gates: first 30 plants, first 50 terms, 3 observe questions/day
+- Free content gates: first 30 plants, first 50 terms
+- No automatic paywalls mid-flow — onboarding paywall is the single conversion moment
+- Avoid "AI" language in UI copy — features run silently without being labelled as AI

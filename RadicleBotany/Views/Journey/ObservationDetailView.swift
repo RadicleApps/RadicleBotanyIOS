@@ -1,9 +1,11 @@
 import SwiftUI
 import SwiftData
+import MapKit
 
 struct ObservationDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
 
     @Bindable var observation: PlantObservation
 
@@ -32,7 +34,7 @@ struct ObservationDetailView: View {
             .padding(.top, 8)
             .padding(.bottom, 32)
         }
-        .background(Color.appBackground)
+        .background(AppColors.appBackground)
         .navigationTitle("Observation")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
@@ -57,30 +59,30 @@ struct ObservationDetailView: View {
             Image(uiImage: uiImage)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .frame(maxWidth: .infinity, maxHeight: 300)
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.borderSubtle, lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: AppRadius.card)
+                        .stroke(AppColors.border, lineWidth: 0.5)
                 )
         } else {
             ZStack {
-                Color.surfaceElevated
+                AppColors.cardElevated
                 VStack(spacing: 8) {
                     Image(systemName: "photo")
-                        .font(.system(size: 40))
-                        .foregroundStyle(Color.textMuted)
+                        .font(AppTypography.inter(size: 40))
+                        .foregroundStyle(AppColors.textMuted)
                     Text("No photo")
-                        .font(AppFont.caption())
-                        .foregroundStyle(Color.textMuted)
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.textMuted)
                 }
             }
             .frame(height: 200)
             .frame(maxWidth: .infinity)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.borderSubtle, lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: AppRadius.card)
+                    .stroke(AppColors.border, lineWidth: 0.5)
             )
         }
     }
@@ -92,8 +94,8 @@ struct ObservationDetailView: View {
         if let scientificName = observation.plantScientificName {
             VStack(alignment: .leading, spacing: 8) {
                 Text("SPECIES")
-                    .font(AppFont.caption())
-                    .foregroundStyle(Color.textMuted)
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textMuted)
 
                 if let plant = matchedPlant {
                     NavigationLink {
@@ -102,46 +104,47 @@ struct ObservationDetailView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(scientificName)
-                                    .font(AppFont.sectionHeader(16))
-                                    .foregroundStyle(Color.textPrimary)
+                                    .font(AppTypography.buttonText)
+                                    .foregroundStyle(AppColors.textPrimary)
                                     .italic()
 
                                 Text(plant.commonName)
-                                    .font(AppFont.body())
-                                    .foregroundStyle(Color.textSecondary)
+                                    .font(AppTypography.bodyText)
+                                    .foregroundStyle(AppColors.textSecondary)
                             }
 
                             Spacer()
 
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 12))
-                                .foregroundStyle(Color.textMuted)
+                                .font(AppTypography.inter(size: 12))
+                                .foregroundStyle(AppColors.textMuted)
                         }
                     }
                     .buttonStyle(.plain)
                 } else {
                     Text(scientificName)
-                        .font(AppFont.sectionHeader(16))
-                        .foregroundStyle(Color.textPrimary)
+                        .font(AppTypography.buttonText)
+                        .foregroundStyle(AppColors.textPrimary)
                         .italic()
                 }
             }
-            .cardStyle()
+            .padding(AppSpacing.sectionPadding)
+            .cardStyle(elevated: false, interactive: matchedPlant != nil)
         } else {
             VStack(alignment: .leading, spacing: 8) {
                 Text("SPECIES")
-                    .font(AppFont.caption())
-                    .foregroundStyle(Color.textMuted)
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textMuted)
 
                 HStack(spacing: 8) {
                     Image(systemName: "questionmark.circle")
-                        .foregroundStyle(Color.textMuted)
+                        .foregroundStyle(AppColors.textMuted)
                     Text("Unidentified")
-                        .font(AppFont.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .font(AppTypography.bodyText)
+                        .foregroundStyle(AppColors.textSecondary)
                 }
             }
-            .cardStyle()
+            .padding(AppSpacing.sectionPadding)
         }
     }
 
@@ -150,37 +153,69 @@ struct ObservationDetailView: View {
     private var locationSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("LOCATION")
-                .font(AppFont.caption())
-                .foregroundStyle(Color.textMuted)
+                .font(AppTypography.tagText)
+                .foregroundStyle(AppColors.textMuted)
 
             if let latitude = observation.latitude, let longitude = observation.longitude {
-                HStack(spacing: 8) {
-                    Image(systemName: "location.fill")
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color.greenSecondary)
+                let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
 
-                    VStack(alignment: .leading, spacing: 2) {
+                // Mini map preview
+                Map(initialPosition: .region(MKCoordinateRegion(
+                    center: coordinate,
+                    latitudinalMeters: 500,
+                    longitudinalMeters: 500
+                ))) {
+                    Annotation("", coordinate: coordinate) {
+                        ObservationMapPin(hasPhoto: observation.photoData != nil)
+                    }
+                }
+                .mapStyle(.imagery(elevation: .flat))
+                .frame(height: 150)
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+                .allowsHitTesting(false)
+
+                // Coordinate text + Open in Maps
+                HStack {
+                    HStack(spacing: 8) {
+                        Image(systemName: "location.fill")
+                            .font(AppTypography.inter(size: 12))
+                            .foregroundStyle(AppColors.primaryAmber)
+
                         Text(String(format: "%.6f, %.6f", latitude, longitude))
-                            .font(AppFont.body())
-                            .foregroundStyle(Color.textPrimary)
+                            .font(AppTypography.tagText)
+                            .foregroundStyle(AppColors.textMuted)
+                    }
 
-                        Text("Lat / Long")
-                            .font(AppFont.caption())
-                            .foregroundStyle(Color.textMuted)
+                    Spacer()
+
+                    Button {
+                        openInMaps(latitude: latitude, longitude: longitude)
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.triangle.turn.up.right.diamond.fill")
+                                .font(AppTypography.inter(size: 11))
+                            Text("Open in Maps")
+                                .font(AppTypography.caption)
+                        }
+                        .foregroundStyle(AppColors.primaryAmber)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(AppColors.primaryAmber.opacity(0.12))
+                        .clipShape(Capsule())
                     }
                 }
             } else {
                 HStack(spacing: 8) {
                     Image(systemName: "location.slash")
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color.textMuted)
+                        .font(AppTypography.inter(size: 14))
+                        .foregroundStyle(AppColors.textMuted)
                     Text("No location recorded")
-                        .font(AppFont.body())
-                        .foregroundStyle(Color.textSecondary)
+                        .font(AppTypography.bodyText)
+                        .foregroundStyle(AppColors.textSecondary)
                 }
             }
         }
-        .cardStyle()
+        .padding(AppSpacing.sectionPadding)
     }
 
     // MARK: - Date Section
@@ -188,26 +223,26 @@ struct ObservationDetailView: View {
     private var dateSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("DATE & TIME")
-                .font(AppFont.caption())
-                .foregroundStyle(Color.textMuted)
+                .font(AppTypography.tagText)
+                .foregroundStyle(AppColors.textMuted)
 
             HStack(spacing: 8) {
                 Image(systemName: "calendar")
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color.purpleSecondary)
+                    .font(AppTypography.inter(size: 14))
+                    .foregroundStyle(AppColors.primaryAmber)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(observation.date.formatted(date: .long, time: .omitted))
-                        .font(AppFont.body())
-                        .foregroundStyle(Color.textPrimary)
+                        .font(AppTypography.bodyText)
+                        .foregroundStyle(AppColors.textPrimary)
 
                     Text(observation.date.formatted(date: .omitted, time: .standard))
-                        .font(AppFont.caption())
-                        .foregroundStyle(Color.textMuted)
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.textMuted)
                 }
             }
         }
-        .cardStyle()
+        .padding(AppSpacing.sectionPadding)
     }
 
     // MARK: - Traits Section
@@ -217,16 +252,16 @@ struct ObservationDetailView: View {
         if !observation.verifiedTraits.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 Text("VERIFIED TRAITS")
-                    .font(AppFont.caption())
-                    .foregroundStyle(Color.textMuted)
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textMuted)
 
                 FlowLayout(spacing: 8) {
                     ForEach(observation.verifiedTraits, id: \.self) { trait in
-                        CategoryPill(text: trait, color: .greenSecondary)
+                        CategoryPill(text: trait, color: .orangePrimary)
                     }
                 }
             }
-            .cardStyle()
+            .padding(AppSpacing.sectionPadding)
         }
     }
 
@@ -235,19 +270,19 @@ struct ObservationDetailView: View {
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("NOTES")
-                .font(AppFont.caption())
-                .foregroundStyle(Color.textMuted)
+                .font(AppTypography.tagText)
+                .foregroundStyle(AppColors.textMuted)
 
             TextField("Add notes about this observation...", text: $editableNotes, axis: .vertical)
-                .font(AppFont.body())
-                .foregroundStyle(Color.textPrimary)
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textPrimary)
                 .lineLimit(3...8)
                 .textFieldStyle(.plain)
                 .onChange(of: editableNotes) { _, newValue in
                     observation.notes = newValue.isEmpty ? nil : newValue
                 }
         }
-        .cardStyle()
+        .padding(AppSpacing.sectionPadding)
     }
 
     // MARK: - Delete Section
@@ -260,16 +295,24 @@ struct ObservationDetailView: View {
                 Image(systemName: "trash")
                 Text("Delete Observation")
             }
-            .font(AppFont.sectionHeader())
-            .foregroundStyle(Color.errorRed)
+            .font(AppTypography.sectionHeader)
+            .foregroundStyle(AppColors.error)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(Color.errorRed.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .background(AppColors.error.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
         }
     }
 
     // MARK: - Actions
+
+    private func openInMaps(latitude: Double, longitude: Double) {
+        let name = observation.plantScientificName ?? "Observation"
+        let encoded = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "Observation"
+        if let url = URL(string: "http://maps.apple.com/?ll=\(latitude),\(longitude)&q=\(encoded)") {
+            openURL(url)
+        }
+    }
 
     private func deleteObservation() {
         modelContext.delete(observation)

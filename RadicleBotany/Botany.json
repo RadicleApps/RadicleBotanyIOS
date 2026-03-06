@@ -346,7 +346,7 @@
     "category": "Style-End Type",
     "descriptionShort": "Style apex divided into two or more distinct lobes.",
     "descriptionLong": "**Lobed style-end** refers to a style tip that is **divided into two or more distinct sections or lobes**, which may be **broad or narrow**, **symmetrical or asymmetrical**, and often serve as **stigmatic surfaces**. These lobes can be **erect, spreading, or reflexed**, depending on the floral architecture.\n\nThis morphology is common in families such as **Brassicaceae**, **Asteraceae**, and **Lamiaceae**, where lobed styles enhance **pollen capture efficiency** and often correspond with specific **pollinator interactions**. The number and shape of lobes are typically **consistent within taxa**, making this trait useful for taxonomic identification.\n\nIn identification, a lobed style-end is recognized by its **clearly separated or partially fused divisions at the apex**, which differentiates it from undivided forms such as filiform, conical, or club-shaped styles. The structure and orientation of the lobes are key diagnostic features in floral morphology.",
-    "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/kul9PQ3ToQjGOzVK5LNu.png",
+    "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/KdRyaEfaK3zLUUtMkTfw.png",
     "showPlantID": true,
     "isFree": true
   },
@@ -379,18 +379,18 @@
   },
   {
     "term": "Acute",
-    "category": "Leaf Base",
-    "descriptionShort": "Base forms a sharp angle (<90°) and comes to a pointed end.",
-    "descriptionLong": "A leaf base in which the **sides of the blade taper evenly to a sharp angle**, typically less than 90 degrees, where they meet at the petiole. The shape is often symmetrical, with a clean, pointed junction between the lamina and petiole, but less extended than in an acuminate base.\n\nAcute bases are common across many plant families and leaf forms. In **Rosaceae**, species such as *Prunus* and *Sorbus* frequently display acute leaf bases on serrate or simple blades. In **Oleaceae**, *Fraxinus* (ash) often shows pinnately compound leaves with acute leaflet bases. In **Lamiaceae**, genera like *Salvia* and *Leonurus* also exhibit acute bases on ovate or lanceolate leaves.\n\nThe pointed taper of an acute base may facilitate **efficient water shedding**, reducing moisture accumulation at the petiole junction. This base shape also contributes to the leaf’s overall aerodynamic profile, and its consistent geometry can aid in field identification when combined with other foliar traits.",
+    "category": "Leaf Apex",
+    "descriptionShort": "Apex forms a sharp angle (<90°) and comes to a pointed end.",
+    "descriptionLong": "A leaf apex in which the **sides of the blade taper evenly to a sharp angle**, typically less than 90 degrees, where they converge at the tip. The shape is often symmetrical, with a clean, pointed termination that is less drawn out than in an acuminate apex.\n\nAcute apices are common across many plant families and leaf forms. In **Rosaceae**, species such as *Prunus* and *Sorbus* frequently display acute leaf tips on serrate or simple blades. In **Oleaceae**, *Fraxinus* (ash) often shows pinnately compound leaves with acute leaflet apices. In **Lamiaceae**, genera like *Salvia* and *Leonurus* also exhibit acute tips on ovate or lanceolate leaves.\n\nThe pointed taper of an acute apex may facilitate **efficient water drip-tip shedding**, reducing moisture accumulation on the leaf surface. This apex shape also contributes to the leaf's overall aerodynamic profile, and its consistent geometry can aid in field identification when combined with other foliar traits.",
     "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/OvUT9TlFXdKe6XlvnxUF.png",
     "showPlantID": true,
     "isFree": true
   },
   {
     "term": "Acuminate",
-    "category": "Leaf Base",
-    "descriptionShort": "Base gradually tapering to a narrow point.",
-    "descriptionLong": "A leaf base that **tapers gradually to a narrow, extended point**, with the sides of the blade curving inward before joining the petiole. This creates a smooth, drawn-out appearance, mirroring the shape of an acuminate apex but located at the base of the leaf. The taper may be long or short, and the transition from blade to petiole is often subtle and graceful.\n\nAcuminate bases occur across a variety of plant families, especially in species with elongated or lanceolate leaves. In **Lauraceae**, species such as *Cinnamomum* and *Persea* often exhibit both acuminate apices and bases. In **Annonaceae**, many *Annona* species display acuminate bases as part of their glossy, tropical foliage. In **Myrtaceae**, *Syzygium* and some *Eucalyptus* leaves also show this tapering base structure.\n\nThis base form may help improve **water runoff**, directing moisture efficiently along the midrib and away from the petiole attachment. It also contributes to the aerodynamic shape of the leaf, which may benefit plants in windy or high-rainfall environments.",
+    "category": "Leaf Apex",
+    "descriptionShort": "Apex gradually tapering to a narrow, extended point.",
+    "descriptionLong": "A leaf apex that **tapers gradually to a narrow, extended point**, with the sides of the blade curving inward before converging at the tip. This creates a smooth, drawn-out appearance often described as a drip tip. The taper may be long or short, and the transition from the broad blade to the fine point is typically smooth and graceful.\n\nAcuminate apices occur across a variety of plant families, especially in species with elongated or lanceolate leaves. In **Lauraceae**, species such as *Cinnamomum* and *Persea* often exhibit pronounced acuminate tips. In **Annonaceae**, many *Annona* species display acuminate apices as part of their glossy, tropical foliage. In **Myrtaceae**, *Syzygium* and some *Eucalyptus* leaves also show this tapering apex structure.\n\nThis apex form is especially common in **tropical rainforest species**, where the elongated drip tip helps shed water rapidly from the leaf surface. By reducing the time moisture remains on the leaf, acuminate apices may help prevent fungal and epiphytic colonization, particularly in humid environments.",
     "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/4RGSI1envMdGk6tzfOQc.png",
     "showPlantID": true,
     "isFree": true
@@ -423,19 +423,10 @@
     "isFree": true
   },
   {
-    "term": "Cordate",
-    "category": "Leaf Base",
-    "descriptionShort": "Heart-shaped base with deep notch.",
-    "descriptionLong": "A leaf base that is heart-shaped, with two rounded lobes extending outward on either side of the petiole and a central notch where the blade attaches. The overall base is broad and symmetrical, forming a distinctive indentation that resembles the top of a heart.\n\nCordate bases are common in many herbaceous and woody plants. In **Malvaceae**, species like *Tilia americana* (basswood) and *Hibiscus* often display cordate leaves with wide, lobed bases. In **Convolvulaceae**, *Ipomoea* (morning glory) frequently exhibits thin, cordate blades along twining stems. **Polygonaceae**, such as *Fallopia* and *Persicaria*, also show cordate to sagittate bases depending on growth form.\n\nThis shape may assist in directing water toward the stem and root zone, particularly in plants with broad leaves. It also increases the basal surface area for attachment, which may improve mechanical stability and flexibility in climbing or vining species.",
-    "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/8apcOXV6fvKSFnRwapae.png",
-    "showPlantID": true,
-    "isFree": true
-  },
-  {
     "term": "Truncate",
-    "category": "Style-End Type",
+    "category": "Leaf Base",
     "descriptionShort": "Style tip appears abruptly cut off or squared at the apex.",
-    "descriptionLong": "**Truncate style-end** refers to a style tip that appears **abruptly cut off or squared at the apex**, rather than tapering or pointed. The end may be **flat, broad, and slightly indented**, with the stigma often occupying the entire terminal surface.\n\nThis form is less common but can occur in families such as **Euphorbiaceae**, **Caryophyllaceae**, and some **Apiaceae**, where it may correspond with **reduced floral complexity** or **exposed stigmatic surfaces** suited for generalized pollination.\n\nIn identification, a truncate style-end is distinguished by its **flat-topped, blunt appearance**, which contrasts with rounded, tapered, or lobed styles. Its abrupt termination is a useful feature in floral morphology, aiding in species-level classification.",
+    "descriptionLong": "A leaf base that appears squared-off or abruptly cut straight across, as if the tip of the petiole meets a flat edge rather than a tapering or rounded form. The base may be nearly perpendicular to the midrib, with little to no curvature, and can sometimes appear asymmetrical.\n    Truncate leaf bases occur across a variety of plant families, particularly in species with large or broad leaves. In **Bignoniaceae**, species like *Catalpa speciosa* often show truncate to slightly cordate bases. In **Sapindaceae**, *Acer negundo* (boxelder) may exhibit truncate or uneven leaf bases. Some species in **Fabaceae**, including *Robinia* and *Albizia*, have compound leaves with leaflets that end in truncate bases.\n    This form allows for a wider area of petiole attachment, offering added support for broad or compound leaves. It may also function as a transitional feature in leaves that are otherwise variable in shape, especially in fast-growing or seasonally deciduous plants.",
     "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/V2UKkyLUiiDHzmTiAHZJ.png",
     "showPlantID": true,
     "isFree": true
@@ -1099,9 +1090,9 @@
   },
   {
     "term": "Terminal",
-    "category": "Style Position",
+    "category": "Flower Position",
     "descriptionShort": "Borne at the tip or apex of a stem or branch.",
-    "descriptionLong": "",
+    "descriptionLong": "A floral position in which the **flower or inflorescence is located at the tip** of a **stem or branch**, terminating its growth. In this **determinate arrangement**, the terminal flower typically opens first, halting further elongation of that shoot axis. The structure may consist of a solitary flower or a compound inflorescence, depending on the species.\n    Terminal flowering is observed in numerous plant families. In **Scrophulariaceae**, species like *Verbascum* produce a prominent terminal spike. In **Brassicaceae**, *Arabis* and *Cardamine* often form terminal racemes. In **Magnoliaceae**, *Magnolia grandiflora* displays large solitary flowers at the ends of branches, emphasizing the terminal position. Many **Cactaceae** species also exhibit terminal flowering on mature stem segments.\nThis position **maximizes floral exposure** to pollinators by elevating the flower above surrounding foliage. It is especially effective in species that flower once per stem (monocarpic shoots) or in habitats where height enhances visibility or pollen dispersal. However, it limits further shoot elongation, influencing plant architecture and branching patterns.",
     "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/W6Qni7sS4M36LsBQc8FM.png",
     "showPlantID": true,
     "isFree": false
@@ -2720,9 +2711,9 @@
   {
     "term": "Terminal",
     "category": "Style Position",
-    "descriptionShort": "Borne at the tip or apex of a stem or branch.",
-    "descriptionLong": "",
-    "imageURL": null,
+    "descriptionShort": "Style inserted at the apex of the ovary.",
+    "descriptionLong": "**Terminal style insertion** refers to a condition where the **style is inserted at the apex (tip) of the ovary**, extending directly upward from the center of the ovary's top surface. This insertion type reflects the **central placement of the stigma-receiving structure**, aligning with the main vertical axis of the flower.\n    It is commonly observed in many **symmetrical, actinomorphic flowers**, particularly in families like **Lamiaceae**, **Solanaceae**, and **Apiaceae**. Terminal style insertion typically corresponds with **superior ovaries** and is functionally associated with **direct pollen tube access** and **efficient fertilization**.\nIn identification, terminal insertion is recognized by the **style's direct attachment at the ovary’s apex**, distinguishing it from other types like **gynobasic** (arising from the base) or **lateral** insertions. This characteristic aids in taxonomic differentiation, especially within floral morphology studies.",
+    "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/BfFeCqVTfntINNr0K6O2.png",
     "showPlantID": true,
     "isFree": false
   },
@@ -3164,15 +3155,6 @@
     "descriptionShort": "Style tip covered in fine hairs or trichomes.",
     "descriptionLong": "**Hairy style-end** refers to a style tip that is **covered in fine hairs or trichomes**, which may be **simple, branched, or glandular**, depending on the species. These hairs are often **stigmatic** or assist in **pollen collection and transfer**, increasing the surface area available for contact with pollen.\n\nThis feature is common in families such as **Asteraceae**, **Boraginaceae**, and **Caprifoliaceae**, where it supports **specialized pollination strategies**, particularly in insect-pollinated flowers. The hairs may trap pollen from pollinators or serve to **brush pollen away from the anthers** during floral movement.\n\nIn identification, a hairy style-end is distinguished by the **presence of visible or microscopic hairs** on the style’s tip, setting it apart from glabrous (smooth) or lobed styles. This characteristic aids in both species identification and understanding pollination mechanisms.",
     "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/8GCvniU9yDUuOWm5qB2c.png",
-    "showPlantID": true,
-    "isFree": false
-  },
-  {
-    "term": "Lobed",
-    "category": "Style-End Type",
-    "descriptionShort": "Style apex divided into two or more distinct lobes.",
-    "descriptionLong": "**Lobed style-end** refers to a style tip that is **divided into two or more distinct sections or lobes**, which may be **broad or narrow**, **symmetrical or asymmetrical**, and often serve as **stigmatic surfaces**. These lobes can be **erect, spreading, or reflexed**, depending on the floral architecture.\n\nThis morphology is common in families such as **Brassicaceae**, **Asteraceae**, and **Lamiaceae**, where lobed styles enhance **pollen capture efficiency** and often correspond with specific **pollinator interactions**. The number and shape of lobes are typically **consistent within taxa**, making this trait useful for taxonomic identification.\n\nIn identification, a lobed style-end is recognized by its **clearly separated or partially fused divisions at the apex**, which differentiates it from undivided forms such as filiform, conical, or club-shaped styles. The structure and orientation of the lobes are key diagnostic features in floral morphology.",
-    "imageURL": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/3j0WjOSIJ97leCcPusqI/pub/KdRyaEfaK3zLUUtMkTfw.png",
     "showPlantID": true,
     "isFree": false
   },
@@ -4143,15 +4125,6 @@
     "term": "Compressed",
     "category": "",
     "descriptionShort": "Flattened laterally, appearing pressed from the sides.",
-    "descriptionLong": "",
-    "imageURL": null,
-    "showPlantID": true,
-    "isFree": false
-  },
-  {
-    "term": "Cone",
-    "category": "Cone Type",
-    "descriptionShort": "A reproductive structure of gymnosperms consisting of overlapping scales bearing seeds or pollen.",
     "descriptionLong": "",
     "imageURL": null,
     "showPlantID": true,

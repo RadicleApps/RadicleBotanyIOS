@@ -2,160 +2,211 @@ import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab: Tab = .botanize
-    @State private var showProfile = false
-    @State private var showSearch = false
+    @State private var previousTabIndex: Int = 1  // Botanize (centre) is default
+    @State private var navigationResetID = UUID()
+    @EnvironmentObject private var navigationState: AppNavigationState
+    @EnvironmentObject private var themeManager: ThemeManager
 
-    enum Tab: String {
-        case journey, botanize, learn
+    enum Tab: String, CaseIterable {
+        case journal, botanize, learn
+
+        var tabIndex: Int {
+            switch self {
+            case .journal:  return 0
+            case .botanize: return 1
+            case .learn:    return 2
+            }
+        }
     }
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            Group {
-                switch selectedTab {
-                case .journey:
-                    NavigationStack {
-                        JourneyView()
-                            .toolbar { headerToolbar }
-                    }
-                case .botanize:
-                    NavigationStack {
-                        BotanizeView()
-                            .toolbar { headerToolbar }
-                    }
-                case .learn:
-                    NavigationStack {
-                        LearnView()
-                            .toolbar { headerToolbar }
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(.bottom, 80)
+            // Current tab content with directional slide
+            tabContent
+                .id(selectedTab)
+                .transition(.asymmetric(
+                    insertion: .move(edge: tabMovedRight ? .trailing : .leading).combined(with: .opacity),
+                    removal: .move(edge: tabMovedRight ? .leading : .trailing).combined(with: .opacity)
+                ))
+                .animation(AppAnimations.interactiveSpring, value: selectedTab)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             customTabBar
         }
-        .background(Color.appBackground)
-        .sheet(isPresented: $showProfile) {
+        .background(AppColors.appBackground)
+        .onChange(of: selectedTab) { oldTab, _ in
+            previousTabIndex = oldTab.tabIndex
+        }
+        .sheet(isPresented: $navigationState.showProfile) {
             NavigationStack {
                 ProfileView()
             }
         }
-        .sheet(isPresented: $showSearch) {
+        .sheet(isPresented: $navigationState.showSearch) {
             NavigationStack {
                 SearchView()
             }
         }
+        .sheet(isPresented: $navigationState.showChatbot) {
+            NavigationStack {
+                ChatView(context: navigationState.chatbotContext)
+            }
+        }
+        .overlay {
+            NotificationBannerOverlay()
+        }
+        .withAgenticGuidance()
     }
 
-    // MARK: - Header Toolbar
+    // MARK: - Tab Content
 
-    @ToolbarContentBuilder
-    private var headerToolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                showProfile = true
-            } label: {
-                Image(systemName: "person.circle.fill")
-                    .font(.title3)
-                    .foregroundStyle(Color.textSecondary)
+    @ViewBuilder
+    private var tabContent: some View {
+        switch selectedTab {
+        case .journal:
+            NavigationStack {
+                JournalView(onLogObservation: { selectedTab = .botanize })
+                    .appToolbar(guide: .journal)
+                    .navigationDestination(for: Plant.self) { PlantDetailView(plant: $0) }
+                    .navigationDestination(for: Family.self) { FamilyDetailView(family: $0) }
+                    .navigationDestination(for: BotanyTerm.self) { TermDetailView(term: $0) }
             }
+            .id(navigationResetID)
+        case .botanize:
+            NavigationStack {
+                BotanizeView()
+                    .appToolbar(guide: .botanize)
+                    .navigationDestination(for: Plant.self) { PlantDetailView(plant: $0) }
+                    .navigationDestination(for: Family.self) { FamilyDetailView(family: $0) }
+                    .navigationDestination(for: BotanyTerm.self) { TermDetailView(term: $0) }
+            }
+            .id(navigationResetID)
+        case .learn:
+            NavigationStack {
+                LearnView()
+                    .appToolbar(guide: .learn)
+                    .navigationDestination(for: Plant.self) { PlantDetailView(plant: $0) }
+                    .navigationDestination(for: Family.self) { FamilyDetailView(family: $0) }
+                    .navigationDestination(for: BotanyTerm.self) { TermDetailView(term: $0) }
+            }
+            .id(navigationResetID)
         }
+    }
 
-        ToolbarItem(placement: .principal) {
-            Button {
-                showSearch = true
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.caption)
-                    Text("Search plants, families, terms...")
-                        .font(AppFont.caption())
-                }
-                .foregroundStyle(Color.textMuted)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
-                .background(Color.surfaceElevated)
-                .clipShape(Capsule())
-            }
-        }
+    // MARK: - Transition Helpers
 
-        ToolbarItem(placement: .topBarTrailing) {
-            Button {} label: {
-                Image(systemName: "bell.fill")
-                    .font(.title3)
-                    .foregroundStyle(Color.textSecondary)
-            }
-        }
+    private var tabMovedRight: Bool {
+        selectedTab.tabIndex > previousTabIndex
     }
 
     // MARK: - Custom Tab Bar
 
     private var customTabBar: some View {
-        HStack {
-            tabButton(icon: "point.topleft.down.to.point.bottomright.curvepath", label: "Journey", tab: .journey)
+        HStack(spacing: 0) {
+            tabButton(icon: "book.closed.fill", label: "Journal", tab: .journal)
 
-            Spacer()
+            // Centre — Botanize (elevated)
+            centerBotanizeButton
 
-            Button {
-                selectedTab = .botanize
-            } label: {
-                VStack(spacing: 4) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.orangePrimary)
-                            .frame(width: 52, height: 52)
-                            .shadow(color: Color.orangePrimary.opacity(0.4), radius: 8, y: 2)
-                        Image(systemName: "leaf.fill")
-                            .font(.title2)
-                            .foregroundStyle(.white)
-                            .overlay(alignment: .topTrailing) {
-                                Image(systemName: "magnifyingglass")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(.white)
-                                    .offset(x: 4, y: -2)
-                            }
-                    }
-                    .offset(y: -10)
-
-                    Text("Botanize")
-                        .font(AppFont.caption(10))
-                        .foregroundStyle(selectedTab == .botanize ? Color.orangePrimary : Color.textMuted)
-                        .offset(y: -10)
-                }
-            }
-
-            Spacer()
-
-            tabButton(icon: "leaf.fill", label: "Learn", tab: .learn)
+            tabButton(icon: "books.vertical.fill", label: "Learn", tab: .learn)
         }
-        .padding(.horizontal, 32)
-        .padding(.top, 8)
-        .padding(.bottom, 20)
-        .background(
-            Color.surface
-                .overlay(
-                    Rectangle()
-                        .fill(Color.borderSubtle)
-                        .frame(height: 0.5),
-                    alignment: .top
-                )
-        )
+        .padding(.horizontal, 24)
+        .padding(.top, 10)
+        .padding(.bottom, safeAreaBottomPadding + 4)
+        .background(tabBarBackground)
     }
+
+    // MARK: - Centre Botanize Button
+
+    private var centerBotanizeButton: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            if selectedTab == .botanize {
+                navigationResetID = UUID()
+            } else {
+                selectedTab = .botanize
+            }
+        } label: {
+            VStack(spacing: 3) {
+                ZStack {
+                    // Outer glow
+                    Circle()
+                        .fill(AppColors.primaryAmber.opacity(0.15))
+                        .frame(width: 60, height: 60)
+
+                    // Main circle
+                    Circle()
+                        .fill(AppColors.primaryAmber)
+                        .frame(width: 48, height: 48)
+                        .shadow(color: AppColors.primaryAmber.opacity(0.35), radius: 10, y: 4)
+
+                    // Icon — leaf with magnifying glass overlay
+                    Image(systemName: "leaf.fill")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(AppColors.onAccent)
+                        .overlay(alignment: .topTrailing) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(AppColors.onAccent)
+                                .offset(x: 4, y: -2)
+                        }
+                }
+
+                Text("Botanize")
+                    .font(AppTypography.navLabel)
+                    .foregroundStyle(selectedTab == .botanize ? AppColors.primaryAmber : AppColors.textMuted)
+            }
+            .offset(y: -14)
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
+        .accessibilityLabel("Botanize")
+        .accessibilityAddTraits(selectedTab == .botanize ? .isSelected : [])
+    }
+
+    // MARK: - Side Tab Button
 
     private func tabButton(icon: String, label: String, tab: Tab) -> some View {
         Button {
-            selectedTab = tab
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            if selectedTab == tab {
+                navigationResetID = UUID()
+            } else {
+                selectedTab = tab
+            }
         } label: {
             VStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundStyle(selectedTab == tab ? Color.orangePrimary : Color.textMuted)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundStyle(selectedTab == tab ? AppColors.primaryAmber : AppColors.textMuted)
                 Text(label)
-                    .font(AppFont.caption(10))
-                    .foregroundStyle(selectedTab == tab ? Color.orangePrimary : Color.textMuted)
+                    .font(AppTypography.navLabel)
+                    .foregroundStyle(selectedTab == tab ? AppColors.primaryAmber : AppColors.textMuted)
             }
             .frame(maxWidth: .infinity)
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
+        .accessibilityAddTraits(selectedTab == tab ? .isSelected : [])
+    }
+
+    // MARK: - Tab Bar Background
+
+    private var tabBarBackground: some View {
+        Rectangle()
+            .fill(AppColors.cardBackground)
+            .overlay(
+                Rectangle()
+                    .fill(AppColors.borderSubtle)
+                    .frame(height: 0.5),
+                alignment: .top
+            )
+            .ignoresSafeArea(edges: .bottom)
+    }
+
+    private var safeAreaBottomPadding: CGFloat {
+        let scenes = UIApplication.shared.connectedScenes
+        let windowScene = scenes.first as? UIWindowScene
+        return windowScene?.windows.first?.safeAreaInsets.bottom ?? 0
     }
 }

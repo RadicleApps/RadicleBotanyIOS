@@ -1,0 +1,506 @@
+{
+  "Leaf Type": [
+    "Bifoliate",
+    "Bipinnately Compound",
+    "Compound",
+    "Imparipinnate Compound",
+    "Needle-like",
+    "Palmately Compound",
+    "Paripinnate Compound",
+    "Pinnately Compound",
+    "Scale",
+    "Simple",
+    "Trifoliate",
+    "Tripinnate Compound",
+    "Unifoliate"
+  ],
+  "Flower Attachment": [
+    "Pedicellate",
+    "Sessile"
+  ],
+  "Leaf Attachment": [
+    "Clasping",
+    "Connate",
+    "Peltate",
+    "Perfoliate",
+    "Petiolate",
+    "Sheathing"
+  ],
+  "Leaf Arrangement": [
+    "Alternate",
+    "Equitant",
+    "Opposite",
+    "Whorled"
+  ],
+  "Leaf Shape": [
+    "Acicular",
+    "Deltoid",
+    "Elliptic",
+    "Ensiform",
+    "Falcate",
+    "Lanceolate",
+    "Linear",
+    "Lyrate",
+    "Oblanceolate",
+    "Oblong",
+    "Obovate",
+    "Orbicular",
+    "Oval",
+    "Ovate",
+    "Reniform",
+    "Runcinate",
+    "Spatulate"
+  ],
+  "Leaf Base": [
+    "Acuminate",
+    "Acute",
+    "Auriculate",
+    "Cordate",
+    "Cuneate",
+    "Hastate",
+    "Inequilateral",
+    "Obtuse",
+    "Round",
+    "Sagittate",
+    "Truncate"
+  ],
+  "Leaf Apex": [
+    "Acuminate",
+    "Acute",
+    "Cuspidate",
+    "Emarginate",
+    "Mucronate",
+    "Obcordate"
+  ],
+  "Leaf Margin": [
+    "Crenate",
+    "Dentate",
+    "Entire",
+    "Serrate",
+    "Spiny"
+  ],
+  "Style-End Type": [
+    "Beaked",
+    "Club-Shaped",
+    "Comb-Like",
+    "Conical",
+    "Disc-Shaped",
+    "Fan-Shaped",
+    "Feathery",
+    "Filiform",
+    "Hairy",
+    "Lobed",
+    "Petal-Like",
+    "Truncate"
+  ],
+  "Marginal Deflection": [
+    "Flat",
+    "Involute",
+    "Revolute",
+    "Undulate"
+  ],
+  "Leaf Venation": [
+    "Arcuate",
+    "Dichotomous",
+    "I-Veined",
+    "Palmate",
+    "Parallel",
+    "Pinnate",
+    "Venation Not Visible"
+  ],
+  "Surface Texture": [
+    "Capitate Hairs",
+    "Clavate Hairs",
+    "Colliculate",
+    "Dendritic Hairs",
+    "Echinate",
+    "Glabrous",
+    "Glandular",
+    "Glaucous",
+    "Hispid",
+    "Indumentum",
+    "Muricate",
+    "Papillae",
+    "Papillate",
+    "Peltrate Scales",
+    "Prickle",
+    "Pubescent",
+    "Reticulate",
+    "Scabrous",
+    "Simple Hairs",
+    "Simple and Glandular Hairs",
+    "Smooth",
+    "Spinulose",
+    "Stellate Hairs",
+    "Striate",
+    "Striations",
+    "Strigose",
+    "Thorn",
+    "Tomentose",
+    "Trichome",
+    "Tuberculate",
+    "Vesicular Hairs",
+    "Villous",
+    "Wrinkles"
+  ],
+  "Olfaction": [
+    "Aromatic"
+  ],
+  "Exudate": [
+    "Latex"
+  ],
+  "Growth Modification": [
+    "Prickles",
+    "Spines",
+    "Thorns"
+  ],
+  "Stem Morphology": [
+    "Armed stem",
+    "Bulb",
+    "Corm",
+    "Internodes",
+    "Interpetiolar Colleter",
+    "Intrapetiolar Colleter",
+    "Lenticels",
+    "Nodes",
+    "Pseudostem",
+    "Rhizome",
+    "Scape",
+    "Stolon",
+    "Tendril",
+    "Tendrils",
+    "Tuber",
+    "Twining Stems",
+    "Unarmed stem",
+    "Winged stem"
+  ],
+  "Floral Symmetry": [
+    "Actinomorphic",
+    "Asymmetric",
+    "Zygomorphic"
+  ],
+  "Petal Count": [
+    "10 petals",
+    "3 petals",
+    "4 petals",
+    "5 petals",
+    "6 petals",
+    "7 petals",
+    "8 petals",
+    "9 petals",
+    "Absent petals",
+    "Many petals"
+  ],
+  "Petal Fusion": [
+    "Apetalous",
+    "Free petals",
+    "Fused petals",
+    "Polypetalous",
+    "Sympetalous"
+  ],
+  "Sepal Presence": [
+    "Sepals absent",
+    "Sepals present"
+  ],
+  "Sepal Fusion": [
+    "Free sepals",
+    "Fused sepals"
+  ],
+  "Petal Color": [
+    "Blue Petals",
+    "Green Petals",
+    "Orange Petals",
+    "Pink Petals",
+    "Purple Petals",
+    "Red Petals",
+    "Variegated Petals",
+    "White Petals",
+    "Yellow Petals"
+  ],
+  "Inflorescence Type": [
+    "Catkin",
+    "Corymb",
+    "Cyme",
+    "Dichasium",
+    "Glomerule",
+    "Head",
+    "Helicoid cyme",
+    "Monochasium",
+    "Panicle",
+    "Raceme",
+    "Solitary",
+    "Spadix",
+    "Spike",
+    "Umbel"
+  ],
+  "Flower Position": [
+    "Axillary",
+    "Terminal"
+  ],
+  "Ovary Position": [
+    "Epigynous",
+    "Hypogynous",
+    "Perigynous"
+  ],
+  "Floral Sex": [
+    "Bisex",
+    "Bisexual",
+    "Unisexual"
+  ],
+  "Floral Part": [
+    "Bract",
+    "Corona",
+    "Labellum",
+    "Spathe",
+    "Staminode",
+    "Stylopodium"
+  ],
+  "Leaf Structure": [
+    "Ligule"
+  ],
+  "Leaf-like Structure": [
+    "Bracteole",
+    "Pulvinus"
+  ],
+  "Fruit Type": [
+    "Achene",
+    "Aggregate fruit",
+    "Berry",
+    "Capsule",
+    "Caryopsis",
+    "Drupe",
+    "Follicle",
+    "Hesperidium",
+    "Legume",
+    "Loment",
+    "Multiple fruit",
+    "Nut",
+    "Nutlet",
+    "Pepos",
+    "Pome",
+    "Samara",
+    "Schizocarp",
+    "Silique",
+    "Utricle"
+  ],
+  "Seed Trait": [
+    "Aril",
+    "Caruncle",
+    "Elaiosome",
+    "Endosperm",
+    "Funiculus",
+    "Hilum",
+    "Micropyle",
+    "Raphe",
+    "Seed wing",
+    "Testa"
+  ],
+  "Structural Part": [
+    "Endocarp",
+    "Exocarp",
+    "Mesocarp",
+    "Pericarp"
+  ],
+  "Characteristic": [
+    "Dehiscent",
+    "Indehiscent"
+  ],
+  "Root Type": [
+    "Adventitious root",
+    "Aerial root",
+    "Buttress root",
+    "Contractile root",
+    "Fibrous root",
+    "Haustorium",
+    "Pneumatophore",
+    "Prop root",
+    "Taproot"
+  ],
+  "Root Trait": [
+    "Mycorrhiza",
+    "Nodule"
+  ],
+  "Stipule Arrangement": [
+    "Adnate Stipule",
+    "Encircling Petiole Stipule",
+    "Exstipulate",
+    "Free Stipule",
+    "Interpetiolar Stipule",
+    "Intrapetiolar Stipule",
+    "Ochreate Stipule",
+    "Stipel",
+    "Stipulate"
+  ],
+  "Habitat": [
+    "Alpine zone",
+    "Bog",
+    "Desert habitat",
+    "Disturbed soil",
+    "Edge habitat",
+    "Fen",
+    "Forest understory",
+    "Marsh",
+    "Open field",
+    "Riparian zone",
+    "Rocky outcrop",
+    "Wetland"
+  ],
+  "Growth Habit": [
+    "Ascending",
+    "Caespitose",
+    "Climbing",
+    "Coppice shoots",
+    "Decumbent",
+    "Divaricate",
+    "Epiphyte",
+    "Erect",
+    "Herbaceous",
+    "Intricate",
+    "Lianas",
+    "Lignotuber",
+    "Pendent",
+    "Procumbent",
+    "Prostrate",
+    "Rhizomatous",
+    "Scandent",
+    "Stoloniferous",
+    "Suckers",
+    "Trailing",
+    "Virgately",
+    "Woody"
+  ],
+  "Ecological Adaptation": [
+    "Halophyte",
+    "Hydrophyte",
+    "Lithophyte",
+    "Mesophyte",
+    "Xerophyte"
+  ],
+  "Leaf Morphology": [
+    "Ligule Absent",
+    "Ligule Present",
+    "Spiral",
+    "Twining Petioles"
+  ],
+  "Style Position": [
+    "Basal",
+    "Lateral",
+    "Terminal"
+  ],
+  "Position": [
+    "Abaxial"
+  ],
+  "Cone Type": [
+    "Cone"
+  ],
+  "Persistence": [
+    "Deciduous",
+    "Evergreen"
+  ],
+  "Sexuality": [
+    "Dioecious"
+  ],
+  "Parasitism": [
+    "Haustorial"
+  ],
+  "Aquatic": [
+    "Floating"
+  ],
+  "Bryophyte Structure": [
+    "Rhizoids"
+  ],
+  "Fern Reproduction": [
+    "Sorus"
+  ],
+  "Spore Production": [
+    "Sporangium"
+  ],
+  "Form": [
+    "Shrubs",
+    "Spreading"
+  ],
+  "Annual/Biennial": [
+    "Annual",
+    "Biennial",
+    "Perennial"
+  ],
+  "Anther Attachment": [
+    "Apical",
+    "Basifixed",
+    "Dorsifixed (not versatile)",
+    "Dorsifixed (versatile)"
+  ],
+  "Anther Dehiscence": [
+    "Dehiscence Irregular",
+    "Longitudinal Slits",
+    "Pores",
+    "Short Slits",
+    "Transverse Slits",
+    "Valves"
+  ],
+  "Bract Presence": [
+    "Bracts Absent",
+    "Bracts Present"
+  ],
+  "Bracteoles Presence": [
+    "Bracts with Bracteoles Above",
+    "Bracts without Bracteoles"
+  ],
+  "Corolla Spurs": [
+    "Corolla Spurs Absent",
+    "Corolla Spurs Present"
+  ],
+  "Anther Dehiscence Direction": [
+    "Extrorse",
+    "Introrse",
+    "Latrorse"
+  ],
+  "Stamen Fusion": [
+    "Stamens Free",
+    "Stamens Fused by Anthers",
+    "Stamens Grouped into Bundles",
+    "Stamens United by Tube"
+  ],
+  "Petal Incision": [
+    "Bifid Petal Incision",
+    "Emarginate Petal Incision",
+    "Entire Petal Incision",
+    "Trifid Petal Incision"
+  ],
+  "Inflorescence Position": [
+    "Cauliforous Inflorescence",
+    "Intercalary Inflorescence",
+    "Leaf Opposed Inflorescence"
+  ],
+  "Spathe Presence": [
+    "Spathe Absent",
+    "Spathe Present"
+  ],
+  "Stipellae Presence": [
+    "Stipellae Absent",
+    "Stipellae Present"
+  ],
+  "Staminodes Presence": [
+    "Staminodes Absent",
+    "Staminodes Present"
+  ],
+  "Perianth Tube": [
+    "Campanulate",
+    "Cupuliform",
+    "Funnel-Shaped",
+    "Rotate",
+    "Salverform",
+    "Tubular",
+    "Urceolate"
+  ],
+  "Carpel Fusion": [
+    "Apocarpous",
+    "Monocarpous",
+    "Syncarpous"
+  ],
+  "Stamen Arrangement": [
+    "Didymous",
+    "Didynamous",
+    "Tetradynamous"
+  ]
+}

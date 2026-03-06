@@ -24,7 +24,7 @@ enum PlantNetError: LocalizedError {
 class PlantNetService {
     static let shared = PlantNetService()
 
-    private let baseURL = "https://my-api.plantnet.org/v2/identify/all"
+    private let baseURLPrefix = "https://my-api.plantnet.org/v2/identify/"
 
     private var apiKey: String {
         guard let path = Bundle.main.path(forResource: "Config", ofType: "plist"),
@@ -35,15 +35,15 @@ class PlantNetService {
         return key
     }
 
-    func identifyPlant(image: UIImage) async throws -> PlantIdentificationResult {
+    func identifyPlant(image: UIImage, organ: String = "auto", project: String = "all") async throws -> PlantIdentificationResult {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             throw PlantNetError.invalidImage
         }
 
         let boundary = UUID().uuidString
-        var urlComponents = URLComponents(string: baseURL)!
+        var urlComponents = URLComponents(string: baseURLPrefix + project)!
         urlComponents.queryItems = [
-            URLQueryItem(name: "include-related-images", value: "false"),
+            URLQueryItem(name: "include-related-images", value: "true"),
             URLQueryItem(name: "no-reject", value: "false"),
             URLQueryItem(name: "lang", value: "en"),
             URLQueryItem(name: "api-key", value: apiKey)
@@ -65,7 +65,7 @@ class PlantNetService {
         // Add organ type
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"organs\"\r\n\r\n".data(using: .utf8)!)
-        body.append("auto\r\n".data(using: .utf8)!)
+        body.append("\(organ)\r\n".data(using: .utf8)!)
 
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
 
@@ -93,4 +93,43 @@ class PlantNetService {
             throw PlantNetError.networkError(error.localizedDescription)
         }
     }
+
+    // MARK: - Regional Project Discovery
+
+    /// Fetches the best regional flora project for identification based on coordinates.
+    func fetchRegionalProject(lat: Double, lon: Double) async -> String? {
+        var components = URLComponents(string: "https://my-api.plantnet.org/v2/projects")!
+        components.queryItems = [
+            URLQueryItem(name: "lat", value: String(lat)),
+            URLQueryItem(name: "lon", value: String(lon)),
+            URLQueryItem(name: "api-key", value: apiKey)
+        ]
+
+        guard let url = components.url else { return nil }
+
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else { return nil }
+
+            let projects = try JSONDecoder().decode([PlantNetProject].self, from: data)
+            // Return the first project (most relevant for the location)
+            let project = projects.first?.id
+            if let project {
+                print("[PlantNetService] Regional project for (\(lat), \(lon)): \(project)")
+            }
+            return project
+        } catch {
+            print("[PlantNetService] Failed to fetch regional projects: \(error.localizedDescription)")
+            return nil
+        }
+    }
+}
+
+// MARK: - Response Models
+
+private struct PlantNetProject: Codable {
+    let id: String
+    let name: String?
 }

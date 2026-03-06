@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import SwiftData
 
 @Model
@@ -14,6 +15,22 @@ final class Plant {
     var isFree: Bool
     var isAtRisk: Bool
     var atRiskStatus: String?
+    var imageURL: String?
+
+    // Additional common names from PlantNet species database
+    var alternativeCommonNames: String?
+
+    // Organ-specific images (from PlantNet)
+    var leafImageURL: String?
+    var flowerImageURL: String?
+    var fruitImageURL: String?
+    var barkImageURL: String?
+    var stemImageURL: String?
+    var habitImageURL: String?
+
+    // Persistently cached image data (downloaded from best available URL)
+    // This ensures every plant ALWAYS has an image, even when offline or APIs fail.
+    @Attribute(.externalStorage) var cachedImageData: Data?
 
     // Leaf traits
     var leafType: String?
@@ -57,6 +74,105 @@ final class Plant {
     var soil: String?
     var growthHabit: String?
 
+    // Bloom/Fruit timing (comma-separated month numbers, e.g. "4,5" for April–May)
+    var bloomMonths: String?
+    var fruitMonths: String?
+
+    // GBIF species ID (from PlantNet enrichment, used for Tier 2 image fetching)
+    var gbifId: Int?
+
+    /// Returns the best available image URL — checks organ images first, then general imageURL.
+    var bestImageURL: String? {
+        // Prefer flower, then habit, then leaf, then general
+        flowerImageURL ?? habitImageURL ?? leafImageURL ?? imageURL ?? fruitImageURL ?? barkImageURL ?? stemImageURL
+    }
+
+    /// Returns a UIImage from the persistently cached data, if available.
+    var cachedImage: UIImage? {
+        guard let data = cachedImageData else { return nil }
+        return UIImage(data: data)
+    }
+
+    /// Whether this plant has a cached fallback image stored locally.
+    var hasCachedImage: Bool {
+        cachedImageData != nil
+    }
+
+    /// Returns an image URL for a specific organ category, or nil.
+    func imageURL(for organ: PlantOrgan) -> String? {
+        switch organ {
+        case .leaf: return leafImageURL
+        case .flower: return flowerImageURL
+        case .fruit: return fruitImageURL
+        case .bark: return barkImageURL
+        case .stem: return stemImageURL
+        case .habit: return habitImageURL
+        case .habitat: return nil  // No image for habitat (text-only trait)
+        }
+    }
+
+    /// Sets an image URL for a specific organ category.
+    func setImageURL(_ url: String?, for organ: PlantOrgan) {
+        switch organ {
+        case .leaf: leafImageURL = url
+        case .flower: flowerImageURL = url
+        case .fruit: fruitImageURL = url
+        case .bark: barkImageURL = url
+        case .stem: stemImageURL = url
+        case .habit: habitImageURL = url
+        case .habitat: break  // No image storage for habitat
+        }
+    }
+
+    /// All common names including alternatives from PlantNet.
+    var allCommonNames: [String] {
+        var names = [commonName]
+        if let alt = alternativeCommonNames, !alt.isEmpty {
+            names.append(contentsOf: alt.components(separatedBy: ", "))
+        }
+        return names
+    }
+
+    /// Returns all organ images that have been populated.
+    var organImages: [(organ: PlantOrgan, url: String)] {
+        PlantOrgan.imageOrgans.compactMap { organ in
+            guard let url = imageURL(for: organ), !url.isEmpty else { return nil }
+            return (organ, url)
+        }
+    }
+
+    // MARK: - Bloom/Fruit Computed Helpers
+
+    /// Returns bloom months as an array of integers (1–12).
+    var bloomMonthArray: [Int] {
+        guard let bloomMonths, !bloomMonths.isEmpty else { return [] }
+        return bloomMonths.components(separatedBy: ",")
+            .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+    }
+
+    /// Returns fruit months as an array of integers (1–12).
+    var fruitMonthArray: [Int] {
+        guard let fruitMonths, !fruitMonths.isEmpty else { return [] }
+        return fruitMonths.components(separatedBy: ",")
+            .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+    }
+
+    /// Human-readable bloom period string (e.g., "April – May").
+    var bloomPeriodText: String? {
+        let months = bloomMonthArray
+        guard !months.isEmpty else { return nil }
+        let formatter = DateFormatter()
+        let names = months.compactMap { m -> String? in
+            guard (1...12).contains(m) else { return nil }
+            return formatter.monthSymbols[m - 1]
+        }
+        guard !names.isEmpty else { return nil }
+        if names.count <= 2 {
+            return names.joined(separator: " – ")
+        }
+        return "\(names.first!) – \(names.last!)"
+    }
+
     init(
         scientificName: String,
         commonName: String,
@@ -68,7 +184,8 @@ final class Plant {
         genus: String = "",
         isFree: Bool = false,
         isAtRisk: Bool = false,
-        atRiskStatus: String? = nil
+        atRiskStatus: String? = nil,
+        imageURL: String? = nil
     ) {
         self.scientificName = scientificName
         self.commonName = commonName
@@ -81,7 +198,135 @@ final class Plant {
         self.isFree = isFree
         self.isAtRisk = isAtRisk
         self.atRiskStatus = atRiskStatus
+        self.imageURL = imageURL
     }
+}
+
+// MARK: - Plant Organ Types
+
+/// Plant organ categories matching PlantNet's media classification.
+/// Maps to RadicleBotany's trait sections.
+enum PlantOrgan: String, CaseIterable, Codable, Identifiable {
+    case leaf = "Leaf"
+    case stem = "Stem"
+    case flower = "Flower"
+    case fruit = "Fruit"
+    case bark = "Bark"
+    case habit = "Habit"
+    case habitat = "Habitat"
+
+    var id: String { rawValue }
+
+    /// Display name for UI (same as rawValue)
+    var displayName: String { rawValue }
+
+    /// SF Symbol icon name
+    var icon: String {
+        switch self {
+        case .leaf: return "leaf.fill"
+        case .stem: return "laurel.leading"
+        case .flower: return "camera.macro"
+        case .fruit: return "drop.fill"
+        case .bark: return "tree.fill"
+        case .habit: return "tree.fill"
+        case .habitat: return "mountain.2.fill"
+        }
+    }
+
+    /// Accent color for this organ
+    var color: Color {
+        switch self {
+        case .leaf: return .greenSecondary
+        case .stem: return .greenLight
+        case .flower: return .orangePrimary
+        case .fruit: return .warningAmber
+        case .bark: return .orangeLight
+        case .habit: return .purpleSecondary
+        case .habitat: return .purpleSecondary
+        }
+    }
+
+    /// Organs that have associated images (excludes habitat which is text-only)
+    static var imageOrgans: [PlantOrgan] {
+        [.leaf, .stem, .flower, .fruit, .bark, .habit]
+    }
+
+    /// Maps PlantNet API organ strings to our enum
+    static func from(plantNetOrgan: String) -> PlantOrgan? {
+        switch plantNetOrgan.lowercased() {
+        case "leaf": return .leaf
+        case "flower": return .flower
+        case "fruit": return .fruit
+        case "bark": return .bark
+        case "branch": return .stem
+        case "habit": return .habit
+        default: return nil
+        }
+    }
+
+    /// Trait questions for each organ, mapped to the Plant model's property names.
+    var traitQuestions: [TraitQuestion] {
+        switch self {
+        case .leaf:
+            return [
+                TraitQuestion(title: "Leaf Type", category: "Leaf Type", keyPath: \.leafType),
+                TraitQuestion(title: "Leaf Shape", category: "Leaf Shape", keyPath: \.leafShape),
+                TraitQuestion(title: "Leaf Arrangement", category: "Leaf Arrangement", keyPath: \.leafArrangement),
+                TraitQuestion(title: "Leaf Attachment", category: "Leaf Attachment", keyPath: \.leafAttachment),
+                TraitQuestion(title: "Leaf Margin", category: "Leaf Margin", keyPath: \.leafMargin),
+                TraitQuestion(title: "Leaf Apex", category: "Leaf Apex", keyPath: \.leafApex),
+                TraitQuestion(title: "Leaf Base", category: "Leaf Base", keyPath: \.leafBase),
+                TraitQuestion(title: "Leaf Venation", category: "Leaf Venation", keyPath: \.leafVenation),
+                TraitQuestion(title: "Leaf Texture", category: "Surface Texture", keyPath: \.leafTexture),
+                TraitQuestion(title: "Stipules", category: "Stipule Arrangement", keyPath: \.leafStipules)
+            ]
+        case .stem:
+            return [
+                TraitQuestion(title: "Stem Habit", category: "Stem Morphology", keyPath: \.stemHabit),
+                TraitQuestion(title: "Stem Structure", category: "Stem Morphology", keyPath: \.stemStructure),
+                TraitQuestion(title: "Stem Branching", category: "Stem Morphology", keyPath: \.stemBranching)
+            ]
+        case .flower:
+            return [
+                TraitQuestion(title: "Flower Color", category: "Petal Color", keyPath: \.flowerColor),
+                TraitQuestion(title: "Flower Symmetry", category: "Floral Symmetry", keyPath: \.flowerSymmetry),
+                TraitQuestion(title: "Petal Count", category: "Petal Count", keyPath: \.flowerPetalCount),
+                TraitQuestion(title: "Petal Fusion", category: "Petal Fusion", keyPath: \.flowerPetalFusion),
+                TraitQuestion(title: "Sepal Presence", category: "Sepal Presence", keyPath: \.flowerSepalPresence),
+                TraitQuestion(title: "Sepal Fusion", category: "Sepal Fusion", keyPath: \.flowerSepalFusion),
+                TraitQuestion(title: "Inflorescence", category: "Inflorescence Type", keyPath: \.flowerInflorescence),
+                TraitQuestion(title: "Flower Position", category: "Flower Position", keyPath: \.flowerPosition),
+                TraitQuestion(title: "Ovary Position", category: "Ovary Position", keyPath: \.flowerOvaryPosition),
+                TraitQuestion(title: "Floral Sex", category: "Floral Sex", keyPath: \.flowerSexuality),
+                TraitQuestion(title: "Floral Part", category: "Floral Part", keyPath: \.flowerFloralPart)
+            ]
+        case .fruit:
+            return [
+                TraitQuestion(title: "Fruit Type", category: "Fruit Type", keyPath: \.fruitType),
+                TraitQuestion(title: "Seed Trait", category: "Seed Trait", keyPath: \.fruitSeedTrait),
+                TraitQuestion(title: "Root Type", category: "Root Type", keyPath: \.rootType)
+            ]
+        case .bark:
+            return []
+        case .habit:
+            return [
+                TraitQuestion(title: "Growth Habit", category: "Growth Habit", keyPath: \.growthHabit)
+            ]
+        case .habitat:
+            return [
+                TraitQuestion(title: "Habitat", category: "Habitat", keyPath: \.habitat)
+            ]
+        }
+    }
+}
+
+// MARK: - Trait Question
+
+struct TraitQuestion: Identifiable {
+    let id = UUID()
+    let title: String
+    let category: String
+    let keyPath: KeyPath<Plant, String?>
 }
 
 // MARK: - JSON Decoding Structure
@@ -89,12 +334,12 @@ final class Plant {
 struct PlantJSON: Codable {
     let plantNameLatin: String
     let plantNameCommon: String
-    let plantKingdom: String
-    let plantClass: String
-    let plantOrder: String
-    let plantFamily: String
-    let plantGenus: String
-    let plantDescription: String
+    let plantKingdom: String?
+    let plantClass: String?
+    let plantOrder: String?
+    let plantFamily: String?
+    let plantGenus: String?
+    let plantDescription: String?
     let leafType: String?
     let leafAttachment: String?
     let leafArrangement: String?
@@ -125,6 +370,18 @@ struct PlantJSON: Codable {
     let environmentHabitat: String?
     let environmentSoil: String?
     let environmentGrowthHabit: String?
+    let bloomMonths: String?
+    let fruitMonths: String?
+
+    // Pre-baked image URLs (exported from iNaturalist via scripts/export_image_urls.py)
+    let imageURL: String?
+    let flowerImageURL: String?
+    let leafImageURL: String?
+    let fruitImageURL: String?
+    let barkImageURL: String?
+    let stemImageURL: String?
+    let habitImageURL: String?
+    let gbifId: Int?
 
     enum CodingKeys: String, CodingKey {
         case plantNameLatin = "Plant_Name_Latin"
@@ -165,5 +422,15 @@ struct PlantJSON: Codable {
         case environmentHabitat = "Environment_Habitat"
         case environmentSoil = "Environment_Soil"
         case environmentGrowthHabit = "Environment_Growth Habit"
+        case bloomMonths = "Bloom_Months"
+        case fruitMonths = "Fruit_Months"
+        case imageURL = "image_url"
+        case flowerImageURL = "flower_image_url"
+        case leafImageURL = "leaf_image_url"
+        case fruitImageURL = "fruit_image_url"
+        case barkImageURL = "bark_image_url"
+        case stemImageURL = "stem_image_url"
+        case habitImageURL = "habit_image_url"
+        case gbifId = "gbif_id"
     }
 }

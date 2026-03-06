@@ -55,6 +55,9 @@ final class Family {
     var soil: String?
     var growthHabit: String?
 
+    // Access
+    var isFree: Bool = false
+
     init(
         familyLatin: String,
         familyEnglish: String,

@@ -20,6 +20,7 @@ struct Query: Codable {
 struct PlantMatch: Codable, Identifiable {
     let score: Double
     let species: Species
+    let images: [RelatedImage]?
 
     var id: String { species.scientificNameWithoutAuthor }
 
@@ -39,6 +40,23 @@ struct Species: Codable {
     let genus: TaxonInfo?
     let family: TaxonInfo?
     let commonNames: [String]?
+}
+
+struct RelatedImage: Codable, Identifiable {
+    let organ: String?
+    let url: RelatedImageURL?
+    let citation: String?
+
+    var id: String { url?.m ?? url?.o ?? UUID().uuidString }
+
+    /// Best available image URL (prefer medium, fallback to original)
+    var bestURL: String? { url?.m ?? url?.o }
+}
+
+struct RelatedImageURL: Codable {
+    let o: String?
+    let m: String?
+    let s: String?
 }
 
 struct TaxonInfo: Codable {

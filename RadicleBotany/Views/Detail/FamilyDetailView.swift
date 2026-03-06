@@ -7,14 +7,50 @@ struct FamilyDetailView: View {
     @Query private var allPlants: [Plant]
     @Query private var allFamilies: [Family]
 
+    @State private var speciesSearchText = ""
+    @State private var relatedSearchText = ""
+    @State private var selectedGenus: String? = nil
+    @State private var isDescriptionExpanded = false
+
     // MARK: - Filtered Data
 
     private var speciesInFamily: [Plant] {
         allPlants.filter { $0.familyLatin == family.familyLatin }
     }
 
+    private var filteredSpecies: [Plant] {
+        var result = speciesInFamily
+
+        if let genus = selectedGenus {
+            result = result.filter { $0.genus == genus }
+        }
+
+        if !speciesSearchText.isEmpty {
+            result = result.filter {
+                $0.scientificName.localizedCaseInsensitiveContains(speciesSearchText) ||
+                $0.commonName.localizedCaseInsensitiveContains(speciesSearchText) ||
+                $0.genus.localizedCaseInsensitiveContains(speciesSearchText)
+            }
+        }
+
+        return result
+    }
+
+    private var speciesGenera: [String] {
+        let genera = Set(speciesInFamily.map(\.genus).filter { !$0.isEmpty })
+        return genera.sorted()
+    }
+
     private var relatedFamilies: [Family] {
         allFamilies.filter { $0.order == family.order && $0.familyLatin != family.familyLatin }
+    }
+
+    private var filteredRelatedFamilies: [Family] {
+        guard !relatedSearchText.isEmpty else { return relatedFamilies }
+        return relatedFamilies.filter {
+            $0.familyLatin.localizedCaseInsensitiveContains(relatedSearchText) ||
+            $0.familyEnglish.localizedCaseInsensitiveContains(relatedSearchText)
+        }
     }
 
     private var generaList: [String] {
@@ -27,28 +63,46 @@ struct FamilyDetailView: View {
     // MARK: - Body
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                headerSection
-                taxonomyPills
-                descriptionSection
-                traitsSection
-                generaSection
-                speciesInFamilySection
-                relatedFamiliesSection
+        ZStack(alignment: .bottomTrailing) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    headerSection
+                    taxonomyPills
+                    descriptionSection
+                    traitsSection
+                    generaSection
+                    speciesInFamilySection
+                    relatedFamiliesSection
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 32)
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 32)
+
+            // Floating Study Button
+            NavigationLink(destination: FamilyFlashcardView().navigationTitle("Family Flashcards").navigationBarTitleDisplayMode(.inline)) {
+                VStack(spacing: 3) {
+                    Image(systemName: "rectangle.on.rectangle.angled")
+                        .font(AppTypography.inter(size: 18, weight: .semibold))
+                        .foregroundStyle(AppColors.brandPurple)
+                        .frame(width: 44, height: 44)
+                        .background(AppColors.brandPurple.opacity(0.12))
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(AppColors.brandPurple.opacity(0.4), lineWidth: 1.5)
+                        )
+
+                    Text("Study")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.textMuted)
+                }
+            }
+            .padding(.trailing, 20)
+            .padding(.bottom, 20)
         }
-        .background(Color.appBackground)
+        .background(AppColors.appBackground)
         .navigationTitle(family.familyLatin)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(for: Plant.self) { plant in
-            PlantDetailView(plant: plant)
-        }
-        .navigationDestination(for: Family.self) { family in
-            FamilyDetailView(family: family)
-        }
     }
 
     // MARK: - Header
@@ -56,12 +110,12 @@ struct FamilyDetailView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(family.familyLatin)
-                .font(AppFont.title())
-                .foregroundStyle(Color.textPrimary)
+                .font(AppTypography.headerTitle)
+                .foregroundStyle(AppColors.textPrimary)
 
             Text(family.familyEnglish)
-                .font(AppFont.bodyLarge())
-                .foregroundStyle(Color.textSecondary)
+                .font(AppTypography.displayMedium)
+                .foregroundStyle(AppColors.textSecondary)
         }
         .padding(.top, 8)
     }
@@ -85,118 +139,99 @@ struct FamilyDetailView: View {
     // MARK: - Description
 
     private var descriptionSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Description")
-                .font(AppFont.sectionHeader())
-                .foregroundStyle(Color.textPrimary)
-
+        VStack(alignment: .leading, spacing: 0) {
             Text(markdownToAttributed(family.familyDescription))
-                .font(AppFont.body())
-                .foregroundStyle(Color.textSecondary)
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textSecondary)
                 .lineSpacing(4)
+                .lineLimit(isDescriptionExpanded ? nil : 3)
+
+            if !isDescriptionExpanded {
+                HStack {
+                    Spacer()
+                    Text("Read more")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.success)
+                        .padding(.top, 6)
+                }
+            } else {
+                HStack {
+                    Spacer()
+                    Text("Show less")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.success)
+                        .padding(.top, 6)
+                }
+            }
         }
-        .cardStyle()
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isDescriptionExpanded.toggle()
+            }
+        }
     }
 
     // MARK: - Traits
 
     private var traitsSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Key Traits")
-                .font(AppFont.sectionHeader())
-                .foregroundStyle(Color.textPrimary)
+            Text("Traits")
+                .font(AppTypography.sectionHeader)
+                .foregroundStyle(AppColors.textPrimary)
                 .padding(.horizontal, 4)
 
             VStack(spacing: 0) {
                 traitDisclosureGroup(title: "Leaf Traits", icon: "leaf.fill", traits: leafTraits)
-                traitDisclosureGroup(title: "Stem Traits", icon: "arrow.up.and.line.horizontal.and.arrow.down", traits: stemTraits)
+                traitDisclosureGroup(title: "Stem Traits", icon: "laurel.leading", traits: stemTraits)
                 traitDisclosureGroup(title: "Flower Traits", icon: "camera.macro", traits: flowerTraits)
-                traitDisclosureGroup(title: "Fruit Traits", icon: "apple.logo", traits: fruitTraits)
-                traitDisclosureGroup(title: "Root Traits", icon: "arrow.down.to.line", traits: rootTraits)
+                traitDisclosureGroup(title: "Fruit Traits", icon: "drop.fill", traits: fruitTraits)
+                traitDisclosureGroup(title: "Root Traits", icon: "carrot.fill", traits: rootTraits)
                 traitDisclosureGroup(title: "Habitat", icon: "mountain.2.fill", traits: habitatTraits)
             }
-            .cardStyle(padding: 0)
         }
     }
 
     private var leafTraits: [(String, String)] {
         [
-            ("Type", family.leafType),
-            ("Attachment", family.leafAttachment),
-            ("Arrangement", family.leafArrangement),
-            ("Shape", family.leafShape),
-            ("Margin", family.leafMargin),
-            ("Apex", family.leafApex),
-            ("Base", family.leafBase),
-            ("Venation", family.leafVenation),
-            ("Texture", family.leafTexture),
-            ("Stipules", family.leafStipules),
+            ("Type", family.leafType), ("Attachment", family.leafAttachment),
+            ("Arrangement", family.leafArrangement), ("Shape", family.leafShape),
+            ("Margin", family.leafMargin), ("Apex", family.leafApex),
+            ("Base", family.leafBase), ("Venation", family.leafVenation),
+            ("Texture", family.leafTexture), ("Stipules", family.leafStipules),
             ("Additional Trait", family.leafAdditionalTrait)
-        ].compactMap { pair in
-            guard let value = pair.1, !value.isEmpty else { return nil }
-            return (pair.0, value)
-        }
+        ].compactMap { pair in guard let v = pair.1, !v.isEmpty else { return nil }; return (pair.0, v) }
     }
 
     private var stemTraits: [(String, String)] {
-        [
-            ("Habit", family.stemHabit),
-            ("Structure", family.stemStructure),
-            ("Branching", family.stemBranching)
-        ].compactMap { pair in
-            guard let value = pair.1, !value.isEmpty else { return nil }
-            return (pair.0, value)
-        }
+        [("Habit", family.stemHabit), ("Structure", family.stemStructure), ("Branching", family.stemBranching)]
+            .compactMap { pair in guard let v = pair.1, !v.isEmpty else { return nil }; return (pair.0, v) }
     }
 
     private var flowerTraits: [(String, String)] {
         [
-            ("Inflorescence", family.flowerInflorescence),
-            ("Symmetry", family.flowerSymmetry),
-            ("Petal Count", family.flowerPetalCount),
-            ("Petal Fusion", family.flowerPetalFusion),
-            ("Sepal Presence", family.flowerSepalPresence),
-            ("Sepal Fusion", family.flowerSepalFusion),
-            ("Color", family.flowerColor),
-            ("Position", family.flowerPosition),
-            ("Ovary Position", family.flowerOvaryPosition),
-            ("Sexuality", family.flowerSexuality),
+            ("Inflorescence", family.flowerInflorescence), ("Symmetry", family.flowerSymmetry),
+            ("Petal Count", family.flowerPetalCount), ("Petal Fusion", family.flowerPetalFusion),
+            ("Sepal Presence", family.flowerSepalPresence), ("Sepal Fusion", family.flowerSepalFusion),
+            ("Color", family.flowerColor), ("Position", family.flowerPosition),
+            ("Ovary Position", family.flowerOvaryPosition), ("Sexuality", family.flowerSexuality),
             ("Floral Part", family.flowerFloralPart)
-        ].compactMap { pair in
-            guard let value = pair.1, !value.isEmpty else { return nil }
-            return (pair.0, value)
-        }
+        ].compactMap { pair in guard let v = pair.1, !v.isEmpty else { return nil }; return (pair.0, v) }
     }
 
     private var fruitTraits: [(String, String)] {
-        [
-            ("Type", family.fruitType),
-            ("Seed Trait", family.fruitSeedTrait)
-        ].compactMap { pair in
-            guard let value = pair.1, !value.isEmpty else { return nil }
-            return (pair.0, value)
-        }
+        [("Type", family.fruitType), ("Seed Trait", family.fruitSeedTrait)]
+            .compactMap { pair in guard let v = pair.1, !v.isEmpty else { return nil }; return (pair.0, v) }
     }
 
     private var rootTraits: [(String, String)] {
-        [
-            ("Type", family.rootType),
-            ("Root Trait", family.rootTrait)
-        ].compactMap { pair in
-            guard let value = pair.1, !value.isEmpty else { return nil }
-            return (pair.0, value)
-        }
+        [("Type", family.rootType), ("Root Trait", family.rootTrait)]
+            .compactMap { pair in guard let v = pair.1, !v.isEmpty else { return nil }; return (pair.0, v) }
     }
 
     private var habitatTraits: [(String, String)] {
-        [
-            ("Habitat", family.habitat),
-            ("Soil", family.soil),
-            ("Growth Habit", family.growthHabit)
-        ].compactMap { pair in
-            guard let value = pair.1, !value.isEmpty else { return nil }
-            return (pair.0, value)
-        }
+        [("Habitat", family.habitat), ("Soil", family.soil), ("Growth Habit", family.growthHabit)]
+            .compactMap { pair in guard let v = pair.1, !v.isEmpty else { return nil }; return (pair.0, v) }
     }
 
     @ViewBuilder
@@ -206,32 +241,27 @@ struct FamilyDetailView: View {
                 VStack(spacing: 0) {
                     ForEach(Array(traits.enumerated()), id: \.offset) { index, trait in
                         traitRow(name: trait.0, value: trait.1)
-
                         if index < traits.count - 1 {
-                            Divider()
-                                .background(Color.borderSubtle)
+                            Divider().background(AppColors.border)
                         }
                     }
                 }
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: icon)
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color.greenSecondary)
+                        .font(AppTypography.inter(size: 14))
+                        .foregroundStyle(AppColors.success)
                         .frame(width: 24)
-
                     Text(title)
-                        .font(AppFont.sectionHeader())
-                        .foregroundStyle(Color.textPrimary)
-
+                        .font(AppTypography.sectionHeader)
+                        .foregroundStyle(AppColors.textPrimary)
                     Spacer()
-
                     Text("\(traits.count)")
-                        .font(AppFont.caption())
-                        .foregroundStyle(Color.textMuted)
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.textMuted)
                 }
             }
-            .tint(Color.textSecondary)
+            .tint(AppColors.textSecondary)
             .padding(16)
         }
     }
@@ -239,15 +269,13 @@ struct FamilyDetailView: View {
     private func traitRow(name: String, value: String) -> some View {
         HStack {
             Text(name)
-                .font(AppFont.caption())
-                .foregroundStyle(Color.textMuted)
+                .font(AppTypography.tagText)
+                .foregroundStyle(AppColors.textMuted)
                 .frame(width: 110, alignment: .leading)
-
             Spacer()
-
             Text(value)
-                .font(AppFont.body())
-                .foregroundStyle(Color.textPrimary)
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textPrimary)
                 .multilineTextAlignment(.trailing)
         }
         .padding(.vertical, 8)
@@ -261,32 +289,63 @@ struct FamilyDetailView: View {
         if !generaList.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Genera")
-                    .font(AppFont.sectionHeader())
-                    .foregroundStyle(Color.textPrimary)
+                    .font(AppTypography.sectionHeader)
+                    .foregroundStyle(AppColors.textPrimary)
 
                 WrappingHStack(items: generaList) { genus in
                     CategoryPill(text: genus, color: .greenSecondary)
                 }
             }
-            .cardStyle()
         }
     }
 
-    // MARK: - Species in Family
+    // MARK: - Species in Family (with search + genus filter)
 
     @ViewBuilder
     private var speciesInFamilySection: some View {
         if !speciesInFamily.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Species in this Family")
-                    .font(AppFont.sectionHeader())
-                    .foregroundStyle(Color.textPrimary)
+                // Header with count
+                CollectionHeader(
+                    icon: "leaf.fill",
+                    title: "Species in this Family",
+                    count: filteredSpecies.count,
+                    total: speciesInFamily.count,
+                    color: .greenSecondary
+                )
 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(speciesInFamily, id: \.scientificName) { plant in
-                            NavigationLink(value: plant) {
-                                speciesCard(plant)
+                // Inline search
+                InlineSearchField(
+                    text: $speciesSearchText,
+                    placeholder: "Search species..."
+                )
+
+                // Genus filter chips
+                if speciesGenera.count > 1 {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            MiniFilterChip(name: "All", isSelected: selectedGenus == nil, color: .greenSecondary) {
+                                withAnimation(.easeInOut(duration: 0.15)) { selectedGenus = nil }
+                            }
+                            ForEach(speciesGenera, id: \.self) { genus in
+                                MiniFilterChip(name: genus, isSelected: selectedGenus == genus, color: .greenSecondary) {
+                                    withAnimation(.easeInOut(duration: 0.15)) { selectedGenus = genus }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Results
+                if filteredSpecies.isEmpty {
+                    MiniEmptyState(icon: "leaf", text: "No matching species", color: .greenSecondary)
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(filteredSpecies, id: \.scientificName) { plant in
+                                NavigationLink(destination: PlantDetailView(plant: plant)) {
+                                    speciesCard(plant)
+                                }
                             }
                         }
                     }
@@ -296,52 +355,114 @@ struct FamilyDetailView: View {
     }
 
     private func speciesCard(_ plant: Plant) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.surfaceElevated)
-                .frame(width: 130, height: 90)
-                .overlay(
-                    Image(systemName: "leaf.fill")
-                        .font(.title3)
-                        .foregroundStyle(Color.greenSecondary.opacity(0.3))
-                )
+        VStack(alignment: .leading, spacing: 0) {
+            ZStack(alignment: .bottomLeading) {
+                if let cachedImage = plant.cachedImage {
+                    Image(uiImage: cachedImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 155, height: 110)
+                        .clipped()
+                } else if let imageURL = plant.bestImageURL, let url = URL(string: imageURL) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 155, height: 110)
+                                .clipped()
+                        default:
+                            speciesCardGradient
+                        }
+                    }
+                } else {
+                    speciesCardGradient
+                }
 
-            Text(plant.commonName)
-                .font(AppFont.caption())
-                .foregroundStyle(Color.textPrimary)
-                .lineLimit(1)
+                if !plant.genus.isEmpty {
+                    Text(plant.genus)
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.success)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(AppColors.success.opacity(0.15))
+                        .clipShape(Capsule())
+                        .padding(8)
+                }
+            }
+            .frame(height: 110)
+            .clipped()
 
-            Text(plant.scientificName)
-                .font(AppFont.caption(10))
-                .foregroundStyle(Color.textMuted)
-                .italic()
-                .lineLimit(1)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(plant.scientificName)
+                    .font(AppTypography.fieldLabel)
+                    .foregroundStyle(AppColors.textPrimary)
+                    .lineLimit(1)
+                Text(plant.commonName)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 10)
+            .padding(.top, 8)
+            .padding(.bottom, 10)
         }
-        .frame(width: 130)
-        .padding(8)
-        .background(Color.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.borderSubtle, lineWidth: 0.5)
-        )
+        .frame(width: 155)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+        .overlay(RoundedRectangle(cornerRadius: AppRadius.card).stroke(AppColors.border, lineWidth: 0.5))
     }
 
-    // MARK: - Related Families
+    /// Small gradient placeholder for mini species cards
+    private var speciesCardGradient: some View {
+        LinearGradient(
+            colors: [AppColors.success.opacity(0.08), AppColors.success.opacity(0.03)],
+            startPoint: .topLeading, endPoint: .bottomTrailing
+        )
+        .frame(height: 110)
+        .overlay(alignment: .topTrailing) {
+            Image("AppIconDark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+                .opacity(0.2)
+                .padding(10)
+        }
+    }
+
+    // MARK: - Related Families (with search)
 
     @ViewBuilder
     private var relatedFamiliesSection: some View {
         if !relatedFamilies.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Related Families")
-                    .font(AppFont.sectionHeader())
-                    .foregroundStyle(Color.textPrimary)
+                CollectionHeader(
+                    icon: "leaf.circle.fill",
+                    title: "Related Families",
+                    count: filteredRelatedFamilies.count,
+                    total: relatedFamilies.count,
+                    color: .orangePrimary
+                )
 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(relatedFamilies, id: \.familyLatin) { relatedFamily in
-                            NavigationLink(value: relatedFamily) {
-                                familyCard(relatedFamily)
+                // Inline search
+                if relatedFamilies.count > 4 {
+                    InlineSearchField(
+                        text: $relatedSearchText,
+                        placeholder: "Search related families..."
+                    )
+                }
+
+                // Results
+                if filteredRelatedFamilies.isEmpty {
+                    MiniEmptyState(icon: "leaf.circle", text: "No matching families", color: .orangePrimary)
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(filteredRelatedFamilies, id: \.familyLatin) { relatedFamily in
+                                NavigationLink(destination: FamilyDetailView(family: relatedFamily)) {
+                                    familyCard(relatedFamily)
+                                }
                             }
                         }
                     }
@@ -351,34 +472,52 @@ struct FamilyDetailView: View {
     }
 
     private func familyCard(_ relatedFamily: Family) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.surfaceElevated)
-                .frame(width: 140, height: 80)
-                .overlay(
-                    Image(systemName: "tree.fill")
-                        .font(.title3)
-                        .foregroundStyle(Color.orangePrimary.opacity(0.3))
+        VStack(alignment: .leading, spacing: 0) {
+            ZStack(alignment: .bottomLeading) {
+                LinearGradient(
+                    colors: [AppColors.primaryAmber.opacity(0.08), AppColors.primaryAmber.opacity(0.03)],
+                    startPoint: .topLeading, endPoint: .bottomTrailing
                 )
+                .frame(height: 60)
+                .overlay(alignment: .topTrailing) {
+                    Image(systemName: "leaf.circle.fill")
+                        .font(AppTypography.inter(size: 20))
+                        .foregroundStyle(AppColors.primaryAmber.opacity(0.12))
+                        .padding(10)
+                }
 
-            Text(relatedFamily.familyLatin)
-                .font(AppFont.caption())
-                .foregroundStyle(Color.textPrimary)
-                .lineLimit(1)
+                let speciesCount = allPlants.filter { $0.familyLatin == relatedFamily.familyLatin }.count
+                if speciesCount > 0 {
+                    Text("\(speciesCount) species")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.primaryAmber)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(AppColors.primaryAmber.opacity(0.15))
+                        .clipShape(Capsule())
+                        .padding(8)
+                }
+            }
 
-            Text(relatedFamily.familyEnglish)
-                .font(AppFont.caption(10))
-                .foregroundStyle(Color.textMuted)
-                .lineLimit(1)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(relatedFamily.familyLatin)
+                    .font(AppTypography.tagText)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.textPrimary)
+                    .lineLimit(1)
+                Text(relatedFamily.familyEnglish)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, 10)
+            .padding(.top, 8)
+            .padding(.bottom, 10)
         }
-        .frame(width: 140)
-        .padding(8)
-        .background(Color.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.borderSubtle, lineWidth: 0.5)
-        )
+        .frame(width: 155)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+        .overlay(RoundedRectangle(cornerRadius: AppRadius.card).stroke(AppColors.border, lineWidth: 0.5))
     }
 }
 

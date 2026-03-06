@@ -17,3 +17,18 @@ Pods/
 # Swift Package Manager
 .build/
 Package.resolved
+
+# Backup files
+*.bak
+*.backup.*
+
+# Script logs and artifacts
+scripts/enrich_log.txt
+scripts/*.backup.*
+scripts/raw_*.json
+scripts/new_plants_*.json
+
+# Loose icon source files at root
+RadicleBotany Icon Official*.png
+extract_bloom_months.py
+scripts/.image_url_checkpoint.json

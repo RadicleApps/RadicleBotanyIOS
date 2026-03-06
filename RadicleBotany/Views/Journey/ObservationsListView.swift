@@ -59,7 +59,7 @@ struct ObservationsListView: View {
             filterBar
             observationsList
         }
-        .background(Color.appBackground)
+        .background(AppColors.appBackground)
         .navigationTitle("Observations")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -77,14 +77,14 @@ struct ObservationsListView: View {
             } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.up.arrow.down")
-                        .font(.system(size: 11))
+                        .font(AppTypography.inter(size: 11))
                     Text(sortOption.rawValue)
-                        .font(AppFont.caption())
+                        .font(AppTypography.tagText)
                 }
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(AppColors.textSecondary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(Color.surfaceElevated)
+                .background(AppColors.cardElevated)
                 .clipShape(Capsule())
             }
 
@@ -97,22 +97,22 @@ struct ObservationsListView: View {
             } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "line.3.horizontal.decrease")
-                        .font(.system(size: 11))
+                        .font(AppTypography.inter(size: 11))
                     Text(filterOption.rawValue)
-                        .font(AppFont.caption())
+                        .font(AppTypography.tagText)
                 }
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(AppColors.textSecondary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(Color.surfaceElevated)
+                .background(AppColors.cardElevated)
                 .clipShape(Capsule())
             }
 
             Spacer()
 
             Text("\(filteredObservations.count) result\(filteredObservations.count == 1 ? "" : "s")")
-                .font(AppFont.caption())
-                .foregroundStyle(Color.textMuted)
+                .font(AppTypography.tagText)
+                .foregroundStyle(AppColors.textMuted)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -152,50 +152,50 @@ struct ObservationsListView: View {
                let uiImage = UIImage(data: photoData) {
                 Image(uiImage: uiImage)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
                     .frame(width: 56, height: 56)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
             } else {
                 ZStack {
-                    Color.surfaceElevated
+                    AppColors.cardElevated
                     Image(systemName: "leaf.fill")
-                        .font(.system(size: 18))
-                        .foregroundStyle(Color.textMuted)
+                        .font(AppTypography.inter(size: 18))
+                        .foregroundStyle(AppColors.textMuted)
                 }
                 .frame(width: 56, height: 56)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
             }
 
             // Details
             VStack(alignment: .leading, spacing: 4) {
                 Text(observation.plantScientificName ?? "Unidentified")
-                    .font(AppFont.sectionHeader())
-                    .foregroundStyle(Color.textPrimary)
+                    .font(AppTypography.sectionHeader)
+                    .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
                     .italic(observation.plantScientificName != nil)
 
                 Text(observation.date.formatted(date: .abbreviated, time: .shortened))
-                    .font(AppFont.caption())
-                    .foregroundStyle(Color.textMuted)
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textMuted)
 
                 if let lat = observation.latitude, let lon = observation.longitude {
                     HStack(spacing: 3) {
                         Image(systemName: "location.fill")
-                            .font(.system(size: 9))
+                            .font(AppTypography.inter(size: 9))
                         Text(String(format: "%.3f, %.3f", lat, lon))
-                            .font(AppFont.caption(10))
+                            .font(AppTypography.caption)
                     }
-                    .foregroundStyle(Color.textMuted)
+                    .foregroundStyle(AppColors.textMuted)
                 }
             }
 
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12))
-                .foregroundStyle(Color.textMuted)
+                .font(AppTypography.inter(size: 12))
+                .foregroundStyle(AppColors.textMuted)
         }
-        .cardStyle(padding: 12)
+        .padding(12).cardStyle(elevated: false, interactive: true)
     }
 
     // MARK: - Empty State
@@ -204,22 +204,24 @@ struct ObservationsListView: View {
         VStack(spacing: 16) {
             Spacer()
 
-            Image(systemName: "binoculars")
-                .font(.system(size: 40))
-                .foregroundStyle(Color.textMuted)
+            Image("Trillium")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 120)
+                .opacity(0.5)
 
             Text("No observations found")
-                .font(AppFont.sectionHeader())
-                .foregroundStyle(Color.textSecondary)
+                .font(AppTypography.sectionHeader)
+                .foregroundStyle(AppColors.textSecondary)
 
             if filterOption != .all {
                 Text("Try adjusting your filters.")
-                    .font(AppFont.caption())
-                    .foregroundStyle(Color.textMuted)
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textMuted)
             } else {
                 Text("Start by capturing a plant in the Botanize tab.")
-                    .font(AppFont.caption())
-                    .foregroundStyle(Color.textMuted)
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textMuted)
             }
 
             Spacer()

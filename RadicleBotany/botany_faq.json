@@ -1,0 +1,180 @@
+{
+  "version": 1,
+  "faq": [
+    {
+      "question": "What is pinnate venation?",
+      "answer": "Pinnate venation is a leaf vein pattern where secondary veins branch off a single central midrib, like a feather. This pattern is common in many dicot families including Fagaceae (oaks), Rosaceae (roses), and Betulaceae (birches). The midrib runs from the leaf base to the tip, with lateral veins extending to the leaf margins at regular intervals.",
+      "category": "morphology",
+      "tags": ["venation", "leaf", "pinnate", "midrib", "vein"],
+      "sources": [{"title": "Pinnate venation", "type": "term"}]
+    },
+    {
+      "question": "What is palmate venation?",
+      "answer": "Palmate venation is a leaf vein pattern where multiple main veins radiate from a single point at the leaf base, like fingers spreading from a palm. This pattern is characteristic of maples (Acer), sycamores (Platanus), and many members of Malvaceae. The number of main veins typically ranges from 3 to 7.",
+      "category": "morphology",
+      "tags": ["venation", "leaf", "palmate", "vein", "maple"],
+      "sources": [{"title": "Palmate venation", "type": "term"}]
+    },
+    {
+      "question": "What is a compound leaf?",
+      "answer": "A compound leaf is divided into separate leaflets attached to a common stalk (rachis). There are two main types: pinnately compound (leaflets arranged along a central axis, like ash or walnut) and palmately compound (leaflets radiating from a single point, like horse chestnut or buckeye). To distinguish a compound leaf from a branch, look for buds — true branches have buds at leaf axils, but leaflets do not.",
+      "category": "morphology",
+      "tags": ["compound", "leaf", "leaflet", "pinnate", "palmate", "rachis"],
+      "sources": [{"title": "Compound leaf", "type": "term"}]
+    },
+    {
+      "question": "What is the difference between alternate and opposite leaves?",
+      "answer": "Leaf arrangement (phyllotaxy) refers to how leaves attach to the stem. Alternate leaves have one leaf per node, spiraling up the stem (most common pattern — oaks, elms, birches). Opposite leaves have two leaves per node, directly across from each other (maples, ash, dogwoods). A helpful mnemonic: MADCap Horse — Maple, Ash, Dogwood, Caprifoliaceae, and Horsechestnut all have opposite leaves.",
+      "category": "morphology",
+      "tags": ["alternate", "opposite", "phyllotaxy", "arrangement", "node"],
+      "sources": [{"title": "Phyllotaxy", "type": "term"}]
+    },
+    {
+      "question": "What is an inflorescence?",
+      "answer": "An inflorescence is a cluster or arrangement of flowers on a stem. Common types include: raceme (flowers along an unbranched stalk, like foxglove), panicle (branched raceme, like lilac), umbel (flowers radiating from a single point, like Queen Anne's lace), spike (sessile flowers along an axis, like plantain), and head/capitulum (dense cluster, like sunflower). The arrangement type is an important identification feature.",
+      "category": "morphology",
+      "tags": ["inflorescence", "flower", "raceme", "panicle", "umbel", "spike"],
+      "sources": [{"title": "Inflorescence", "type": "term"}]
+    },
+    {
+      "question": "How do I identify a plant family?",
+      "answer": "Look for consistent diagnostic features shared across the family: flower structure (petal count, symmetry, fusion), fruit type, leaf arrangement, and special characteristics. For example: Asteraceae always have composite flower heads; Fabaceae have butterfly-shaped flowers and legume pods; Lamiaceae have square stems and opposite leaves; Apiaceae have umbrella-shaped umbel inflorescences. Start by learning 10-15 major families — they cover most temperate species.",
+      "category": "taxonomy",
+      "tags": ["family", "identification", "taxonomy", "diagnostic"],
+      "sources": [{"title": "Plant taxonomy", "type": "term"}]
+    },
+    {
+      "question": "What are dicots vs monocots?",
+      "answer": "Dicots (eudicots) and monocots are the two main groups of flowering plants. Monocots have: one seed leaf (cotyledon), parallel leaf venation, flower parts in multiples of 3, and scattered vascular bundles. Examples: grasses, lilies, orchids, palms. Dicots have: two seed leaves, net-like (reticulate) venation, flower parts in multiples of 4 or 5, and ring-arranged vascular bundles. Examples: oaks, roses, sunflowers, mints.",
+      "category": "taxonomy",
+      "tags": ["dicot", "monocot", "eudicot", "cotyledon", "venation"],
+      "sources": [{"title": "Monocotyledon", "type": "term"}, {"title": "Dicotyledon", "type": "term"}]
+    },
+    {
+      "question": "What does IUCN Endangered mean?",
+      "answer": "IUCN Endangered (EN) means a species faces a very high risk of extinction in the wild. The IUCN Red List categories from least to most concern are: Least Concern (LC), Near Threatened (NT), Vulnerable (VU), Endangered (EN), Critically Endangered (CR), Extinct in the Wild (EW), and Extinct (EX). A species is classified as Endangered based on criteria including population size decline (>70% over 10 years), restricted range (<5,000 km2), or fewer than 2,500 mature individuals.",
+      "category": "conservation",
+      "tags": ["iucn", "endangered", "conservation", "extinction", "red list"],
+      "sources": [{"title": "IUCN Red List", "url": "https://www.iucnredlist.org", "type": "article"}]
+    },
+    {
+      "question": "What is photosynthesis?",
+      "answer": "Photosynthesis is the process by which plants convert light energy, carbon dioxide, and water into glucose (sugar) and oxygen. It occurs primarily in chloroplasts within leaf mesophyll cells. The light-dependent reactions happen in the thylakoid membranes, producing ATP and NADPH. The Calvin cycle (light-independent reactions) occurs in the stroma, using CO2 to build sugars. The overall equation: 6CO2 + 6H2O + light energy -> C6H12O6 + 6O2.",
+      "category": "physiology",
+      "tags": ["photosynthesis", "chloroplast", "light", "carbon dioxide", "glucose"],
+      "sources": [{"title": "Photosynthesis", "type": "term"}]
+    },
+    {
+      "question": "What are stamens and pistils?",
+      "answer": "Stamens are the male reproductive organs of a flower, consisting of an anther (produces pollen) atop a filament (stalk). Collectively, all stamens form the androecium. The pistil (or carpel) is the female reproductive organ, consisting of the stigma (receives pollen), style (connecting tube), and ovary (contains ovules). Collectively, all pistils form the gynoecium. A complete flower has both stamens and pistils, while incomplete flowers lack one or both.",
+      "category": "morphology",
+      "tags": ["stamen", "pistil", "carpel", "anther", "stigma", "flower"],
+      "sources": [{"title": "Stamen", "type": "term"}, {"title": "Pistil", "type": "term"}]
+    },
+    {
+      "question": "How do ferns reproduce?",
+      "answer": "Ferns reproduce via spores rather than seeds, in a two-stage life cycle called alternation of generations. The familiar fern plant (sporophyte) produces spores in clusters called sori (singular: sorus) on the undersides of fronds. Spores germinate into a tiny heart-shaped gametophyte (prothallus) that produces both eggs and sperm. After fertilization, the new sporophyte grows from the gametophyte. Some ferns also reproduce vegetatively through rhizomes.",
+      "category": "reproduction",
+      "tags": ["fern", "spore", "sorus", "gametophyte", "sporophyte", "reproduction"],
+      "sources": [{"title": "Alternation of generations", "type": "term"}]
+    },
+    {
+      "question": "What is a cultivar?",
+      "answer": "A cultivar (from 'cultivated variety') is a plant variety that has been selected and maintained through cultivation for specific desirable traits like flower color, disease resistance, or fruit size. Cultivar names are written in single quotes after the species name: Rosa 'Peace' or Acer palmatum 'Bloodgood'. Unlike botanical varieties (which occur naturally), cultivars are maintained through human selection — by cuttings, grafting, or controlled seed production.",
+      "category": "taxonomy",
+      "tags": ["cultivar", "variety", "cultivation", "selection", "hybrid"],
+      "sources": [{"title": "Cultivar", "type": "term"}]
+    },
+    {
+      "question": "What makes a flower complete?",
+      "answer": "A complete flower has all four whorls: sepals (calyx), petals (corolla), stamens (androecium), and pistils (gynoecium). An incomplete flower lacks one or more whorls. A perfect flower has both stamens and pistils (but may lack sepals or petals). An imperfect flower has only stamens (staminate) or only pistils (pistillate). Monoecious plants have separate male and female flowers on the same plant (corn, oak). Dioecious plants have male and female flowers on separate plants (holly, willow).",
+      "category": "morphology",
+      "tags": ["complete", "flower", "sepal", "petal", "perfect", "imperfect"],
+      "sources": [{"title": "Complete flower", "type": "term"}]
+    },
+    {
+      "question": "How are plants classified?",
+      "answer": "Plants are classified using a hierarchical taxonomy: Domain > Kingdom > Phylum > Class > Order > Family > Genus > Species. The binomial naming system (Linnaeus, 1753) uses genus + specific epithet in italics: Quercus alba (white oak). Plant families end in -aceae (e.g., Rosaceae, Fabaceae). Modern classification uses molecular phylogenetics (DNA analysis) alongside morphology. The APG IV system (Angiosperm Phylogeny Group, 2016) is the current standard for flowering plant classification.",
+      "category": "taxonomy",
+      "tags": ["classification", "taxonomy", "binomial", "family", "genus", "species"],
+      "sources": [{"title": "Plant taxonomy", "type": "term"}, {"title": "APG IV", "type": "article"}]
+    },
+    {
+      "question": "What is pollination?",
+      "answer": "Pollination is the transfer of pollen from an anther to a stigma. Biotic pollination involves animals: bees (most important pollinators), butterflies, moths, hummingbirds, bats, and flies. Abiotic pollination uses wind (grasses, oaks, conifers) or water (aquatic plants). Flowers often have adaptations for specific pollinators: red tubular flowers attract hummingbirds, white fragrant night-bloomers attract moths, and UV-patterned flowers guide bees. Self-pollination occurs within the same flower or plant; cross-pollination transfers pollen between different plants.",
+      "category": "ecology",
+      "tags": ["pollination", "pollen", "bee", "wind", "cross-pollination"],
+      "sources": [{"title": "Pollination", "type": "term"}]
+    },
+    {
+      "question": "How do seeds disperse?",
+      "answer": "Seed dispersal mechanisms include: wind (dandelion plumes, maple samaras, elm wings), water (coconut, lotus), animals (fleshy fruits eaten by birds, burrs on fur, nuts cached by squirrels), ballistic/explosive (touch-me-not, witch hazel pods), and gravity (heavy seeds like acorns). Dispersal is crucial for species survival — it reduces competition with parent plants, colonizes new habitats, and maintains genetic diversity. The dispersal method often determines seed and fruit morphology.",
+      "category": "ecology",
+      "tags": ["seed", "dispersal", "wind", "animal", "fruit"],
+      "sources": [{"title": "Seed dispersal", "type": "term"}]
+    },
+    {
+      "question": "How do plant species arrive in new regions?",
+      "answer": "Some plant species have been locally adapted to a region for thousands of years, evolving alongside local pollinators, soil microbes, and wildlife. Other species were introduced through human activity — intentionally for agriculture, horticulture, or landscaping, or accidentally via trade and travel. When introduced species spread rapidly in a new environment, they can shift the ecological balance by outcompeting established plants for sunlight, water, and nutrients. Understanding a plant's geographic origin and ecological role helps botanists assess biodiversity and plan conservation strategies.",
+      "category": "ecology",
+      "tags": ["biogeography", "introduced", "ecology", "ecosystem", "plant distribution"],
+      "sources": [{"title": "Biogeography", "type": "term"}]
+    },
+    {
+      "question": "What is a herbarium specimen?",
+      "answer": "A herbarium specimen is a pressed, dried plant sample mounted on archival paper with a label recording the collector, date, location, habitat, and identification. Herbaria are scientific collections used for taxonomy, biodiversity research, and species documentation. Proper technique: collect representative samples with flowers/fruits when possible, press between newspaper in a plant press, dry with heat and ventilation. Digital herbaria are increasingly available online through resources like GBIF and iDigBio.",
+      "category": "fieldwork",
+      "tags": ["herbarium", "specimen", "pressed", "collection", "taxonomy"],
+      "sources": [{"title": "Herbarium", "type": "term"}, {"title": "GBIF", "url": "https://www.gbif.org", "type": "article"}]
+    },
+    {
+      "question": "What should I note in field observations?",
+      "answer": "Essential field observation data includes: date and time, GPS coordinates or detailed location, habitat type (forest, meadow, wetland), associated species, soil conditions, light exposure, plant height and growth form, phenological stage (vegetative, budding, flowering, fruiting, dormant), abundance estimate, and any notable features. Photograph the whole plant, close-ups of flowers/fruits/leaves, and the habitat. Scientific observations become more valuable when they include standardized metadata.",
+      "category": "fieldwork",
+      "tags": ["observation", "field", "notes", "phenology", "documentation"],
+      "sources": null
+    },
+    {
+      "question": "How do I document phenology?",
+      "answer": "Phenology is the study of seasonal biological events. For plants, track: leaf-out date, first flower date, peak bloom, fruit development, seed dispersal, leaf color change, and leaf drop. Record these consistently at the same location over time. Citizen science programs like Nature's Notebook (USA National Phenology Network) use standardized protocols. Phenological data is valuable for tracking climate change impacts — many species are flowering earlier as temperatures rise.",
+      "category": "fieldwork",
+      "tags": ["phenology", "bloom", "season", "flowering", "climate"],
+      "sources": [{"title": "National Phenology Network", "url": "https://www.usanpn.org", "type": "article"}]
+    },
+    {
+      "question": "Best photo angle for identification?",
+      "answer": "For reliable plant identification from photos, capture: (1) overall growth habit from a distance, (2) leaf close-up showing shape, margin, and venation — include both upper and lower surfaces, (3) flower or fruit close-up showing structure, (4) bark or stem detail, (5) scale reference (coin or hand). Photograph in natural light when possible. Include both typical and atypical features. Multiple organs dramatically improve identification accuracy — a leaf photo alone succeeds about 60% of the time, while leaf + flower exceeds 90%.",
+      "category": "identification",
+      "tags": ["photo", "identification", "camera", "angle", "leaf", "flower"],
+      "sources": null
+    },
+    {
+      "question": "Which plant parts help most with ID?",
+      "answer": "In order of diagnostic value: (1) Flowers — petal count, symmetry, color, and fusion are highly diagnostic for family-level ID. (2) Fruits/seeds — fruit type (capsule, drupe, berry, legume, achene) often confirms family. (3) Leaves — shape, margin (entire, serrate, lobed), venation, and arrangement. (4) Bark/stems — texture, color, lenticel pattern, and stem cross-section shape. (5) Overall habit — tree vs shrub vs herb, growth pattern. Using multiple organs together is always more reliable than any single feature.",
+      "category": "identification",
+      "tags": ["identification", "diagnostic", "flower", "fruit", "leaf", "bark"],
+      "sources": null
+    },
+    {
+      "question": "What is transpiration?",
+      "answer": "Transpiration is the evaporation of water from plant leaves through stomata (tiny pores on the leaf surface). It drives the upward movement of water and dissolved minerals from roots through the xylem (transpiration pull). Guard cells control stomatal opening — they open for gas exchange during photosynthesis and close to conserve water during drought. A large tree can transpire hundreds of liters of water per day. Factors affecting transpiration rate include temperature, humidity, wind, and light intensity.",
+      "category": "physiology",
+      "tags": ["transpiration", "stomata", "water", "xylem", "guard cell"],
+      "sources": [{"title": "Transpiration", "type": "term"}, {"title": "Stomata", "type": "term"}]
+    },
+    {
+      "question": "What is mycorrhiza?",
+      "answer": "Mycorrhiza is a symbiotic association between plant roots and fungi. The fungus extends the root system's absorptive area (sometimes by 100x), improving water and nutrient uptake — especially phosphorus. In return, the plant provides the fungus with sugars from photosynthesis. About 90% of plant species form mycorrhizal associations. Two main types: ectomycorrhiza (fungus wraps around root tips — common in oaks, pines, birches) and arbuscular mycorrhiza (fungus penetrates root cells — most herbaceous plants).",
+      "category": "ecology",
+      "tags": ["mycorrhiza", "fungi", "symbiosis", "root", "nutrient"],
+      "sources": [{"title": "Mycorrhiza", "type": "term"}]
+    },
+    {
+      "question": "What is the difference between a fruit and a vegetable?",
+      "answer": "Botanically, a fruit is the mature ovary of a flowering plant, containing seeds. This includes tomatoes, peppers, cucumbers, squash, and beans — all botanical fruits used as culinary vegetables. A vegetable is a culinary term with no strict botanical definition — it can refer to roots (carrots), stems (celery), leaves (lettuce), or flower buds (broccoli). The confusion arises because culinary and botanical classifications serve different purposes. Nuts are also fruits — specifically dry, indehiscent fruits with a hard shell.",
+      "category": "morphology",
+      "tags": ["fruit", "vegetable", "ovary", "seed", "nut"],
+      "sources": [{"title": "Fruit", "type": "term"}]
+    }
+  ]
+}

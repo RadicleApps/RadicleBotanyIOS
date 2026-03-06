@@ -1,40 +1,62 @@
 import SwiftUI
+import SwiftData
 
 struct OnboardingView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @EnvironmentObject private var storeManager: StoreManager
+    @Environment(\.modelContext) private var modelContext
+    @Query private var settingsQuery: [UserSettings]
 
     @State private var currentPage = 0
+    @State private var purchaseInProgress = false
+    @State private var showError = false
 
-    private let totalPages = 5
+    // Personalization
+    @State private var selectedExperience: BotanicalExperience? = nil
+    @State private var selectedGoals: Set<BotanicalGoal> = []
+
+    // Pricing page selected tier (Path pre-selected)
+    @State private var pricingPathSelected = true
+
+    private let totalPages = 7
 
     var body: some View {
         ZStack {
-            Color.appBackground
+            AppColors.appBackground
                 .ignoresSafeArea()
 
-            TabView(selection: $currentPage) {
-                welcomePage.tag(0)
-                botanizePage.tag(1)
-                learnPage.tag(2)
-                collectPage.tag(3)
-                pricingPage.tag(4)
-            }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
-            .animation(.easeInOut(duration: 0.3), value: currentPage)
+            VStack(spacing: 0) {
+                // Main page content
+                TabView(selection: $currentPage) {
+                    welcomePage.tag(0)
+                    botanizePage.tag(1)
+                    learnPage.tag(2)
+                    collectPage.tag(3)
+                    experiencePage.tag(4)
+                    goalsPage.tag(5)
+                    pricingPage.tag(6)
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .animation(.easeInOut(duration: 0.3), value: currentPage)
 
-            // Skip button on pages 0-3
+                // Bottom navigation (dots + button) — not on pricing page
+                if currentPage < totalPages - 1 {
+                    bottomNavigation
+                        .padding(.bottom, 40)
+                }
+            }
+
+            // Skip button on pages 0-5
             if currentPage < totalPages - 1 {
                 VStack {
                     HStack {
                         Spacer()
                         Button {
-                            completeOnboarding()
+                            withAnimation { currentPage = totalPages - 1 }
                         } label: {
                             Text("Skip")
-                                .font(AppFont.sectionHeader())
-                                .foregroundStyle(Color.textSecondary)
+                                .font(AppTypography.tagText)
+                                .foregroundStyle(AppColors.textMuted)
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 8)
                         }
@@ -43,6 +65,63 @@ struct OnboardingView: View {
                     .padding(.trailing, 8)
                     Spacer()
                 }
+            }
+
+            // Loading overlay for purchases
+            if storeManager.isLoading || purchaseInProgress {
+                purchaseLoadingOverlay
+            }
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK", role: .cancel) {
+                storeManager.errorMessage = nil
+            }
+        } message: {
+            Text(storeManager.errorMessage ?? "An unknown error occurred.")
+        }
+        .onChange(of: storeManager.errorMessage) { _, newValue in
+            showError = newValue != nil
+        }
+    }
+
+    // MARK: - Bottom Navigation
+
+    private var canAdvance: Bool {
+        switch currentPage {
+        case 4: return selectedExperience != nil
+        case 5: return !selectedGoals.isEmpty
+        default: return true
+        }
+    }
+
+    private var nextButtonLabel: String {
+        currentPage == 5 ? "Continue" : "Next"
+    }
+
+    private var bottomNavigation: some View {
+        VStack(spacing: 20) {
+            progressDots
+
+            Button {
+                withAnimation { currentPage += 1 }
+            } label: {
+                Text(nextButtonLabel)
+            }
+            .buttonStyle(PrimaryButtonStyle(color: currentPage >= 4 ? .orangePrimary : .purpleSecondary))
+            .disabled(!canAdvance)
+            .padding(.horizontal, 32)
+        }
+    }
+
+    // MARK: - Custom Progress Dots
+
+    private var progressDots: some View {
+        HStack(spacing: 8) {
+            ForEach(0..<(totalPages - 1), id: \.self) { index in
+                Capsule()
+                    .fill(index == currentPage ? AppColors.primaryAmber : AppColors.textMuted.opacity(0.3))
+                    .frame(width: index == currentPage ? 24 : 8, height: 8)
+                    .animation(.easeInOut(duration: 0.25), value: currentPage)
             }
         }
     }
@@ -53,34 +132,22 @@ struct OnboardingView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            ZStack {
-                Circle()
-                    .fill(Color.orangePrimary.opacity(0.15))
-                    .frame(width: 140, height: 140)
+            Image("Logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 140, height: 140)
+                .clipShape(RoundedRectangle(cornerRadius: 32))
+                .shadow(color: AppColors.primaryAmber.opacity(0.15), radius: 24, y: 8)
 
-                Circle()
-                    .fill(Color.orangePrimary.opacity(0.08))
-                    .frame(width: 180, height: 180)
-
-                ZStack {
-                    Circle()
-                        .fill(Color.orangePrimary)
-                        .frame(width: 100, height: 100)
-
-                    Image(systemName: "leaf.fill")
-                        .font(.system(size: 44))
-                        .foregroundStyle(.white)
-                }
-            }
-
-            VStack(spacing: 10) {
+            VStack(spacing: 8) {
                 Text("RadicleBotany")
-                    .font(AppFont.title(32))
-                    .foregroundStyle(Color.textPrimary)
+                    .font(Font.custom("Inter18pt-Black", size: 34))
+                    .foregroundStyle(AppColors.textPrimary)
 
-                Text("Learn plants. Know nature.")
-                    .font(AppFont.bodyLarge())
-                    .foregroundStyle(Color.textSecondary)
+                Text("A Modern Botanical Field Guide")
+                    .font(AppTypography.bodyText)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .multilineTextAlignment(.center)
             }
 
             Spacer()
@@ -89,37 +156,26 @@ struct OnboardingView: View {
         .padding(.horizontal, 32)
     }
 
-    // MARK: - Page 2: Botanize
+    // MARK: - Page 2: Botanize (Identify)
 
     private var botanizePage: some View {
         VStack(spacing: 24) {
             Spacer()
 
-            ZStack {
-                Circle()
-                    .fill(Color.greenSecondary.opacity(0.12))
-                    .frame(width: 140, height: 140)
-
-                ZStack {
-                    Image(systemName: "leaf.fill")
-                        .font(.system(size: 50))
-                        .foregroundStyle(Color.greenSecondary)
-
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundStyle(Color.greenLight)
-                        .offset(x: 20, y: -18)
-                }
-            }
+            Image("FlowerParts")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: 220)
+                .shadow(color: Color.black.opacity(0.2), radius: 16, y: 6)
 
             VStack(spacing: 10) {
-                Text("Three Ways to Identify")
-                    .font(AppFont.title(24))
-                    .foregroundStyle(Color.textPrimary)
+                Text("Identify Any Plant")
+                    .font(AppTypography.headerTitle)
+                    .foregroundStyle(AppColors.textPrimary)
 
-                Text("Use Observe mode to learn morphological traits through guided questions. Use Capture mode for instant AI identification. Or combine Both for the best results.")
-                    .font(AppFont.body())
-                    .foregroundStyle(Color.textSecondary)
+                Text("Answer guided questions, point your camera, or combine both methods to identify plants with confidence.")
+                    .font(AppTypography.bodyText)
+                    .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
@@ -142,31 +198,27 @@ struct OnboardingView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            ZStack {
-                Circle()
-                    .fill(Color.purpleSecondary.opacity(0.12))
-                    .frame(width: 140, height: 140)
-
-                Image(systemName: "book.fill")
-                    .font(.system(size: 50))
-                    .foregroundStyle(Color.purpleSecondary)
-            }
+            Image("LeafParts")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: 220)
+                .shadow(color: Color.black.opacity(0.2), radius: 16, y: 6)
 
             VStack(spacing: 10) {
-                Text("179 Species. 183 Families.")
-                    .font(AppFont.title(24))
-                    .foregroundStyle(Color.textPrimary)
+                Text("Master Botanical Anatomy")
+                    .font(AppTypography.headerTitle)
+                    .foregroundStyle(AppColors.textPrimary)
 
-                Text("Explore a curated botanical database with detailed morphological traits, cross-referenced families, and hundreds of botanical terms. Every species links to its family and relevant terminology.")
-                    .font(AppFont.body())
-                    .foregroundStyle(Color.textSecondary)
+                Text("Explore 179 species, 183 families, and 464 terms with detailed morphological traits. Every species cross-links to its family and related terminology.")
+                    .font(AppTypography.bodyText)
+                    .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
 
             HStack(spacing: 16) {
                 onboardingFeatureChip(icon: "leaf.fill", text: "Species", color: .greenSecondary)
-                onboardingFeatureChip(icon: "tree.fill", text: "Families", color: .orangePrimary)
+                onboardingFeatureChip(icon: "leaf.circle.fill", text: "Families", color: .orangePrimary)
                 onboardingFeatureChip(icon: "text.book.closed.fill", text: "Terms", color: .purpleSecondary)
             }
 
@@ -182,24 +234,20 @@ struct OnboardingView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            ZStack {
-                Circle()
-                    .fill(Color.orangePrimary.opacity(0.12))
-                    .frame(width: 140, height: 140)
-
-                Image(systemName: "book.closed.fill")
-                    .font(.system(size: 50))
-                    .foregroundStyle(Color.orangePrimary)
-            }
+            Image("StemParts")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: 220)
+                .shadow(color: Color.black.opacity(0.2), radius: 16, y: 6)
 
             VStack(spacing: 10) {
-                Text("Your Botanical Journal")
-                    .font(AppFont.title(24))
-                    .foregroundStyle(Color.textPrimary)
+                Text("Track Your Discoveries")
+                    .font(AppTypography.headerTitle)
+                    .foregroundStyle(AppColors.textPrimary)
 
-                Text("Log every plant you encounter with photos, location, and verified traits. Build collections, track your streak, and watch your botanical knowledge grow over time.")
-                    .font(AppFont.body())
-                    .foregroundStyle(Color.textSecondary)
+                Text("Log every plant with photos, GPS location, and verified traits. Build collections, maintain your streak, and watch your expertise grow.")
+                    .font(AppTypography.bodyText)
+                    .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
@@ -216,143 +264,368 @@ struct OnboardingView: View {
         .padding(.horizontal, 32)
     }
 
-    // MARK: - Page 5: Pricing
+    // MARK: - Page 5: Experience
 
-    private var pricingPage: some View {
-        VStack(spacing: 20) {
+    private var experiencePage: some View {
+        VStack(spacing: 24) {
             Spacer()
-                .frame(height: 20)
+                .frame(height: 60)
 
-            Text("Choose Your Path")
-                .font(AppFont.title(24))
-                .foregroundStyle(Color.textPrimary)
+            VStack(spacing: 8) {
+                Text("Your Botanical Background")
+                    .font(AppTypography.headerTitle)
+                    .foregroundStyle(AppColors.textPrimary)
+                    .multilineTextAlignment(.center)
 
-            Text("Start free, go further when you're ready.")
-                .font(AppFont.body())
-                .foregroundStyle(Color.textSecondary)
+                Text("Helps us tailor the app for you")
+                    .font(AppTypography.bodyText)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
 
             VStack(spacing: 12) {
-                // Lifetime Tier Card
-                pricingCard(
-                    tier: "Lifetime",
-                    price: storeManager.lifetimeProduct?.displayPrice ?? "$29.99",
-                    subtitle: "One-time purchase",
-                    features: [
-                        "All 179 species & 183 families",
-                        "Full botanical journal",
-                        "Collections & achievements"
-                    ],
-                    accentColor: .orangePrimary,
-                    isHighlighted: true
-                )
-
-                // Pro Tier Card
-                pricingCard(
-                    tier: "Pro",
-                    price: storeManager.proMonthlyProduct?.displayPrice ?? "$2.99/mo",
-                    subtitle: "or \(storeManager.proYearlyProduct?.displayPrice ?? "$19.99/yr")",
-                    features: [
-                        "Everything in Lifetime",
-                        "AI-powered Capture mode",
-                        "iCloud sync across devices"
-                    ],
-                    accentColor: .greenSecondary,
-                    isHighlighted: false
-                )
+                ForEach(BotanicalExperience.allCases, id: \.self) { option in
+                    experienceOptionRow(option)
+                }
             }
-            .padding(.horizontal, 8)
-
-            VStack(spacing: 10) {
-                Button {
-                    if let product = storeManager.lifetimeProduct {
-                        Task {
-                            let success = await storeManager.purchase(product)
-                            if success { completeOnboarding() }
-                        }
-                    }
-                } label: {
-                    Text("Get Lifetime Access")
-                }
-                .buttonStyle(PrimaryButtonStyle(color: .orangePrimary))
-
-                Button {
-                    if let product = storeManager.proMonthlyProduct {
-                        Task {
-                            let success = await storeManager.purchase(product)
-                            if success { completeOnboarding() }
-                        }
-                    }
-                } label: {
-                    Text("Start Free Trial")
-                }
-                .buttonStyle(SecondaryButtonStyle(color: .greenSecondary))
-
-                Button {
-                    completeOnboarding()
-                } label: {
-                    Text("Continue Free")
-                }
-                .buttonStyle(GhostButtonStyle(color: .textSecondary))
-            }
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 24)
 
             Spacer()
-                .frame(height: 20)
         }
-        .padding(.horizontal, 24)
     }
 
-    // MARK: - Pricing Card
+    private func experienceOptionRow(_ option: BotanicalExperience) -> some View {
+        let isSelected = selectedExperience == option
+        return Button {
+            selectedExperience = option
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: option.icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(AppColors.primaryAmber)
+                    .frame(width: 36, height: 36)
+                    .background(AppColors.primaryAmber.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
 
-    private func pricingCard(
-        tier: String,
-        price: String,
-        subtitle: String,
-        features: [String],
-        accentColor: Color,
-        isHighlighted: Bool
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                Text(tier)
-                    .font(AppFont.sectionHeader(16))
-                    .foregroundStyle(Color.textPrimary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(option.rawValue.capitalized)
+                        .font(AppTypography.bodyText)
+                        .foregroundStyle(AppColors.textPrimary)
+
+                    Text(option.label)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.textSecondary)
+                }
 
                 Spacer()
 
-                VStack(alignment: .trailing, spacing: 1) {
-                    Text(price)
-                        .font(AppFont.sectionHeader(16))
-                        .foregroundStyle(accentColor)
-
-                    Text(subtitle)
-                        .font(AppFont.caption(10))
-                        .foregroundStyle(Color.textMuted)
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(AppTypography.inter(size: 18))
+                        .foregroundStyle(AppColors.primaryAmber)
                 }
             }
-
-            ForEach(features, id: \.self) { feature in
-                HStack(spacing: 8) {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(accentColor)
-
-                    Text(feature)
-                        .font(AppFont.caption())
-                        .foregroundStyle(Color.textSecondary)
-                }
-            }
+            .padding(16)
+            .background(isSelected ? AppColors.primaryAmber.opacity(0.08) : AppColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.card)
+                    .stroke(
+                        isSelected ? AppColors.primaryAmber.opacity(0.5) : Color.clear,
+                        lineWidth: 1.5
+                    )
+            )
         }
-        .padding(16)
-        .background(Color.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Page 6: Goals
+
+    private var goalsPage: some View {
+        VStack(spacing: 24) {
+            Spacer()
+                .frame(height: 60)
+
+            VStack(spacing: 8) {
+                Text("Your Goals")
+                    .font(AppTypography.headerTitle)
+                    .foregroundStyle(AppColors.textPrimary)
+
+                Text("Select all that apply")
+                    .font(AppTypography.bodyText)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+
+            VStack(spacing: 12) {
+                ForEach(BotanicalGoal.allCases, id: \.self) { goal in
+                    goalOptionRow(goal)
+                }
+            }
+            .padding(.horizontal, 24)
+
+            Spacer()
+        }
+    }
+
+    private func goalOptionRow(_ goal: BotanicalGoal) -> some View {
+        let isSelected = selectedGoals.contains(goal)
+        return Button {
+            if isSelected {
+                selectedGoals.remove(goal)
+            } else {
+                selectedGoals.insert(goal)
+            }
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: goal.icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(AppColors.primaryAmber)
+                    .frame(width: 36, height: 36)
+                    .background(AppColors.primaryAmber.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                Text(goal.label)
+                    .font(AppTypography.bodyText)
+                    .foregroundStyle(AppColors.textPrimary)
+
+                Spacer()
+
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(AppTypography.inter(size: 18))
+                        .foregroundStyle(AppColors.primaryAmber)
+                }
+            }
+            .padding(16)
+            .background(isSelected ? AppColors.primaryAmber.opacity(0.08) : AppColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.card)
+                    .stroke(
+                        isSelected ? AppColors.primaryAmber.opacity(0.5) : Color.clear,
+                        lineWidth: 1.5
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Page 7: Pricing
+
+    private var pricingPage: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Spacer()
+                    .frame(height: 12)
+
+                // Personalized header
+                VStack(spacing: 8) {
+                    Text(personalizedHeadline)
+                        .font(AppTypography.headerTitle)
+                        .foregroundStyle(AppColors.textPrimary)
+                        .multilineTextAlignment(.center)
+
+                    Text("7 days free — full access, no limits")
+                        .font(AppTypography.bodyText)
+                        .foregroundStyle(AppColors.textSecondary)
+                }
+
+                // RadicleBotany Card (Tier 1)
+                Button {
+                    pricingPathSelected = false
+                } label: {
+                    pricingAnnualCardContent
+                }
+                .buttonStyle(.plain)
+
+                // RadicleBotany Path Card (Tier 2 — default)
+                Button {
+                    pricingPathSelected = true
+                } label: {
+                    pricingPathCardContent
+                }
+                .buttonStyle(.plain)
+
+                // Primary CTA
+                Button {
+                    Task { await purchaseSelectedTier() }
+                } label: {
+                    Text("Start 7-Day Free Trial")
+                }
+                .buttonStyle(PrimaryButtonStyle(color: .orangePrimary))
+                .disabled(storeManager.isLoading || purchaseInProgress)
+
+                // Sub-price label
+                let selectedPrice = pricingPathSelected
+                    ? (storeManager.pathProduct?.displayPrice ?? "$63.99")
+                    : (storeManager.annualProduct?.displayPrice ?? "$33.99")
+                Text("Then \(selectedPrice)/year · cancel anytime")
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textMuted)
+
+                // Footer
+                VStack(spacing: 12) {
+                    Button {
+                        Task {
+                            await storeManager.restorePurchases()
+                            if storeManager.userTier != .free {
+                                completeOnboarding()
+                            }
+                        }
+                    } label: {
+                        Text("Restore Purchases")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textMuted)
+                    }
+                    .disabled(storeManager.isLoading || purchaseInProgress)
+
+                    HStack(spacing: 20) {
+                        Link("Terms of Use", destination: URL(string: "https://radiclebotany.app/dl/f3f484")!)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textMuted)
+
+                        Link("Privacy Policy", destination: URL(string: "https://radiclebotany.app/dl/29abc7")!)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textMuted)
+                    }
+
+                    let tierName = pricingPathSelected ? "RadicleBotany Path" : "RadicleBotany"
+                    Text("\(tierName) subscription: \(selectedPrice)/year after 7-day free trial. Payment charged to Apple ID at confirmation. Auto-renews yearly unless cancelled at least 24 hours before period end. Manage in Apple ID Account Settings.")
+                        .font(AppTypography.inter(size: 10))
+                        .foregroundStyle(AppColors.textMuted)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 8)
+                }
+                .padding(.top, 4)
+
+                Spacer()
+                    .frame(height: 20)
+            }
+            .padding(.horizontal, 24)
+        }
+    }
+
+    private var pricingAnnualCardContent: some View {
+        let isSelected = !pricingPathSelected
+        return VStack(spacing: 16) {
+            HStack {
+                Text("RADICLEBOTANY")
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(AppColors.cardElevated)
+                    .clipShape(Capsule())
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(storeManager.annualProduct?.displayPrice ?? "$33.99")
+                        .font(AppTypography.headerTitle)
+                        .foregroundStyle(AppColors.textPrimary)
+
+                    Text("7-day free trial")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.textSecondary)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                pricingFeatureRow("All 179 species & 183 families")
+                pricingFeatureRow("464 botanical terms")
+                pricingFeatureRow("Unlimited Observe mode")
+                pricingFeatureRow("Journal & Collections")
+                pricingFeatureRow("Flashcards & study streaks")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(20)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: AppRadius.card)
                 .stroke(
-                    isHighlighted ? accentColor.opacity(0.5) : Color.borderSubtle,
-                    lineWidth: isHighlighted ? 1.5 : 0.5
+                    isSelected ? AppColors.textSecondary.opacity(0.6) : AppColors.cardElevated,
+                    lineWidth: isSelected ? 2 : 1
                 )
         )
+    }
+
+    private var pricingPathCardContent: some View {
+        let isSelected = pricingPathSelected
+        return VStack(spacing: 16) {
+            HStack {
+                HStack(spacing: 6) {
+                    Text("RADICLEBOTANY PATH")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.primaryAmber)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(AppColors.primaryAmber.opacity(0.15))
+                        .clipShape(Capsule())
+
+                    Text("Best Value")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.primaryAmber)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(storeManager.pathProduct?.displayPrice ?? "$63.99")
+                        .font(AppTypography.headerTitle)
+                        .foregroundStyle(AppColors.textPrimary)
+
+                    Text("7-day free trial")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.primaryAmber)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                pricingFeatureRow("Everything in RadicleBotany", color: .orangePrimary)
+                pricingFeatureRow("Photo Identification", color: .orangePrimary)
+                pricingFeatureRow("Both mode", color: .orangePrimary)
+                pricingFeatureRow("Plant Assistant", color: .orangePrimary)
+                pricingFeatureRow("iCloud sync across devices", color: .orangePrimary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(20)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.card)
+                .stroke(
+                    isSelected ? AppColors.primaryAmber.opacity(0.6) : AppColors.cardElevated,
+                    lineWidth: isSelected ? 2 : 1
+                )
+        )
+    }
+
+    // MARK: - Personalized Headline
+
+    private var personalizedHeadline: String {
+        switch selectedExperience {
+        case .novice:       return "Start identifying plants."
+        case .enthusiast:   return "Expand your plant knowledge."
+        case .student:      return "Everything a botany student needs."
+        case .professional: return "Built for field botanists."
+        case nil:           return "Access the full database."
+        }
+    }
+
+    // MARK: - Pricing Feature Row
+
+    private func pricingFeatureRow(_ text: String, color: Color = .secondary) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(AppTypography.inter(size: 14))
+                .foregroundStyle(color)
+
+            Text(text)
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textPrimary)
+        }
     }
 
     // MARK: - Onboarding Feature Chip
@@ -360,26 +633,72 @@ struct OnboardingView: View {
     private func onboardingFeatureChip(icon: String, text: String, color: Color) -> some View {
         VStack(spacing: 6) {
             Image(systemName: icon)
-                .font(.system(size: 18))
+                .font(AppTypography.inter(size: 18))
                 .foregroundStyle(color)
                 .frame(width: 40, height: 40)
                 .background(color.opacity(0.12))
                 .clipShape(Circle())
 
             Text(text)
-                .font(AppFont.caption())
-                .foregroundStyle(Color.textSecondary)
+                .font(AppTypography.tagText)
+                .foregroundStyle(AppColors.textSecondary)
         }
     }
 
-    // MARK: - Actions
+    // MARK: - Loading Overlay
+
+    private var purchaseLoadingOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+
+            VStack(spacing: 16) {
+                ProgressView()
+                    .tint(AppColors.primaryAmber)
+                    .scaleEffect(1.2)
+
+                Text("Processing...")
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+            .padding(32)
+            .background(AppColors.cardElevated)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.badge))
+        }
+    }
+
+    // MARK: - Purchase Action
+
+    private func purchaseSelectedTier() async {
+        let product = pricingPathSelected ? storeManager.pathProduct : storeManager.annualProduct
+        guard let product else {
+            await storeManager.fetchProducts()
+            return
+        }
+        purchaseInProgress = true
+        let success = await storeManager.purchase(product)
+        purchaseInProgress = false
+        if success { completeOnboarding() }
+    }
+
+    // MARK: - Complete Onboarding
 
     private func completeOnboarding() {
+        // Save personalization to UserSettings if available
+        if let settings = settingsQuery.first {
+            settings.botanicalExperience = selectedExperience?.rawValue
+            if !selectedGoals.isEmpty,
+               let data = try? JSONEncoder().encode(selectedGoals.map(\.rawValue)),
+               let str = String(data: data, encoding: .utf8) {
+                settings.botanicalGoals = str
+            }
+        }
         hasCompletedOnboarding = true
     }
 }
 
-#Preview {
+#Preview("Onboarding") {
     OnboardingView()
-        .environmentObject(StoreManager())
+        .environmentObject(StoreManager(preview: true))
+        .preferredColorScheme(.dark)
 }

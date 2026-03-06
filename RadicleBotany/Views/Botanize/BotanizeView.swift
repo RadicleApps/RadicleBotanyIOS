@@ -3,8 +3,8 @@ import SwiftUI
 // MARK: - Botanize Mode
 
 enum BotanizeMode: String, CaseIterable, Identifiable {
+    case capture = "Snap"
     case observe = "Observe"
-    case capture = "Capture"
     case both = "Both"
 
     var id: String { rawValue }
@@ -20,7 +20,7 @@ enum BotanizeMode: String, CaseIterable, Identifiable {
     var requiredFeature: Feature? {
         switch self {
         case .observe: return nil
-        case .capture: return .capture
+        case .capture: return nil  // Screen is free; camera is gated inside CaptureView
         case .both: return .bothMode
         }
     }
@@ -31,9 +31,7 @@ enum BotanizeMode: String, CaseIterable, Identifiable {
 struct BotanizeView: View {
     @EnvironmentObject private var storeManager: StoreManager
     @State private var selectedMode: BotanizeMode = .observe
-    @State private var showPaywall = false
-    @State private var paywallContext: String?
-
+    @AppStorage("hasSeenBotanizeOnboarding") private var hasSeenBotanizeOnboarding = false
     var body: some View {
         VStack(spacing: 0) {
             modeSelector
@@ -42,7 +40,7 @@ struct BotanizeView: View {
                 .padding(.bottom, 12)
 
             Divider()
-                .overlay(Color.borderSubtle)
+                .overlay(AppColors.border)
 
             // Content area
             Group {
@@ -51,33 +49,22 @@ struct BotanizeView: View {
                     ObserveView()
 
                 case .capture:
-                    if storeManager.isFeatureUnlocked(.capture) {
-                        CaptureView()
-                    } else {
-                        lockedPlaceholder(
-                            mode: .capture,
-                            description: "Use AI-powered plant identification to snap a photo and instantly identify species."
-                        )
-                    }
+                    CaptureView()
 
                 case .both:
-                    if storeManager.isFeatureUnlocked(.bothMode) {
-                        BothModeView()
-                    } else {
-                        lockedPlaceholder(
-                            mode: .both,
-                            description: "Combine camera identification with trait verification for the most accurate results."
-                        )
-                    }
+                    BothModeView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .background(Color.appBackground)
+        .background(AppColors.appBackground)
         .navigationTitle("Botanize")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(contextText: paywallContext)
+        .sheet(isPresented: Binding(
+            get: { !hasSeenBotanizeOnboarding },
+            set: { if !$0 { hasSeenBotanizeOnboarding = true } }
+        )) {
+            BotanizeOnboardingView()
         }
     }
 
@@ -90,91 +77,34 @@ struct BotanizeView: View {
             }
         }
         .padding(3)
-        .background(Color.surface)
+        .background(AppColors.cardBackground)
         .clipShape(Capsule())
     }
 
     private func modePill(_ mode: BotanizeMode) -> some View {
         let isSelected = selectedMode == mode
-        let isLocked: Bool = {
-            guard let feature = mode.requiredFeature else { return false }
-            return !storeManager.isFeatureUnlocked(feature)
-        }()
 
         return Button {
-            if isLocked {
-                paywallContext = "Upgrade to Pro to unlock \(mode.rawValue) mode."
-                showPaywall = true
-            } else {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    selectedMode = mode
-                }
+            withAnimation(.easeInOut(duration: 0.2)) {
+                selectedMode = mode
             }
         } label: {
             HStack(spacing: 5) {
-                if isLocked {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 9))
-                        .foregroundStyle(Color.textMuted)
-                }
-
                 Image(systemName: mode.icon)
-                    .font(.system(size: 12))
+                    .font(AppTypography.inter(size: 12))
 
                 Text(mode.rawValue)
-                    .font(AppFont.sectionHeader())
+                    .font(AppTypography.sectionHeader)
             }
-            .foregroundStyle(isSelected ? Color.textPrimary : (isLocked ? Color.textMuted : Color.textSecondary))
+            .foregroundStyle(isSelected ? AppColors.textPrimary : AppColors.textSecondary)
             .padding(.horizontal, 16)
             .padding(.vertical, 9)
-            .background(isSelected ? Color.surfaceElevated : Color.clear)
+            .background(isSelected ? AppColors.cardElevated : Color.clear)
             .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }
 
-    // MARK: - Locked Placeholder
-
-    private func lockedPlaceholder(mode: BotanizeMode, description: String) -> some View {
-        VStack(spacing: 24) {
-            Spacer()
-
-            VStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .fill(Color.surfaceElevated)
-                        .frame(width: 80, height: 80)
-
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 28))
-                        .foregroundStyle(Color.orangePrimary)
-                }
-
-                Text("\(mode.rawValue) Mode")
-                    .font(AppFont.title(22))
-                    .foregroundStyle(Color.textPrimary)
-
-                Text(description)
-                    .font(AppFont.body())
-                    .foregroundStyle(Color.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-
-                CategoryPill(text: "PRO", color: .greenSecondary)
-            }
-
-            Button {
-                paywallContext = "Upgrade to Pro to unlock \(mode.rawValue) mode."
-                showPaywall = true
-            } label: {
-                Text("Unlock \(mode.rawValue) Mode")
-            }
-            .buttonStyle(PrimaryButtonStyle(color: .orangePrimary))
-            .padding(.horizontal, 40)
-
-            Spacer()
-        }
-    }
 }
 
 // MARK: - Preview
@@ -183,6 +113,6 @@ struct BotanizeView: View {
     NavigationStack {
         BotanizeView()
     }
-    .environmentObject(StoreManager())
+    .environmentObject(StoreManager(preview: true))
     .preferredColorScheme(.dark)
 }

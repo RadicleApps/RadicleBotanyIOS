@@ -1,0 +1,129 @@
+[
+  {
+    "name": "United Plant Savers",
+    "description": "At-risk medicinal plants, botanical sanctuaries",
+    "category": "Conservation Organizations",
+    "url": "https://unitedplantsavers.org"
+  },
+  {
+    "name": "Plant Conservation Alliance",
+    "description": "Federal/non-federal partnership, 400+ cooperators",
+    "category": "Conservation Organizations",
+    "url": "https://plantconservationalliance.org"
+  },
+  {
+    "name": "Native Plant Trust",
+    "description": "New England conservation, Go Botany database",
+    "category": "Conservation Organizations",
+    "url": "https://nativeplanttrust.org"
+  },
+  {
+    "name": "Center for Plant Conservation",
+    "description": "National network preventing plant extinction",
+    "category": "Conservation Organizations",
+    "url": "https://saveplants.org"
+  },
+  {
+    "name": "Xerces Society",
+    "description": "Invertebrate conservation, pollinator protection, science-based habitat guidance",
+    "category": "Conservation Organizations",
+    "url": "https://xerces.org"
+  },
+  {
+    "name": "Pollinator Partnership",
+    "description": "Largest pollinator-focused nonprofit, ecoregional planting guides",
+    "category": "Conservation Organizations",
+    "url": "https://pollinator.org"
+  },
+  {
+    "name": "Monarch Joint Venture",
+    "description": "Multi-agency partnership protecting monarch migration, milkweed habitat",
+    "category": "Conservation Organizations",
+    "url": "https://monarchjointventure.org"
+  },
+  {
+    "name": "New York Botanical Garden",
+    "description": "100,000+ native plants, NYC EcoFlora community science",
+    "category": "Botanical Gardens & Sanctuaries",
+    "url": "https://nybg.org"
+  },
+  {
+    "name": "Brooklyn Botanic Garden",
+    "description": "Urban greening, community education, native plant programs",
+    "category": "Botanical Gardens & Sanctuaries",
+    "url": "https://bbg.org"
+  },
+  {
+    "name": "Lady Bird Johnson Wildflower Center",
+    "description": "Native plant database (8,000+ species), Texas State Botanic Garden",
+    "category": "Botanical Gardens & Sanctuaries",
+    "url": "https://wildflower.org"
+  },
+  {
+    "name": "Chicago Botanic Garden",
+    "description": "Dixon National Tallgrass Prairie Seed Bank, native landscape restoration",
+    "category": "Botanical Gardens & Sanctuaries",
+    "url": "https://chicagobotanic.org"
+  },
+  {
+    "name": "Missouri Botanical Garden",
+    "description": "Shaw Nature Reserve, 300+ acres of prairie restoration, regional seed banking",
+    "category": "Botanical Gardens & Sanctuaries",
+    "url": "https://missouribotanicalgarden.org"
+  },
+  {
+    "name": "U.S. Botanic Garden",
+    "description": "Living plant museum, endangered species programs",
+    "category": "Botanical Gardens & Sanctuaries",
+    "url": "https://usbg.gov"
+  },
+  {
+    "name": "Fairchild Tropical Botanic Garden",
+    "description": "South Florida rare plant propagation, restoration",
+    "category": "Botanical Gardens & Sanctuaries",
+    "url": "https://fairchildgarden.org"
+  },
+  {
+    "name": "California Native Plant Society",
+    "description": "Statewide conservation, education, multiple regional chapters",
+    "category": "Native Plant Societies",
+    "url": "https://cnps.org"
+  },
+  {
+    "name": "Native Plant Society of Texas",
+    "description": "Monarch waystations, native plant certification program",
+    "category": "Native Plant Societies",
+    "url": "https://npsot.org"
+  },
+  {
+    "name": "New York Flora Association",
+    "description": "NY State plant documentation",
+    "category": "Native Plant Societies",
+    "url": "https://nyflora.org"
+  },
+  {
+    "name": "Native Plant Society of New Jersey",
+    "description": "NJ native plant conservation",
+    "category": "Native Plant Societies",
+    "url": "https://npsnj.org"
+  },
+  {
+    "name": "Missouri Native Plant Society",
+    "description": "Field trips, research grants, The Petal Pusher newsletter",
+    "category": "Native Plant Societies",
+    "url": "https://monativeplants.org"
+  },
+  {
+    "name": "North American Native Plant Society",
+    "description": "Conservation properties, seed exchange, continent-wide resources",
+    "category": "Native Plant Societies",
+    "url": "https://nanps.org"
+  },
+  {
+    "name": "Find your state society",
+    "description": "Directory of all state/regional native plant societies",
+    "category": "Native Plant Societies",
+    "url": "https://theplantnative.com/resources/native-plant-societies",
+    "isDirectory": true
+  }
+]

@@ -4,20 +4,35 @@ import SwiftData
 struct FamiliesListView: View {
     @EnvironmentObject var storeManager: StoreManager
     @Query(sort: \Family.familyLatin) private var families: [Family]
+    @Query(sort: \Plant.scientificName) private var allPlants: [Plant]
 
-    @State private var showPaywall = false
     @State private var searchText = ""
+    @State private var selectedOrder: String? = nil
 
     // MARK: - Computed Properties
 
+    private var allOrders: [String] {
+        let orders = Set(families.compactMap { $0.order }.filter { !$0.isEmpty })
+        return orders.sorted()
+    }
+
     private var filteredFamilies: [Family] {
-        if searchText.isEmpty {
-            return families
+        var result = families
+
+        if let order = selectedOrder {
+            result = result.filter { $0.order == order }
         }
-        return families.filter {
-            $0.familyLatin.localizedCaseInsensitiveContains(searchText) ||
-            $0.familyEnglish.localizedCaseInsensitiveContains(searchText)
+
+        if !searchText.isEmpty {
+            result = result.filter {
+                $0.familyLatin.localizedCaseInsensitiveContains(searchText) ||
+                $0.familyEnglish.localizedCaseInsensitiveContains(searchText) ||
+                $0.order.localizedCaseInsensitiveContains(searchText) ||
+                $0.genera.localizedCaseInsensitiveContains(searchText)
+            }
         }
+
+        return result
     }
 
     private var groupedFamilies: [(letter: String, families: [Family])] {
@@ -35,98 +50,229 @@ struct FamiliesListView: View {
         storeManager.isFeatureUnlocked(.fullFamilyAccess)
     }
 
+    private var hasActiveFilters: Bool {
+        selectedOrder != nil || !searchText.isEmpty
+    }
+
     var body: some View {
-        List {
-            ForEach(groupedFamilies, id: \.letter) { group in
-                Section {
-                    ForEach(group.families) { family in
-                        familyRow(family)
+        VStack(spacing: 0) {
+            searchBar
+
+            FilterChipBar(
+                categories: allOrders,
+                selectedCategory: $selectedOrder,
+                accentColor: .orangePrimary
+            )
+
+            resultCountBar
+
+            if filteredFamilies.isEmpty {
+                emptyState
+            } else {
+                List {
+                    ForEach(groupedFamilies, id: \.letter) { group in
+                        Section {
+                            ForEach(group.families) { family in
+                                familyRow(family)
+                            }
+                        } header: {
+                            Text(group.letter)
+                                .font(AppTypography.sectionHeader)
+                                .foregroundStyle(AppColors.primaryAmber)
+                        }
                     }
-                } header: {
-                    Text(group.letter)
-                        .font(AppFont.sectionHeader())
-                        .foregroundStyle(Color.orangePrimary)
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(Color.appBackground)
+        .background(AppColors.appBackground)
         .navigationTitle("Families")
-        .searchable(text: $searchText, prompt: "Search families...")
-        .navigationDestination(for: Family.self) { family in
-            FamilyDetailView(family: family)
+        .navigationBarTitleDisplayMode(.inline)
+        .featureGuide(.families)
+    }
+
+    // MARK: - Search Bar
+
+    private var searchBar: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "magnifyingglass")
+                .font(AppTypography.inter(size: 14))
+                .foregroundStyle(AppColors.textMuted)
+
+            TextField("Search families, orders, genera...", text: $searchText)
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textPrimary)
+                .autocorrectionDisabled()
+
+            if !searchText.isEmpty {
+                Button {
+                    searchText = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(AppTypography.inter(size: 14))
+                        .foregroundStyle(AppColors.textMuted)
+                }
+                .buttonStyle(.plain)
+            }
         }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView()
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(AppColors.cardElevated)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.button)
+                .stroke(AppColors.border, lineWidth: 0.5)
+        )
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+    }
+
+    // MARK: - Result Count Bar
+
+    private var resultCountBar: some View {
+        HStack(spacing: 4) {
+            let count = filteredFamilies.count
+            let total = families.count
+
+            Text("\(count) of \(total) families")
+                .font(AppTypography.tagText)
+                .foregroundStyle(AppColors.textMuted)
+
+            if let order = selectedOrder {
+                Text("in \(order)")
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.primaryAmber)
+            }
+
+            if hasActiveFilters {
+                Text("·")
+                    .foregroundStyle(AppColors.textMuted)
+                Button {
+                    selectedOrder = nil
+                    searchText = ""
+                } label: {
+                    Text("Clear")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.primaryAmber)
+                }
+                .buttonStyle(.plain)
+            }
+
+            Spacer()
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 6)
+    }
+
+    // MARK: - Empty State
+
+    private var emptyState: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            Image("Zygomorphic (symmetry) color")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 100)
+                .opacity(0.5)
+
+            Text("No families found")
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textSecondary)
+
+            if !searchText.isEmpty {
+                Text("Try a different search term")
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textMuted)
+            }
+
+            if hasActiveFilters {
+                Button {
+                    searchText = ""
+                    selectedOrder = nil
+                } label: {
+                    Text("Clear all filters")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.primaryAmber)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(AppColors.primaryAmber.opacity(0.1))
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Family Row
 
     private func familyRow(_ family: Family) -> some View {
-        Group {
-            if isUnlocked {
-                NavigationLink(value: family) {
-                    familyRowContent(family)
-                }
-            } else {
-                Button {
-                    showPaywall = true
-                } label: {
-                    familyRowContent(family, showLock: true)
-                }
-            }
+        NavigationLink(destination: FamilyDetailView(family: family)) {
+            familyRowContent(family)
         }
-        .listRowBackground(Color.surface)
-        .listRowSeparatorTint(Color.borderSubtle)
+        .listRowBackground(AppColors.cardBackground)
+        .listRowSeparatorTint(AppColors.border)
     }
 
     private func familyRowContent(_ family: Family, showLock: Bool = false) -> some View {
         HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(family.familyLatin)
-                    .font(AppFont.body())
-                    .fontWeight(.semibold)
-                    .foregroundStyle(Color.textPrimary)
+            Image(systemName: "leaf.circle.fill")
+                .font(AppTypography.inter(size: 14))
+                .foregroundStyle(AppColors.primaryAmber)
+                .frame(width: 32, height: 32)
+                .background(AppColors.primaryAmber.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
 
-                Text(family.familyEnglish)
-                    .font(AppFont.caption())
-                    .foregroundStyle(Color.textSecondary)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(family.familyLatin)
+                    .font(AppTypography.bodyText)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.textPrimary)
+
+                HStack(spacing: 6) {
+                    Text(family.familyEnglish)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.textSecondary)
+                        .lineLimit(1)
+
+                    if !family.order.isEmpty {
+                        Text("·")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textMuted)
+                        Text(family.order)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.primaryAmber.opacity(0.7))
+                            .lineLimit(1)
+                    }
+                }
             }
 
             Spacer()
 
-            // Genera count
-            let generaCount = generaCount(for: family)
-            if generaCount > 0 {
-                Text("\(generaCount) genera")
-                    .font(AppFont.caption())
-                    .foregroundStyle(Color.textMuted)
+            let speciesCount = allPlants.filter { $0.familyLatin == family.familyLatin }.count
+            if speciesCount > 0 {
+                VStack(spacing: 1) {
+                    Text("\(speciesCount)")
+                        .font(AppTypography.tagText)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.success)
+                    Text("species")
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(AppColors.textMuted)
+                }
             }
 
             if showLock {
                 Image(systemName: "lock.fill")
-                    .font(.caption)
-                    .foregroundStyle(Color.textMuted)
-            } else {
-                Image(systemName: "chevron.right")
-                    .font(.caption2)
-                    .foregroundStyle(Color.textMuted)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textMuted)
             }
         }
         .padding(.vertical, 4)
-    }
-
-    // MARK: - Helpers
-
-    private func generaCount(for family: Family) -> Int {
-        guard !family.genera.isEmpty else { return 0 }
-        let components = family.genera
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty }
-        return components.count
     }
 }
 
@@ -134,7 +280,7 @@ struct FamiliesListView: View {
     NavigationStack {
         FamiliesListView()
     }
-    .environmentObject(StoreManager())
-    .modelContainer(for: Family.self, inMemory: true)
+    .environmentObject(StoreManager(preview: true))
+    .modelContainer(for: [Family.self, Plant.self], inMemory: true)
     .preferredColorScheme(.dark)
 }

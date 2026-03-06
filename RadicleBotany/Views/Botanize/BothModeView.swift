@@ -21,29 +21,28 @@ struct BothModeView: View {
     @Query(filter: #Predicate<BotanyTerm> { $0.showPlantID == true })
     private var botanyTerms: [BotanyTerm]
 
-    // Capture state
-    @State private var capturedImage: UIImage?
-    @State private var showCamera = false
-    @State private var showPhotoPicker = false
-    @State private var selectedOrgan: CaptureOrgan = .flower
-    @State private var isIdentifying = false
-    @State private var identificationResult: PlantIdentificationResult?
-    @State private var errorMessage: String?
-    @State private var showError = false
+    @StateObject private var viewModel = IdentificationViewModel()
 
     // Verification state
     @State private var verificationIndex: Int = 0
-    @State private var verifiedTraits: [String: String] = [:]
+    @State private var verifiedTraits: [String: Set<String>] = [:]
     @State private var showFinalResults = false
+    @State private var noteForEditing: JournalNote? = nil
+    @State private var fullscreenImage: ImageSource? = nil
+    @State private var selectedPlant: Plant? = nil
 
     // Phase: capture first, then verify
     private var isInVerificationPhase: Bool {
-        identificationResult != nil && !isIdentifying
+        viewModel.identificationResult != nil && !viewModel.isIdentifying
+    }
+
+    private var totalVerifiedCount: Int {
+        verifiedTraits.values.reduce(0) { $0 + $1.count }
     }
 
     var body: some View {
         ZStack {
-            Color.appBackground.ignoresSafeArea()
+            AppColors.appBackground.ignoresSafeArea()
 
             if isInVerificationPhase {
                 verificationPhase
@@ -53,30 +52,53 @@ struct BothModeView: View {
         }
         .navigationTitle("Both Mode")
         .navigationBarTitleDisplayMode(.inline)
-        .fullScreenCover(isPresented: $showCamera) {
-            CameraView(image: $capturedImage)
+        .fullScreenCover(isPresented: $viewModel.showCamera) {
+            CameraView(image: $viewModel.capturedImage)
                 .ignoresSafeArea()
                 .onDisappear {
-                    if capturedImage != nil {
-                        identifyImage()
+                    if viewModel.capturedImage != nil {
+                        identifyAndResetVerification()
                     }
                 }
         }
-        .sheet(isPresented: $showPhotoPicker) {
-            PhotoPickerView(image: $capturedImage)
+        .sheet(isPresented: $viewModel.showPhotoPicker) {
+            PhotoPickerView(image: $viewModel.capturedImage)
                 .onDisappear {
-                    if capturedImage != nil {
-                        identifyImage()
+                    if viewModel.capturedImage != nil {
+                        identifyAndResetVerification()
                     }
                 }
         }
         .sheet(isPresented: $showFinalResults) {
             finalResultsModal
         }
-        .alert("Identification Error", isPresented: $showError) {
+        .sheet(item: $noteForEditing) { note in
+            NavigationStack {
+                NoteEditorView(
+                    note: note,
+                    isNewNote: true,
+                    onDelete: {
+                        modelContext.delete(note)
+                        noteForEditing = nil
+                    }
+                )
+            }
+        }
+        .fullScreenCover(item: $fullscreenImage) { source in
+            FullscreenImageViewer(source: source)
+        }
+        .sheet(item: $selectedPlant) { plant in
+            NavigationStack {
+                PlantDetailView(plant: plant)
+            }
+        }
+        .alert("Identification Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(errorMessage ?? "An unknown error occurred.")
+            Text(viewModel.errorMessage ?? "An unknown error occurred.")
+        }
+        .task {
+            await viewModel.setupLocation()
         }
     }
 
@@ -85,42 +107,41 @@ struct BothModeView: View {
     private var capturePhase: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Capture area
-                captureArea
-                    .padding(.horizontal, 16)
-                    .padding(.top, 12)
+                CaptureImagePreview(
+                    image: viewModel.capturedImage,
+                    height: 240,
+                    placeholderIcon: "sparkles",
+                    placeholderText: "Capture + Verify",
+                    placeholderIconColor: .purpleSecondary,
+                    showRetake: false
+                )
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
 
-                // Organ selector
-                bothOrganSelector
-                    .padding(.horizontal, 16)
+                OrganSelector(
+                    selectedOrgan: $viewModel.selectedOrgan,
+                    accentColor: .orangePrimary,
+                    showLabel: false
+                )
+                .padding(.horizontal, 16)
 
-                // Capture controls
-                bothCaptureControls
-                    .padding(.horizontal, 16)
+                CaptureControls(
+                    accentColor: .orangePrimary,
+                    isDisabled: viewModel.isIdentifying,
+                    onCamera: { viewModel.showCamera = true },
+                    onLibrary: { viewModel.showPhotoPicker = true }
+                )
+                .padding(.horizontal, 16)
 
-                // Loading
-                if isIdentifying {
-                    VStack(spacing: 12) {
-                        ProgressView()
-                            .tint(Color.orangePrimary)
-                            .scaleEffect(1.1)
-
-                        Text("Identifying...")
-                            .font(AppFont.sectionHeader())
-                            .foregroundStyle(Color.textPrimary)
-
-                        Text("After identification, you'll verify traits to refine results.")
-                            .font(AppFont.caption())
-                            .foregroundStyle(Color.textMuted)
-                            .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .cardStyle()
+                if viewModel.isIdentifying {
+                    IdentifyingCard(
+                        organName: viewModel.selectedOrgan.rawValue,
+                        subtitle: "After identification, you'll verify traits to refine results."
+                    )
                     .padding(.horizontal, 16)
                 }
 
-                // Instructions
-                if capturedImage == nil && !isIdentifying {
+                if viewModel.capturedImage == nil && !viewModel.isIdentifying {
                     instructionsCard
                         .padding(.horizontal, 16)
                 }
@@ -130,154 +151,39 @@ struct BothModeView: View {
         }
     }
 
-    private var captureArea: some View {
-        ZStack {
-            if let capturedImage {
-                Image(uiImage: capturedImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(height: 240)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-            } else {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.surface)
-                    .frame(height: 240)
-                    .overlay(
-                        VStack(spacing: 12) {
-                            Image(systemName: "sparkles")
-                                .font(.system(size: 36))
-                                .foregroundStyle(Color.purpleSecondary.opacity(0.5))
-
-                            Text("Capture + Verify")
-                                .font(AppFont.sectionHeader())
-                                .foregroundStyle(Color.textSecondary)
-
-                            Text("Take a photo, then verify traits for accurate results")
-                                .font(AppFont.caption())
-                                .foregroundStyle(Color.textMuted)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 40)
-                        }
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.borderSubtle, lineWidth: 0.5)
-                    )
-            }
-        }
-    }
-
-    private var bothOrganSelector: some View {
-        HStack(spacing: 8) {
-            ForEach(CaptureOrgan.allCases) { organ in
-                Button {
-                    selectedOrgan = organ
-                } label: {
-                    HStack(spacing: 5) {
-                        Image(systemName: organ.icon)
-                            .font(.system(size: 13))
-                        Text(organ.rawValue)
-                            .font(AppFont.caption())
-                    }
-                    .foregroundStyle(selectedOrgan == organ ? Color.purpleSecondary : Color.textMuted)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(selectedOrgan == organ ? Color.purpleSecondary.opacity(0.12) : Color.surface)
-                    .clipShape(Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(selectedOrgan == organ ? Color.purpleSecondary.opacity(0.4) : Color.borderSubtle, lineWidth: 0.5)
-                    )
-                }
-                .buttonStyle(.plain)
-            }
-        }
-    }
-
-    private var bothCaptureControls: some View {
-        HStack(spacing: 32) {
-            Button {
-                showPhotoPicker = true
-            } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: "photo.on.rectangle")
-                        .font(.system(size: 22))
-                        .foregroundStyle(Color.textSecondary)
-                        .frame(width: 48, height: 48)
-                        .background(Color.surfaceElevated)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-
-                    Text("Library")
-                        .font(AppFont.caption())
-                        .foregroundStyle(Color.textMuted)
-                }
-            }
-            .buttonStyle(.plain)
-
-            Button {
-                showCamera = true
-            } label: {
-                ZStack {
-                    Circle()
-                        .stroke(Color.purpleSecondary, lineWidth: 4)
-                        .frame(width: 72, height: 72)
-
-                    Circle()
-                        .fill(Color.textPrimary)
-                        .frame(width: 58, height: 58)
-
-                    Image(systemName: "camera.fill")
-                        .font(.system(size: 22))
-                        .foregroundStyle(Color.appBackground)
-                }
-            }
-            .buttonStyle(.plain)
-            .disabled(isIdentifying)
-
-            // Placeholder for layout balance
-            VStack(spacing: 4) {
-                Color.clear
-                    .frame(width: 48, height: 48)
-                Text("")
-                    .font(AppFont.caption())
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-    }
-
     private var instructionsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: "info.circle.fill")
-                    .foregroundStyle(Color.purpleSecondary)
+                    .foregroundStyle(AppColors.brandPurple)
                 Text("How Both Mode Works")
-                    .font(AppFont.sectionHeader())
-                    .foregroundStyle(Color.textPrimary)
+                    .font(AppTypography.sectionHeader)
+                    .foregroundStyle(AppColors.textPrimary)
             }
 
             VStack(alignment: .leading, spacing: 8) {
                 instructionStep(number: 1, text: "Take a photo of the plant organ")
-                instructionStep(number: 2, text: "AI identifies potential species")
+                instructionStep(number: 2, text: "Software identifies potential species")
                 instructionStep(number: 3, text: "Verify traits to refine accuracy")
                 instructionStep(number: 4, text: "Get final confidence-adjusted results")
             }
         }
-        .cardStyle()
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
     }
 
     private func instructionStep(number: Int, text: String) -> some View {
         HStack(spacing: 10) {
             Text("\(number)")
-                .font(AppFont.caption())
-                .foregroundStyle(Color.purpleSecondary)
+                .font(AppTypography.tagText)
+                .foregroundStyle(AppColors.brandPurple)
                 .frame(width: 22, height: 22)
-                .background(Color.purpleSecondary.opacity(0.15))
+                .background(AppColors.brandPurple.opacity(0.15))
                 .clipShape(Circle())
 
             Text(text)
-                .font(AppFont.body())
-                .foregroundStyle(Color.textSecondary)
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textSecondary)
         }
     }
 
@@ -288,12 +194,12 @@ struct BothModeView: View {
 
         return ZStack {
             // Blurred background image
-            if let capturedImage {
+            if let capturedImage = viewModel.capturedImage {
                 Image(uiImage: capturedImage)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
                     .blur(radius: 20)
-                    .overlay(Color.appBackground.opacity(0.75))
+                    .overlay(AppColors.appBackground.opacity(0.75))
                     .ignoresSafeArea()
             }
 
@@ -320,7 +226,7 @@ struct BothModeView: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "forward.fill")
-                                .font(.system(size: 10))
+                                .font(AppTypography.inter(size: 10))
                             Text("Skip to Results")
                         }
                     }
@@ -337,17 +243,17 @@ struct BothModeView: View {
 
     private var verificationHeader: some View {
         HStack {
-            if let best = identificationResult?.bestMatch {
+            if let best = viewModel.identificationResult?.bestMatch {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Verifying: \(best.commonName)")
-                        .font(AppFont.sectionHeader())
-                        .foregroundStyle(Color.textPrimary)
+                        .font(AppTypography.sectionHeader)
+                        .foregroundStyle(AppColors.textPrimary)
                         .lineLimit(1)
 
                     let adjusted = adjustedConfidence(for: best)
                     Text("Confidence: \(Int(adjusted * 100))%")
-                        .font(AppFont.caption())
-                        .foregroundStyle(adjusted >= 0.5 ? Color.greenSecondary : Color.orangePrimary)
+                        .font(AppTypography.tagText)
+                        .foregroundStyle(adjusted >= 0.5 ? AppColors.success : AppColors.primaryAmber)
                 }
             }
 
@@ -358,14 +264,14 @@ struct BothModeView: View {
             } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.counterclockwise")
-                        .font(.system(size: 11))
+                        .font(AppTypography.inter(size: 11))
                     Text("New Photo")
-                        .font(AppFont.caption())
+                        .font(AppTypography.tagText)
                 }
-                .foregroundStyle(Color.textSecondary)
+                .foregroundStyle(AppColors.textSecondary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.surfaceElevated)
+                .background(AppColors.cardElevated)
                 .clipShape(Capsule())
             }
         }
@@ -376,19 +282,19 @@ struct BothModeView: View {
             // Card header
             HStack {
                 Text("Verify: \(card.traitName)")
-                    .font(AppFont.title(18))
-                    .foregroundStyle(Color.textPrimary)
+                    .font(AppTypography.headerTitle)
+                    .foregroundStyle(AppColors.textPrimary)
 
                 Spacer()
 
                 Text("\(index + 1)/\(total)")
-                    .font(AppFont.caption())
-                    .foregroundStyle(Color.textMuted)
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.textMuted)
             }
 
             Text("Does this match your specimen?")
-                .font(AppFont.body())
-                .foregroundStyle(Color.textSecondary)
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             // Options
@@ -403,105 +309,144 @@ struct BothModeView: View {
                 }
             }
 
-            // Skip this trait
-            Button {
-                advanceVerification()
-            } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "forward.fill")
-                        .font(.system(size: 10))
-                    Text("Skip")
+            // Confirm or Skip
+            HStack(spacing: 12) {
+                Button {
+                    advanceVerification()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "forward.fill")
+                            .font(AppTypography.inter(size: 10))
+                        Text("Skip")
+                    }
+                }
+                .buttonStyle(GhostButtonStyle())
+
+                if verifiedTraits[card.category] != nil {
+                    Button {
+                        advanceVerification()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "checkmark")
+                                .font(AppTypography.inter(size: 12, weight: .bold))
+                            Text("Confirm")
+                        }
+                    }
+                    .buttonStyle(PrimaryButtonStyle(color: .purpleSecondary))
                 }
             }
-            .buttonStyle(GhostButtonStyle())
         }
         .padding(20)
-        .background(Color.surface.opacity(0.95))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(AppColors.cardBackground.opacity(0.95))
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.badge))
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.purpleSecondary.opacity(0.3), lineWidth: 1)
+            RoundedRectangle(cornerRadius: AppRadius.badge)
+                .stroke(AppColors.brandPurple.opacity(0.3), lineWidth: 1)
         )
         .padding(.horizontal, 16)
     }
 
     private func verificationOptionButton(term: BotanyTerm, card: VerificationCard) -> some View {
-        let isSelected = verifiedTraits[card.category] == term.term
+        let isSelected: Bool = verifiedTraits[card.category]?.contains(term.term) ?? false
 
         return Button {
-            verifiedTraits[card.category] = term.term
-            // Auto-advance after short delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                advanceVerification()
-            }
-        } label: {
-            VStack(spacing: 6) {
-                if let imageURL = term.imageURL, let url = URL(string: imageURL) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(height: 60)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        case .failure:
-                            verificationPlaceholder
-                        case .empty:
-                            ProgressView()
-                                .tint(Color.textMuted)
-                                .frame(height: 60)
-                        @unknown default:
-                            verificationPlaceholder
-                        }
+            withAnimation(.easeInOut(duration: 0.2)) {
+                var current = verifiedTraits[card.category] ?? Set<String>()
+                if current.contains(term.term) {
+                    current.remove(term.term)
+                    if current.isEmpty {
+                        _ = verifiedTraits.removeValue(forKey: card.category)
+                    } else {
+                        verifiedTraits[card.category] = current
                     }
                 } else {
-                    verificationPlaceholder
+                    current.insert(term.term)
+                    verifiedTraits[card.category] = current
                 }
-
-                Text(term.term)
-                    .font(AppFont.caption())
-                    .foregroundStyle(isSelected ? Color.purpleSecondary : Color.textPrimary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.8)
             }
-            .frame(maxWidth: .infinity)
-            .padding(6)
-            .background(isSelected ? Color.purpleSecondary.opacity(0.12) : Color.surfaceElevated)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(isSelected ? Color.purpleSecondary : Color.borderSubtle, lineWidth: isSelected ? 1.5 : 0.5)
-            )
+        } label: {
+            verificationButtonLabel(term: term, isSelected: isSelected)
         }
         .buttonStyle(.plain)
     }
 
+    @ViewBuilder
+    private func verificationButtonLabel(term: BotanyTerm, isSelected: Bool) -> some View {
+        let bgColor: Color = isSelected ? AppColors.brandPurple.opacity(0.12) : AppColors.cardElevated
+        let strokeColor: Color = isSelected ? AppColors.brandPurple : AppColors.border
+        let strokeWidth: CGFloat = isSelected ? 1.5 : 0.5
+
+        VStack(spacing: 6) {
+            verificationTermImage(term: term)
+
+            Text(term.term)
+                .font(AppTypography.tagText)
+                .foregroundStyle(isSelected ? AppColors.brandPurple : AppColors.textPrimary)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(6)
+        .background(bgColor)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.button)
+                .stroke(strokeColor, lineWidth: strokeWidth)
+        )
+    }
+
+    @ViewBuilder
+    private func verificationTermImage(term: BotanyTerm) -> some View {
+        if let imageURL = term.imageURL, let url = URL(string: imageURL) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 70)
+                        .clipped()
+                case .failure:
+                    verificationPlaceholder
+                case .empty:
+                    ProgressView()
+                        .tint(AppColors.textMuted)
+                        .frame(height: 60)
+                @unknown default:
+                    verificationPlaceholder
+                }
+            }
+        } else {
+            verificationPlaceholder
+        }
+    }
+
     private var verificationPlaceholder: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.surface)
+            RoundedRectangle(cornerRadius: AppRadius.button)
+                .fill(AppColors.cardBackground)
                 .frame(height: 60)
             Image(systemName: "leaf.fill")
-                .font(.caption)
-                .foregroundStyle(Color.textMuted.opacity(0.5))
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColors.textMuted.opacity(0.5))
         }
     }
 
     private var verificationComplete: some View {
         VStack(spacing: 20) {
             Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 48))
-                .foregroundStyle(Color.purpleSecondary)
+                .font(AppTypography.inter(size: 48))
+                .foregroundStyle(AppColors.brandPurple)
 
             Text("Verification Complete")
-                .font(AppFont.title(22))
-                .foregroundStyle(Color.textPrimary)
+                .font(AppTypography.headerTitle)
+                .foregroundStyle(AppColors.textPrimary)
 
-            Text("\(verifiedTraits.count) traits verified")
-                .font(AppFont.body())
-                .foregroundStyle(Color.textSecondary)
+            Text("\(totalVerifiedCount) traits verified")
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textSecondary)
 
             Button {
                 showFinalResults = true
@@ -512,7 +457,9 @@ struct BothModeView: View {
             .padding(.horizontal, 40)
         }
         .frame(maxWidth: .infinity)
-        .cardStyle()
+        .padding(16)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
         .padding(.horizontal, 16)
     }
 
@@ -521,38 +468,19 @@ struct BothModeView: View {
     private var finalResultsModal: some View {
         NavigationStack {
             ZStack {
-                Color.appBackground.ignoresSafeArea()
+                AppColors.appBackground.ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 2) {
-                        // Header with captured image
-                        if let image = capturedImage {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(height: 160)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                                .padding(.horizontal, 16)
-                                .padding(.top, 12)
-                        }
+                        ResultsModalHeader(
+                            image: viewModel.capturedImage,
+                            title: "Final Results",
+                            trailingPill: verifiedTraits.isEmpty ? nil : "\(totalVerifiedCount) verified",
+                            pillColor: .orangePrimary,
+                            imageHeight: 160
+                        )
 
-                        HStack {
-                            Text("Final Results")
-                                .font(AppFont.sectionHeader())
-                                .foregroundStyle(Color.textPrimary)
-
-                            Spacer()
-
-                            if !verifiedTraits.isEmpty {
-                                CategoryPill(text: "\(verifiedTraits.count) verified", color: .purpleSecondary)
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 16)
-                        .padding(.bottom, 8)
-
-                        // Adjusted results
-                        if let result = identificationResult {
+                        if let result = viewModel.identificationResult {
                             let adjustedResults = computeAdjustedResults(from: result)
 
                             ForEach(Array(adjustedResults.enumerated()), id: \.element.match.id) { index, adjusted in
@@ -560,16 +488,7 @@ struct BothModeView: View {
                             }
 
                             if adjustedResults.isEmpty {
-                                VStack(spacing: 12) {
-                                    Image(systemName: "magnifyingglass")
-                                        .font(.system(size: 30))
-                                        .foregroundStyle(Color.textMuted)
-                                    Text("No results available")
-                                        .font(AppFont.body())
-                                        .foregroundStyle(Color.textSecondary)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 40)
+                                EmptyResultsPlaceholder(message: "No results available")
                             }
                         }
                     }
@@ -583,39 +502,22 @@ struct BothModeView: View {
                     Button("Done") {
                         showFinalResults = false
                     }
-                    .foregroundStyle(Color.purpleSecondary)
+                    .foregroundStyle(AppColors.primaryAmber)
                 }
             }
             .safeAreaInset(edge: .bottom) {
-                if storeManager.isFeatureUnlocked(.journal) {
-                    Button {
+                SaveToJournalBar(
+                    isUnlocked: storeManager.isFeatureUnlocked(.journal),
+                    accentColor: .orangePrimary,
+                    onSave: {
                         saveToJournal()
                         showFinalResults = false
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "book.fill")
-                            Text("Save to Journal")
-                        }
+                    },
+                    onDismiss: { showFinalResults = false },
+                    onWriteNote: {
+                        createNoteFromBothMode()
                     }
-                    .buttonStyle(PrimaryButtonStyle(color: .purpleSecondary))
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                    .background(Color.appBackground)
-                } else {
-                    Button {
-                        showFinalResults = false
-                    } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "lock.fill")
-                            Text("Save to Journal")
-                            CategoryPill(text: "LIFETIME+", color: .orangePrimary)
-                        }
-                    }
-                    .buttonStyle(SecondaryButtonStyle(color: .purpleSecondary))
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                    .background(Color.appBackground)
-                }
+                )
             }
         }
         .presentationDetents([.large])
@@ -624,66 +526,92 @@ struct BothModeView: View {
     // MARK: - Adjusted Result Row
 
     private func adjustedResultRow(_ result: AdjustedMatch, rank: Int) -> some View {
-        HStack(spacing: 12) {
-            // Rank
-            Text("#\(rank)")
-                .font(AppFont.sectionHeader())
-                .foregroundStyle(rank <= 3 ? Color.purpleSecondary : Color.textMuted)
-                .frame(width: 30)
+        let inDB = viewModel.isInLocalDatabase(result.match.scientificName, plants: plants)
+        return Button {
+            if inDB, let plant = plants.first(where: {
+                $0.scientificName.localizedCaseInsensitiveCompare(result.match.scientificName) == .orderedSame
+            }) {
+                selectedPlant = plant
+            }
+        } label: {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .top, spacing: 12) {
+                    // Rank
+                    Text("#\(rank)")
+                        .font(AppTypography.sectionHeader)
+                        .foregroundStyle(rank <= 3 ? AppColors.primaryAmber : AppColors.textMuted)
+                        .frame(width: 30)
 
-            // Confidence indicator
-            VStack(spacing: 2) {
-                Text("\(Int(result.adjustedScore * 100))%")
-                    .font(AppFont.sectionHeader())
-                    .foregroundStyle(result.adjustedScore >= 0.5 ? Color.highConfidence : Color.mediumConfidence)
+                    // Confidence indicator
+                    VStack(spacing: 2) {
+                        Text("\(Int(result.adjustedScore * 100))%")
+                            .font(AppTypography.sectionHeader)
+                            .foregroundStyle(result.adjustedScore >= 0.5 ? AppColors.highConfidence : AppColors.mediumConfidence)
 
-                if result.adjustedScore != result.match.score {
-                    let delta = result.adjustedScore - result.match.score
-                    HStack(spacing: 1) {
-                        Image(systemName: delta >= 0 ? "arrow.up" : "arrow.down")
-                            .font(.system(size: 8))
-                        Text("\(abs(Int(delta * 100)))%")
-                            .font(.system(size: 9))
+                        if result.adjustedScore != result.match.score {
+                            let delta = result.adjustedScore - result.match.score
+                            HStack(spacing: 1) {
+                                Image(systemName: delta >= 0 ? "arrow.up" : "arrow.down")
+                                    .font(AppTypography.inter(size: 8))
+                                Text("\(abs(Int(delta * 100)))%")
+                                    .font(AppTypography.inter(size: 9))
+                            }
+                            .foregroundStyle(delta >= 0 ? AppColors.success : AppColors.error)
+                        }
                     }
-                    .foregroundStyle(delta >= 0 ? Color.greenSecondary : Color.errorRed)
+                    .frame(width: 50)
+
+                    // Species info
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(result.match.scientificName)
+                            .font(AppTypography.sectionHeader)
+                            .foregroundStyle(AppColors.textPrimary)
+                            .italic()
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        Text(result.match.commonName)
+                            .font(AppTypography.bodyText)
+                            .foregroundStyle(AppColors.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        if result.verifiedTraitCount > 0 {
+                            Text("\(result.verifiedTraitCount) trait\(result.verifiedTraitCount == 1 ? "" : "s") verified")
+                                .font(AppTypography.tagText)
+                                .foregroundStyle(AppColors.primaryAmber)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    if inDB {
+                        VStack(alignment: .trailing, spacing: 4) {
+                            CategoryPill(text: "In DB", color: .orangePrimary)
+                            Image(systemName: "chevron.right")
+                                .font(AppTypography.inter(size: 10))
+                                .foregroundStyle(AppColors.textMuted)
+                        }
+                    }
+                }
+
+                // Reference images
+                if let images = result.match.images, !images.isEmpty {
+                    ReferenceImageStrip(images: images, onImageTap: { urlStr in
+                        fullscreenImage = .url(urlStr)
+                    })
                 }
             }
-            .frame(width: 50)
-
-            // Species info
-            VStack(alignment: .leading, spacing: 3) {
-                Text(result.match.scientificName)
-                    .font(AppFont.sectionHeader())
-                    .foregroundStyle(Color.textPrimary)
-                    .italic()
-
-                Text(result.match.commonName)
-                    .font(AppFont.body())
-                    .foregroundStyle(Color.textSecondary)
-
-                if result.verifiedTraitCount > 0 {
-                    Text("\(result.verifiedTraitCount) trait\(result.verifiedTraitCount == 1 ? "" : "s") verified")
-                        .font(AppFont.caption())
-                        .foregroundStyle(Color.purpleSecondary)
-                }
-            }
-
-            Spacer()
-
-            if isInLocalDatabase(result.match.scientificName) {
-                CategoryPill(text: "In DB", color: .greenSecondary)
-            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(AppColors.cardBackground)
+            .contentShape(Rectangle())
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(Color.surface)
+        .buttonStyle(.plain)
     }
 
     // MARK: - Logic
 
     private var verificationCards: [VerificationCard] {
         let organQuestions: [TraitQuestion] = {
-            switch selectedOrgan {
+            switch viewModel.selectedOrgan {
             case .flower:
                 return PlantOrgan.flower.traitQuestions
             case .leaf:
@@ -691,7 +619,7 @@ struct BothModeView: View {
             case .fruit:
                 return PlantOrgan.fruit.traitQuestions
             case .bark:
-                return PlantOrgan.bark.traitQuestions
+                return PlantOrgan.stem.traitQuestions
             }
         }()
 
@@ -718,28 +646,10 @@ struct BothModeView: View {
         }
     }
 
-    private func identifyImage() {
-        guard let image = capturedImage else { return }
-        identificationResult = nil
-        isIdentifying = true
+    private func identifyAndResetVerification() {
         verifiedTraits = [:]
         verificationIndex = 0
-
-        Task {
-            do {
-                let result = try await PlantNetService.shared.identifyPlant(image: image)
-                await MainActor.run {
-                    identificationResult = result
-                    isIdentifying = false
-                }
-            } catch {
-                await MainActor.run {
-                    isIdentifying = false
-                    errorMessage = error.localizedDescription
-                    showError = true
-                }
-            }
-        }
+        viewModel.identifyImage()
     }
 
     private func adjustedConfidence(for match: PlantMatch) -> Double {
@@ -749,15 +659,16 @@ struct BothModeView: View {
         guard let localPlant else { return match.score }
 
         var bonus: Double = 0
-        var checked: Int = 0
 
         for card in verificationCards {
-            guard let verifiedValue = verifiedTraits[card.category] else { continue }
-            checked += 1
+            guard let verifiedValues = verifiedTraits[card.category], !verifiedValues.isEmpty else { continue }
 
             let plantValue = localPlant[keyPath: card.keyPath]
-            if let plantValue, plantValue.localizedCaseInsensitiveContains(verifiedValue) || verifiedValue.localizedCaseInsensitiveContains(plantValue) {
-                bonus += 0.05
+            if let plantValue {
+                let matched = verifiedValues.contains { verified in
+                    plantValue.localizedCaseInsensitiveContains(verified) || verified.localizedCaseInsensitiveContains(plantValue)
+                }
+                bonus += matched ? 0.05 : -0.03
             } else {
                 bonus -= 0.03
             }
@@ -783,12 +694,19 @@ struct BothModeView: View {
 
             if let localPlant {
                 for card in verificationCards {
-                    guard let verifiedValue = verifiedTraits[card.category] else { continue }
+                    guard let verifiedValues = verifiedTraits[card.category], !verifiedValues.isEmpty else { continue }
 
                     let plantValue = localPlant[keyPath: card.keyPath]
-                    if let plantValue, plantValue.localizedCaseInsensitiveContains(verifiedValue) || verifiedValue.localizedCaseInsensitiveContains(plantValue) {
-                        bonus += 0.05
-                        verifiedCount += 1
+                    if let plantValue {
+                        let matched = verifiedValues.contains { verified in
+                            plantValue.localizedCaseInsensitiveContains(verified) || verified.localizedCaseInsensitiveContains(plantValue)
+                        }
+                        if matched {
+                            bonus += 0.05
+                            verifiedCount += 1
+                        } else {
+                            bonus -= 0.03
+                        }
                     } else {
                         bonus -= 0.03
                     }
@@ -801,33 +719,61 @@ struct BothModeView: View {
         .sorted { $0.adjustedScore > $1.adjustedScore }
     }
 
-    private func isInLocalDatabase(_ scientificName: String) -> Bool {
-        plants.contains { $0.scientificName.lowercased() == scientificName.lowercased() }
-    }
-
     private func resetAll() {
-        capturedImage = nil
-        identificationResult = nil
+        viewModel.reset()
         verifiedTraits = [:]
         verificationIndex = 0
-        isIdentifying = false
     }
 
     private func saveToJournal() {
-        guard let result = identificationResult,
+        guard let result = viewModel.identificationResult,
               let bestMatch = result.bestMatch else { return }
 
         let adjustedResults = computeAdjustedResults(from: result)
         let topAdjusted = adjustedResults.first
+        let flattenedTraits = verifiedTraits.values.flatMap { $0 }.sorted()
 
-        let observation = PlantObservation(
-            plantScientificName: topAdjusted?.match.scientificName ?? bestMatch.scientificName,
-            photoData: capturedImage?.jpegData(compressionQuality: 0.7),
-            date: .now,
-            notes: "Identified via Both mode. Original: \(Int(bestMatch.score * 100))%, Adjusted: \(Int((topAdjusted?.adjustedScore ?? bestMatch.score) * 100))%. Verified \(verifiedTraits.count) traits.",
-            verifiedTraits: Array(verifiedTraits.values)
+        viewModel.saveToJournal(
+            modelContext: modelContext,
+            notes: "Identified via Both mode. Original: \(Int(bestMatch.score * 100))%, Adjusted: \(Int((topAdjusted?.adjustedScore ?? bestMatch.score) * 100))%. Verified \(totalVerifiedCount) traits.",
+            verifiedTraits: Array(flattenedTraits)
         )
-        modelContext.insert(observation)
+    }
+
+    private func createNoteFromBothMode() {
+        guard let result = viewModel.identificationResult else { return }
+
+        let bestMatch = result.bestMatch
+        let adjustedResults = computeAdjustedResults(from: result)
+        let topAdjusted = adjustedResults.first
+        let title = bestMatch.map { "Observation: \($0.scientificName)" } ?? "Both Mode Note"
+        var content = ""
+
+        if let match = bestMatch {
+            content += "\(match.commonName) (\(match.scientificName))\n"
+            let originalScore = Int(match.score * 100)
+            let adjustedScore = Int((topAdjusted?.adjustedScore ?? match.score) * 100)
+            content += "Confidence: \(originalScore)% \u{2192} Adjusted: \(adjustedScore)%\n\n"
+        }
+
+        let flatTraits = verifiedTraits
+            .sorted { $0.key < $1.key }
+            .map { "\($0.key): \($0.value.sorted().joined(separator: ", "))" }
+            .joined(separator: "\n")
+
+        if !flatTraits.isEmpty {
+            content += "Verified traits:\n\(flatTraits)\n\n"
+        }
+
+        let note = JournalNote(
+            title: title,
+            content: content,
+            linkedEntityType: bestMatch != nil ? LinkedEntityType.plant.rawValue : nil,
+            linkedEntityID: bestMatch?.scientificName
+        )
+        modelContext.insert(note)
+        showFinalResults = false
+        noteForEditing = note
     }
 }
 
@@ -837,7 +783,7 @@ struct BothModeView: View {
     NavigationStack {
         BothModeView()
     }
-    .environmentObject(StoreManager())
-    .modelContainer(for: [Plant.self, BotanyTerm.self, PlantObservation.self], inMemory: true)
+    .environmentObject(StoreManager(preview: true))
+    .modelContainer(for: [Plant.self, BotanyTerm.self, PlantObservation.self, JournalNote.self], inMemory: true)
     .preferredColorScheme(.dark)
 }

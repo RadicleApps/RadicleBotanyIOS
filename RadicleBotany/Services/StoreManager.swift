@@ -5,16 +5,20 @@ import SwiftData
 @MainActor
 final class StoreManager: ObservableObject {
 
-    static let lifetimeID = "com.radicle.radiclebotany.lifetime"
-    static let proMonthlyID = "com.radicle.radiclebotany.pro.monthly"
-    static let proYearlyID = "com.radicle.radiclebotany.pro.yearly"
+    /// Shared singleton for services that need tier info outside the view hierarchy.
+    /// Synced from the real instance in RadicleBotanyApp via `becomeShared()`.
+    @MainActor static var shared = StoreManager(preview: true)
 
-    static let allProductIDs: Set<String> = [lifetimeID, proMonthlyID, proYearlyID]
+    static let annualID = "com.radicle.radiclebotany.botanist.annual"
+    static let pathID   = "com.radicle.radiclebotany.path.annual"
+
+    static let allProductIDs: Set<String> = [annualID, pathID]
 
     @Published var products: [Product] = []
     @Published var purchasedProductIDs: Set<String> = []
     @Published var userTier: UserTier = .free
     @Published var isLoading: Bool = false
+    @Published var isLoadingProducts: Bool = false
     @Published var errorMessage: String?
 
     private var transactionListener: Task<Void, Never>?
@@ -27,13 +31,23 @@ final class StoreManager: ObservableObject {
 
             #if targetEnvironment(simulator)
             // Auto-unlock all features in Simulator for testing
-            if self.userTier == .free {
-                self.userTier = .lifetime
-                self.purchasedProductIDs = [StoreManager.lifetimeID]
-                print("[StoreManager] Simulator detected — auto-unlocked lifetime for testing")
-            }
+            self.userTier = .path
+            self.purchasedProductIDs = [StoreManager.pathID]
+            print("[StoreManager] Simulator detected — auto-unlocked Path for testing")
             #endif
         }
+    }
+
+    /// Preview-safe initializer that skips all StoreKit network calls.
+    init(preview: Bool) {
+        // No transaction listener, no product fetch, no entitlement check
+        self.userTier = .path
+        self.purchasedProductIDs = [StoreManager.pathID]
+    }
+
+    /// Call once from RadicleBotanyApp to sync the shared reference with the real instance.
+    func becomeShared() {
+        StoreManager.shared = self
     }
 
     deinit {
@@ -43,6 +57,8 @@ final class StoreManager: ObservableObject {
     // MARK: - Fetch Products
 
     func fetchProducts() async {
+        isLoadingProducts = true
+        defer { isLoadingProducts = false }
         do {
             let storeProducts = try await Product.products(for: StoreManager.allProductIDs)
             products = storeProducts.sorted { $0.price < $1.price }
@@ -118,12 +134,11 @@ final class StoreManager: ObservableObject {
 
         purchasedProductIDs = purchased
 
-        // Determine tier
-        if purchased.contains(StoreManager.proMonthlyID) ||
-            purchased.contains(StoreManager.proYearlyID) {
-            userTier = .pro
-        } else if purchased.contains(StoreManager.lifetimeID) {
-            userTier = .lifetime
+        // Determine tier (Path > Annual > Free)
+        if purchased.contains(StoreManager.pathID) {
+            userTier = .path
+        } else if purchased.contains(StoreManager.annualID) {
+            userTier = .annual
         } else {
             userTier = .free
         }
@@ -162,15 +177,12 @@ final class StoreManager: ObservableObject {
 
     // MARK: - Convenience Getters
 
-    var lifetimeProduct: Product? {
-        products.first { $0.id == StoreManager.lifetimeID }
+    var annualProduct: Product? {
+        products.first { $0.id == StoreManager.annualID }
     }
 
-    var proMonthlyProduct: Product? {
-        products.first { $0.id == StoreManager.proMonthlyID }
+    var pathProduct: Product? {
+        products.first { $0.id == StoreManager.pathID }
     }
 
-    var proYearlyProduct: Product? {
-        products.first { $0.id == StoreManager.proYearlyID }
-    }
 }
