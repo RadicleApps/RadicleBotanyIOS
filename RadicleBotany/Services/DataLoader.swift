@@ -694,9 +694,10 @@ final class DataLoader {
         var failCount = 0
         var tierCounts: [String: Int] = [:]
 
-        // Process in batches of 3 concurrent requests
-        // iNaturalist rate limit is ~100 req/min; 2 requests per plant × 3 batch = 6 requests
-        let batchSize = 3
+        // Process in batches of 5 concurrent requests
+        // iNaturalist rate limit is ~100 req/min; 2 requests per plant × 5 batch = 10 requests
+        let batchSize = 5
+        var processedCount = 0
         for batchStart in stride(from: 0, to: plantsNeedingImages.count, by: batchSize) {
             let batchEnd = min(batchStart + batchSize, plantsNeedingImages.count)
             let batch = Array(plantsNeedingImages[batchStart..<batchEnd])
@@ -717,17 +718,13 @@ final class DataLoader {
                     let plant = batch[index]
 
                     if result.hasAnyImage {
-                        // Set general image URL (only if we got a new one)
                         if let newGeneral = result.generalImageURL {
                             plant.imageURL = newGeneral
                         }
-
-                        // Set organ-specific images
                         for (organ, url) in result.organImages {
                             plant.setImageURL(url, for: organ)
                             organImageCount += 1
                         }
-
                         successCount += 1
                         if !result.source.isEmpty {
                             tierCounts[result.source, default: 0] += 1
@@ -738,12 +735,18 @@ final class DataLoader {
                 }
             }
 
-            // Save after each batch to persist progress incrementally
-            try? modelContext.save()
+            processedCount += batch.count
 
-            // Pause between batches to respect iNaturalist rate limits (~100 req/min)
+            // Save every 25 plants instead of every batch to reduce context churn
+            if processedCount % 25 < batchSize {
+                try? modelContext.save()
+            }
+
+            // Pause between batches to respect iNaturalist rate limits
             try? await Task.sleep(nanoseconds: 500_000_000) // 500ms
         }
+        // Final save for any remaining
+        try? modelContext.save()
 
         let elapsed = Date().timeIntervalSince(startTime)
         let tierSummary = tierCounts.map { "\($0.key): \($0.value)" }.joined(separator: ", ")
@@ -773,7 +776,8 @@ final class DataLoader {
         var iucnCount = 0
         var altNameCount = 0
 
-        let batchSize = 3
+        let batchSize = 5
+        var enrichedCount = 0
         for batchStart in stride(from: 0, to: plantsToEnrich.count, by: batchSize) {
             let batchEnd = min(batchStart + batchSize, plantsToEnrich.count)
             let batch = Array(plantsToEnrich[batchStart..<batchEnd])
@@ -800,7 +804,6 @@ final class DataLoader {
                             iucnCount += 1
                         }
                     } else {
-                        // Mark as processed even without IUCN data
                         plant.atRiskStatus = plant.atRiskStatus ?? "Not Evaluated"
                     }
 
@@ -815,15 +818,22 @@ final class DataLoader {
                         plant.alternativeCommonNames = alternatives.joined(separator: ", ")
                         altNameCount += 1
                     } else {
-                        // Mark as processed
                         plant.alternativeCommonNames = plant.alternativeCommonNames ?? ""
                     }
                 }
             }
 
-            try? modelContext.save()
+            enrichedCount += batch.count
+
+            // Save every 50 plants to reduce context churn
+            if enrichedCount % 50 < batchSize {
+                try? modelContext.save()
+            }
+
             try? await Task.sleep(nanoseconds: 300_000_000) // 300ms
         }
+        // Final save for any remaining
+        try? modelContext.save()
 
         let elapsed = Date().timeIntervalSince(startTime)
         print("[DataLoader] Enrichment complete in \(String(format: "%.1f", elapsed))s")

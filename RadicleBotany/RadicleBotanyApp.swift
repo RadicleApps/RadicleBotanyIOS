@@ -164,17 +164,24 @@ struct RootView: View {
             // Now show the real UI — @Query in child views will see the data
             isDataReady = true
 
+            // ALL background work below uses a SEPARATE modelContext so saves
+            // don't trigger @Query re-evaluations and UI hitching on the main thread.
+            let container = modelContext.container
+
             // Background enrichment: IUCN status, common names, GBIF IDs.
-            // Fire and forget — doesn't block the UI or image loading.
-            // Runs incrementally so partial results are available quickly.
-            Task {
-                await DataLoader.shared.loadSpeciesEnrichment(modelContext: modelContext)
+            Task.detached(priority: .utility) {
+                let bgContext = ModelContext(container)
+                bgContext.autosaveEnabled = false
+                await DataLoader.shared.loadSpeciesEnrichment(modelContext: bgContext)
             }
 
-            // Image URLs are pre-baked in Plants.json from iNaturalist.
-            // AsyncImage loads them on-demand with URLCache (500MB disk) for persistence.
-            // Only fetch images for the rare species not covered by the pre-baked data.
-            await DataLoader.shared.loadPlantImages(modelContext: modelContext)
+            // Image URLs are pre-baked in Plants.json from iNaturalist (97.2% coverage).
+            // Only ~59 species need API fetching — fire and forget on background context.
+            Task.detached(priority: .utility) {
+                let bgContext = ModelContext(container)
+                bgContext.autosaveEnabled = false
+                await DataLoader.shared.loadPlantImages(modelContext: bgContext)
+            }
 
             // NOTE: cacheAllPlantImages() removed from launch sequence.
             // Images are cached lazily: URLCache persists AsyncImage downloads,
