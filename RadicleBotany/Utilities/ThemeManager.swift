@@ -83,7 +83,7 @@ extension ThemePalette {
             borderSubtle:   Color(hex: "222222"),
             textPrimary:    Color(hex: "FAFAFA"),
             textSecondary:  Color(hex: "999999"),
-            textMuted:      Color(hex: "555555"),
+            textMuted:      Color(hex: "D4CFC8"),
             accent:         accent
         )
     }
@@ -99,7 +99,7 @@ extension ThemePalette {
             borderSubtle:   Color(hex: "3A3C48"),
             textPrimary:    Color(hex: "F0F0F4"),
             textSecondary:  Color(hex: "A0A0A8"),
-            textMuted:      Color(hex: "6A6A74"),
+            textMuted:      Color(hex: "D4CFC8"),
             accent:         accent
         )
     }
@@ -115,7 +115,7 @@ extension ThemePalette {
             borderSubtle:   Color(hex: "2C2C34"),
             textPrimary:    Color(hex: "E8E8EE"),
             textSecondary:  Color(hex: "9898A0"),
-            textMuted:      Color(hex: "5C5C66"),
+            textMuted:      Color(hex: "D4CFC8"),
             accent:         accent
         )
     }
@@ -131,7 +131,7 @@ extension ThemePalette {
             borderSubtle:   Color(hex: "2A2A26"),
             textPrimary:    Color(hex: "F0EEE8"),
             textSecondary:  Color(hex: "A0A098"),
-            textMuted:      Color(hex: "606058"),
+            textMuted:      Color(hex: "D4CFC8"),
             accent:         accent
         )
     }

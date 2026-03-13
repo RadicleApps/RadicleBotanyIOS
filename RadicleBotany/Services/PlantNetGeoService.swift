@@ -21,7 +21,7 @@ final class PlantNetGeoService {
     ) async throws -> [GeoPrediction] {
         guard let apiKey else {
             print("[PlantNetGeoService] No API key found")
-            return []
+            throw PlantNetGeoError.noAPIKey
         }
 
         var components = URLComponents(string: "https://my-api.plantnet.org/v2/prediction/geo/species")!
@@ -36,13 +36,16 @@ final class PlantNetGeoService {
 
         guard let url = components.url else { return [] }
 
+        print("[PlantNetGeoService] Requesting: \(url)")
+
         let (data, response) = try await URLSession.shared.data(from: url)
 
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
             let status = (response as? HTTPURLResponse)?.statusCode ?? 0
-            print("[PlantNetGeoService] API error: status \(status)")
-            return []
+            let preview = String(data: data.prefix(500), encoding: .utf8) ?? "<binary>"
+            print("[PlantNetGeoService] API error: status \(status), response: \(preview)")
+            throw PlantNetGeoError.httpError(status)
         }
 
         let decoded = try JSONDecoder().decode([GeoPrediction].self, from: data)
@@ -98,4 +101,18 @@ struct GeoImageURL: Codable {
     let o: String?
     let m: String?
     let s: String?
+}
+
+// MARK: - Error
+
+enum PlantNetGeoError: LocalizedError {
+    case httpError(Int)
+    case noAPIKey
+
+    var errorDescription: String? {
+        switch self {
+        case .httpError(let code): return "Prediction service returned error \(code)."
+        case .noAPIKey: return "API key not configured."
+        }
+    }
 }

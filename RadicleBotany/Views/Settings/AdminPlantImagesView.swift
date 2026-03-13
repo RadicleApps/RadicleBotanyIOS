@@ -237,7 +237,7 @@ struct AdminPlantImagesView: View {
                     .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
 
-                Text(plant.commonName)
+                Text(plant.titleCasedCommonName)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)
@@ -384,7 +384,7 @@ struct AdminPlantImageDetailView: View {
             .padding(.bottom, 32)
         }
         .background(AppColors.appBackground)
-        .navigationTitle(plant.commonName)
+        .navigationTitle(plant.titleCasedCommonName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

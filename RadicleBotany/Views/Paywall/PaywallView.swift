@@ -8,13 +8,8 @@ struct PaywallView: View {
     var experience: BotanicalExperience? = nil
     var goals: [BotanicalGoal] = []
 
-    @State private var selectedTier: SelectedTier = .path
     @State private var showError = false
     @State private var purchaseInProgress = false
-
-    enum SelectedTier {
-        case annual, path
-    }
 
     var personalizedHeadline: String {
         switch experience {
@@ -38,14 +33,13 @@ struct PaywallView: View {
                     } else {
                         headerSection
                         annualCard
-                        pathCard
                         ctaButton
                         footerSection
                     }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
-                .padding(.bottom, 40)
+                .padding(.bottom, 100)
                 .frame(maxWidth: 500) // iPad: constrain content width
             }
             .frame(maxWidth: .infinity) // Center the constrained content
@@ -144,120 +138,54 @@ struct PaywallView: View {
         .padding(.top, 40)
     }
 
-    // MARK: - RadicleBotany Card (Tier 1)
+    // MARK: - RadicleBotany Card
 
     private var annualCard: some View {
-        let isSelected = selectedTier == .annual
-        return Button {
-            selectedTier = .annual
-        } label: {
-            VStack(spacing: 16) {
-                // Header row
-                HStack {
-                    Text("RADICLEBOTANY")
+        VStack(spacing: 16) {
+            // Header row
+            HStack {
+                Text("RADICLEBOTANY")
+                    .font(AppTypography.tagText)
+                    .foregroundStyle(AppColors.primaryAmber)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(AppColors.primaryAmber.opacity(0.15))
+                    .clipShape(Capsule())
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(storeManager.annualProduct?.displayPrice ?? "$33.99")
+                        .font(AppTypography.headerTitle)
+                        .foregroundStyle(AppColors.textPrimary)
+
+                    Text("7-day free trial")
                         .font(AppTypography.tagText)
-                        .foregroundStyle(AppColors.textSecondary)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(AppColors.cardElevated)
-                        .clipShape(Capsule())
-
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(storeManager.annualProduct?.displayPrice ?? "$33.99")
-                            .font(AppTypography.headerTitle)
-                            .foregroundStyle(AppColors.textPrimary)
-
-                        Text("7-day free trial")
-                            .font(AppTypography.tagText)
-                            .foregroundStyle(AppColors.textSecondary)
-                    }
+                        .foregroundStyle(AppColors.primaryAmber)
                 }
-
-                // Feature list
-                VStack(alignment: .leading, spacing: 10) {
-                    featureRow("All 179 species & 183 families")
-                    featureRow("464 botanical terms")
-                    featureRow("Unlimited Observe mode")
-                    featureRow("Journal & Collections")
-                    featureRow("Flashcards & study streaks")
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(20)
-            .background(AppColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
-            .overlay(
-                RoundedRectangle(cornerRadius: AppRadius.card)
-                    .stroke(
-                        isSelected ? AppColors.textSecondary.opacity(0.6) : AppColors.cardElevated,
-                        lineWidth: isSelected ? 2 : 1
-                    )
-            )
-        }
-        .buttonStyle(.plain)
-    }
 
-    // MARK: - RadicleBotany Path Card (Tier 2 — default selected)
-
-    private var pathCard: some View {
-        let isSelected = selectedTier == .path
-        return Button {
-            selectedTier = .path
-        } label: {
-            VStack(spacing: 16) {
-                // Header row
-                HStack {
-                    HStack(spacing: 6) {
-                        Text("RADICLEBOTANY PATH")
-                            .font(AppTypography.tagText)
-                            .foregroundStyle(AppColors.primaryAmber)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 4)
-                            .background(AppColors.primaryAmber.opacity(0.15))
-                            .clipShape(Capsule())
-
-                        Text("Best Value")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.primaryAmber)
-                    }
-
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(storeManager.pathProduct?.displayPrice ?? "$63.99")
-                            .font(AppTypography.headerTitle)
-                            .foregroundStyle(AppColors.textPrimary)
-
-                        Text("7-day free trial")
-                            .font(AppTypography.tagText)
-                            .foregroundStyle(AppColors.primaryAmber)
-                    }
-                }
-
-                // Feature list
-                VStack(alignment: .leading, spacing: 10) {
-                    featureRow("Everything in RadicleBotany", color: .orangePrimary)
-                    featureRow("Photo Identification", color: .orangePrimary)
-                    featureRow("Both mode", color: .orangePrimary)
-                    featureRow("Plant Assistant", color: .orangePrimary)
-                    featureRow("iCloud sync across devices", color: .orangePrimary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+            // Feature list
+            VStack(alignment: .leading, spacing: 10) {
+                featureRow("All species & families", color: .orangePrimary)
+                featureRow("Botanical terms", color: .orangePrimary)
+                featureRow("Unlimited Observe mode", color: .orangePrimary)
+                featureRow("Journal & Collections", color: .orangePrimary)
+                featureRow("Flashcards & study streaks", color: .orangePrimary)
+                featureRow("Photo Identification", color: .orangePrimary)
+                featureRow("Both mode", color: .orangePrimary)
+                featureRow("Plant Assistant", color: .orangePrimary)
+                featureRow("iCloud sync across devices", color: .orangePrimary)
             }
-            .padding(20)
-            .background(AppColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
-            .overlay(
-                RoundedRectangle(cornerRadius: AppRadius.card)
-                    .stroke(
-                        isSelected ? AppColors.primaryAmber.opacity(0.6) : AppColors.cardElevated,
-                        lineWidth: isSelected ? 2 : 1
-                    )
-            )
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(.plain)
+        .padding(20)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.card)
+                .stroke(AppColors.primaryAmber.opacity(0.6), lineWidth: 2)
+        )
     }
 
     // MARK: - CTA Button
@@ -271,9 +199,9 @@ struct PaywallView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(PrimaryButtonStyle(color: .orangePrimary))
-            .disabled(storeManager.isLoading || purchaseInProgress || selectedProduct == nil)
+            .disabled(storeManager.isLoading || purchaseInProgress || storeManager.annualProduct == nil)
 
-            let price = selectedProduct?.displayPrice ?? (selectedTier == .path ? "$63.99" : "$33.99")
+            let price = storeManager.annualProduct?.displayPrice ?? "$33.99"
             Text("Then \(price)/year · cancel anytime")
                 .font(AppTypography.tagText)
                 .foregroundStyle(AppColors.textMuted)
@@ -281,10 +209,7 @@ struct PaywallView: View {
     }
 
     private var selectedProduct: Product? {
-        switch selectedTier {
-        case .annual: return storeManager.annualProduct
-        case .path:   return storeManager.pathProduct
-        }
+        storeManager.annualProduct
     }
 
     // MARK: - Footer
@@ -312,9 +237,8 @@ struct PaywallView: View {
                     .foregroundStyle(AppColors.textMuted)
             }
 
-            let tierName = selectedTier == .path ? "RadicleBotany Path" : "RadicleBotany"
-            let price = selectedProduct?.displayPrice ?? (selectedTier == .path ? "$63.99" : "$33.99")
-            Text("\(tierName) subscription: \(price)/year after 7-day free trial. Payment charged to Apple ID at confirmation. Auto-renews yearly unless cancelled at least 24 hours before period end. Manage in Apple ID Account Settings.")
+            let price = storeManager.annualProduct?.displayPrice ?? "$33.99"
+            Text("RadicleBotany subscription: \(price)/year after 7-day free trial. Payment charged to Apple ID at confirmation. Auto-renews yearly unless cancelled at least 24 hours before period end. Manage in Apple ID Account Settings.")
                 .font(AppTypography.inter(size: 10))
                 .foregroundStyle(AppColors.textMuted)
                 .multilineTextAlignment(.center)

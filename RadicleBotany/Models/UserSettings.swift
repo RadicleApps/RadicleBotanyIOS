@@ -61,30 +61,17 @@ final class UserSettings {
 
 enum UserTier: String, Codable {
     case free
-    case annual  // RadicleBotany — Tier 1
-    case path    // RadicleBotany Path — Tier 2
+    case annual  // RadicleBotany — full access
 
-    var canAccessFullContent: Bool {
-        self != .free
-    }
-
-    var canAccessCapture: Bool {
-        self == .path
-    }
-
-    var canAccessPlantAssistant: Bool {
-        self == .path
-    }
-
-    var canAccessiCloud: Bool {
-        self == .path
-    }
+    var canAccessFullContent: Bool { self != .free }
+    var canAccessCapture: Bool { self != .free }
+    var canAccessPlantAssistant: Bool { self != .free }
+    var canAccessiCloud: Bool { self != .free }
 
     var displayName: String {
         switch self {
         case .free:   return "Free"
         case .annual: return "RadicleBotany"
-        case .path:   return "RadicleBotany Path"
         }
     }
 }
@@ -104,13 +91,7 @@ enum Feature {
     case plantAssistant
 
     func isUnlocked(for tier: UserTier) -> Bool {
-        switch self {
-        case .capture, .bothMode, .plantAssistant, .iCloudSync:
-            return tier.canAccessCapture
-        case .fullSpeciesAccess, .fullFamilyAccess, .fullTermAccess,
-             .journal, .collections, .unlimitedObserve:
-            return tier.canAccessFullContent
-        }
+        tier.canAccessFullContent
     }
 }
 
@@ -161,8 +142,8 @@ enum BotanicalGoal: String, Codable, CaseIterable {
     var icon: String {
         switch self {
         case .identify: return "magnifyingglass"
-        case .learn:    return "book.open.fill"
-        case .track:    return "mappin.fill"
+        case .learn:    return "book.fill"
+        case .track:    return "mappin.circle.fill"
         case .study:    return "graduationcap.fill"
         case .conserve: return "globe.americas.fill"
         }

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -32,6 +32,7 @@
 		45BE73A52F3D269100DE3FD1 /* StudySessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE73A32F3D269100DE3FD1 /* StudySessionManager.swift */; };
 		45BE73A92F3D498D00DE3FD1 /* AchievementUnlockBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE73A82F3D498D00DE3FD1 /* AchievementUnlockBanner.swift */; };
 		45BE73AD2F3D6B1400DE3FD1 /* FullscreenImageViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE73AC2F3D6B1400DE3FD1 /* FullscreenImageViewer.swift */; };
+		45BE73B02F3D1B7000DE3FD1 /* ThrottledImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BE73AF2F3D1B7000DE3FD1 /* ThrottledImageLoader.swift */; };
 		A10001 /* RadicleBotanyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001 /* RadicleBotanyApp.swift */; };
 		A10002 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002 /* Achievement.swift */; };
 		A10003 /* BotanyTerm.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003 /* BotanyTerm.swift */; };
@@ -84,6 +85,10 @@
 		A10050 /* EntityLinkPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10050 /* EntityLinkPicker.swift */; };
 		A10051 /* NotesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10051 /* NotesListView.swift */; };
 		A10052 /* NotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10052 /* NotionService.swift */; };
+		A10053 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10053 /* QuizView.swift */; };
+		A10054 /* BotanizingScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10054 /* BotanizingScenario.swift */; };
+		A10055 /* BotanizingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10055 /* BotanizingListView.swift */; };
+		A10056 /* BotanizingScenarioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10056 /* BotanizingScenarioView.swift */; };
 		A20001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C20001 /* Assets.xcassets */; };
 		A20002 /* Botany.json in Resources */ = {isa = PBXBuildFile; fileRef = C20002 /* Botany.json */; };
 		A20003 /* Families.json in Resources */ = {isa = PBXBuildFile; fileRef = C20003 /* Families.json */; };
@@ -91,6 +96,8 @@
 		A20005 /* Inter.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C20007 /* Inter.ttf */; };
 		A20006 /* Inter-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C20008 /* Inter-Italic.ttf */; };
 		A20007 /* Resources.json in Resources */ = {isa = PBXBuildFile; fileRef = C20009 /* Resources.json */; };
+		A20008 /* PlantThumbnails in Resources */ = {isa = PBXBuildFile; fileRef = C20010 /* PlantThumbnails */; };
+		A20009 /* Botanizing.json in Resources */ = {isa = PBXBuildFile; fileRef = C20011 /* Botanizing.json */; };
 		CC0001 /* AppNavigationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0001 /* AppNavigationState.swift */; };
 		CC0002 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0002 /* ChatView.swift */; };
 		CC0003 /* IntelligenceStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0003 /* IntelligenceStrip.swift */; };
@@ -105,6 +112,7 @@
 		CC0012 /* UPSSpeciesDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0012 /* UPSSpeciesDetailView.swift */; };
 		CC0014 /* BotanizeOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0014 /* BotanizeOnboardingView.swift */; };
 		DD0015 /* FeatureGuideSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE0015 /* FeatureGuideSheet.swift */; };
+		EE0016 /* CollectionPagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0016 /* CollectionPagerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -133,6 +141,7 @@
 		45BE73A32F3D269100DE3FD1 /* StudySessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudySessionManager.swift; sourceTree = "<group>"; };
 		45BE73A82F3D498D00DE3FD1 /* AchievementUnlockBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementUnlockBanner.swift; sourceTree = "<group>"; };
 		45BE73AC2F3D6B1400DE3FD1 /* FullscreenImageViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullscreenImageViewer.swift; sourceTree = "<group>"; };
+		45BE73AF2F3D1B7000DE3FD1 /* ThrottledImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThrottledImageLoader.swift; sourceTree = "<group>"; };
 		B10001 /* RadicleBotanyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadicleBotanyApp.swift; sourceTree = "<group>"; };
 		B10002 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
 		B10003 /* BotanyTerm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotanyTerm.swift; sourceTree = "<group>"; };
@@ -185,6 +194,10 @@
 		B10050 /* EntityLinkPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntityLinkPicker.swift; sourceTree = "<group>"; };
 		B10051 /* NotesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesListView.swift; sourceTree = "<group>"; };
 		B10052 /* NotionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotionService.swift; sourceTree = "<group>"; };
+		B10053 /* QuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizView.swift; sourceTree = "<group>"; };
+		B10054 /* BotanizingScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotanizingScenario.swift; sourceTree = "<group>"; };
+		B10055 /* BotanizingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotanizingListView.swift; sourceTree = "<group>"; };
+		B10056 /* BotanizingScenarioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotanizingScenarioView.swift; sourceTree = "<group>"; };
 		C20001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C20002 /* Botany.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Botany.json; sourceTree = "<group>"; };
 		C20003 /* Families.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Families.json; sourceTree = "<group>"; };
@@ -194,6 +207,8 @@
 		C20007 /* Inter.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Inter.ttf; sourceTree = "<group>"; };
 		C20008 /* Inter-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Italic.ttf"; sourceTree = "<group>"; };
 		C20009 /* Resources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Resources.json; sourceTree = "<group>"; };
+		C20010 /* PlantThumbnails */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PlantThumbnails; sourceTree = "<group>"; };
+		C20011 /* Botanizing.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Botanizing.json; sourceTree = "<group>"; };
 		D10000 /* RadicleBotany.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RadicleBotany.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD0001 /* AppNavigationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigationState.swift; sourceTree = "<group>"; };
 		DD0002 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
@@ -209,7 +224,12 @@
 		DD0012 /* UPSSpeciesDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UPSSpeciesDetailView.swift; sourceTree = "<group>"; };
 		DD0014 /* BotanizeOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotanizeOnboardingView.swift; sourceTree = "<group>"; };
 		EE0015 /* FeatureGuideSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FeatureGuideSheet.swift; path = Components/FeatureGuideSheet.swift; sourceTree = "<group>"; };
+		FF0016 /* CollectionPagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CollectionPagerView.swift; path = Components/CollectionPagerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		459078D42F5DE53400455E54 /* PlantImages */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); name = PlantImages; path = RadicleBotany/PlantImages; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		E10001 /* Frameworks */ = {
@@ -225,6 +245,7 @@
 		F10000 = {
 			isa = PBXGroup;
 			children = (
+				459078D42F5DE53400455E54 /* PlantImages */,
 				F10001 /* RadicleBotany */,
 				F10099 /* Products */,
 			);
@@ -239,9 +260,11 @@
 				C20006 /* Configuration.storekit */,
 				C20001 /* Assets.xcassets */,
 				C20002 /* Botany.json */,
+				C20011 /* Botanizing.json */,
 				C20003 /* Families.json */,
 				C20004 /* Plants.json */,
 				C20009 /* Resources.json */,
+				C20010 /* PlantThumbnails */,
 				DD0011 /* botany_faq.json */,
 				F10018 /* App */,
 				F10002 /* Models */,
@@ -259,6 +282,7 @@
 			children = (
 				B10002 /* Achievement.swift */,
 				B10003 /* BotanyTerm.swift */,
+				B10054 /* BotanizingScenario.swift */,
 				B10004 /* Family.swift */,
 				B10043 /* FlashcardProgress.swift */,
 				B10005 /* Plant.swift */,
@@ -301,6 +325,7 @@
 				452B9F7C2F53548200FEE661 /* FontRegistration.swift */,
 				454969B42F435B2A009F2A72 /* ThemeManager.swift */,
 				45BE73A02F3D1B6E00DE3FD1 /* CachedPlantImage.swift */,
+				45BE73AF2F3D1B7000DE3FD1 /* ThrottledImageLoader.swift */,
 				B10012 /* DesignSystem.swift */,
 				DD0010 /* KeychainManager.swift */,
 			);
@@ -315,6 +340,7 @@
 				454969BA2F435B5B009F2A72 /* AppToolbar.swift */,
 				454969BB2F435B5B009F2A72 /* CarouselPicker.swift */,
 				EE0015 /* FeatureGuideSheet.swift */,
+				FF0016 /* CollectionPagerView.swift */,
 				DD0003 /* IntelligenceStrip.swift */,
 				454969BE2F435B5B009F2A72 /* NotificationBanner.swift */,
 				454969BF2F435B5B009F2A72 /* SectionCard.swift */,
@@ -381,11 +407,14 @@
 				45BE739A2F3D1B4C00DE3FD1 /* FamilyFlashcardView.swift */,
 				45BE739B2F3D1B4C00DE3FD1 /* FlashcardHubView.swift */,
 				45BE739C2F3D1B4C00DE3FD1 /* PlantFlashcardView.swift */,
+				B10055 /* BotanizingListView.swift */,
+				B10056 /* BotanizingScenarioView.swift */,
 				B10035 /* CategoryDetailView.swift */,
 				B10024 /* FamiliesListView.swift */,
 				B10044 /* FlashcardView.swift */,
 				B10025 /* LearnView.swift */,
 				4590AEC72F3C0B7000667A53 /* PlantsNearMeView.swift */,
+				B10053 /* QuizView.swift */,
 				B10026 /* SpeciesGridView.swift */,
 				B10027 /* TermsListView.swift */,
 				B10045 /* BloomCalendarView.swift */,
@@ -504,6 +533,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				459078D42F5DE53400455E54 /* PlantImages */,
+			);
 			name = RadicleBotany;
 			packageProductDependencies = (
 			);
@@ -553,6 +585,7 @@
 			files = (
 				A20001 /* Assets.xcassets in Resources */,
 				A20002 /* Botany.json in Resources */,
+				A20009 /* Botanizing.json in Resources */,
 				A20003 /* Families.json in Resources */,
 				A20004 /* Plants.json in Resources */,
 				A20005 /* Inter.ttf in Resources */,
@@ -560,6 +593,7 @@
 				4594E6292F3BFD5C002E7924 /* Config.plist in Resources */,
 				A20007 /* Resources.json in Resources */,
 				CC0011 /* botany_faq.json in Resources */,
+				A20008 /* PlantThumbnails in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -577,6 +611,7 @@
 				4590AECE2F3C0D5400667A53 /* PlantNetGeoService.swift in Sources */,
 				A10002 /* Achievement.swift in Sources */,
 				45BE73A12F3D1B6E00DE3FD1 /* CachedPlantImage.swift in Sources */,
+				45BE73B02F3D1B7000DE3FD1 /* ThrottledImageLoader.swift in Sources */,
 				A10003 /* BotanyTerm.swift in Sources */,
 				A10004 /* Family.swift in Sources */,
 				A10005 /* Plant.swift in Sources */,
@@ -587,6 +622,7 @@
 				454969C62F435B5B009F2A72 /* AppToolbar.swift in Sources */,
 				454969C72F435B5B009F2A72 /* CarouselPicker.swift in Sources */,
 				DD0015 /* FeatureGuideSheet.swift in Sources */,
+				EE0016 /* CollectionPagerView.swift in Sources */,
 				45637AC32F53330E00F0B16C /* SpeciesMapView.swift in Sources */,
 				454969C92F435B5B009F2A72 /* TypewriterText.swift in Sources */,
 				A10006 /* PlantIdentificationResult.swift in Sources */,
@@ -648,6 +684,10 @@
 				A10050 /* EntityLinkPicker.swift in Sources */,
 				A10051 /* NotesListView.swift in Sources */,
 				A10052 /* NotionService.swift in Sources */,
+				A10053 /* QuizView.swift in Sources */,
+				A10054 /* BotanizingScenario.swift in Sources */,
+				A10055 /* BotanizingListView.swift in Sources */,
+				A10056 /* BotanizingScenarioView.swift in Sources */,
 				454969B52F435B2A009F2A72 /* ThemeManager.swift in Sources */,
 				CC0001 /* AppNavigationState.swift in Sources */,
 				CC0002 /* ChatView.swift in Sources */,
@@ -790,7 +830,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = K9FMFG6A3Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RadicleBotany/Info.plist;
@@ -823,7 +863,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = K9FMFG6A3Y;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RadicleBotany/Info.plist;

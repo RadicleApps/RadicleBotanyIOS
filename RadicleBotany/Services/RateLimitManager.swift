@@ -4,8 +4,7 @@ import Foundation
 ///
 /// Tiered limits protect the owner's API budget:
 /// - Free: 20 queries/day (casual use)
-/// - Annual: 100 queries/day (power users)
-/// - Path: Unlimited (premium workflows)
+/// - Annual: Unlimited (subscribers)
 ///
 /// Resets daily at midnight local time. Persisted in UserDefaults.
 
@@ -23,8 +22,7 @@ final class RateLimitManager {
     func dailyLimit(for tier: UserTier) -> Int {
         switch tier {
         case .free: return 20
-        case .annual: return 100
-        case .path: return Int.max
+        case .annual: return Int.max
         }
     }
 

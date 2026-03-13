@@ -242,7 +242,7 @@ final class ChatbotService: ObservableObject {
             "What is a herbarium specimen?",
             "What is pollination?",
             "How do seeds disperse?",
-            "How do I identify a tree by its bark?",
+            "How do I identify a tree by their bark?",
             "What leaf features help with plant ID?",
             "How do I tell grasses from sedges?",
             "What's the best way to photograph a plant for ID?",

@@ -14,7 +14,7 @@ struct UPSSpeciesDetailView: View {
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle(species.commonName)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -24,18 +24,11 @@ struct UPSSpeciesDetailView: View {
         ZStack(alignment: .bottom) {
             // Image or placeholder
             if let url = imageURL {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 280)
-                            .clipped()
-                    default:
-                        placeholderImage
-                    }
+                ThrottledAsyncImage(url: url, contentMode: .fill) {
+                    placeholderImage
                 }
+                .frame(height: 280)
+                .clipped()
             } else {
                 placeholderImage
             }
@@ -61,8 +54,8 @@ struct UPSSpeciesDetailView: View {
                 .foregroundStyle(species.category.color)
 
                 // Names
-                Text(species.commonName)
-                    .font(AppTypography.inter(size: 24, weight: .bold))
+                Text(species.commonName.titleCased)
+                    .font(.cormorant(size: 28, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
 
                 Text(species.scientificName)
@@ -86,7 +79,7 @@ struct UPSSpeciesDetailView: View {
                     .font(AppTypography.inter(size: 48, weight: .light))
                     .foregroundStyle(species.category.color.opacity(0.3))
 
-                Text(species.commonName)
+                Text(species.commonName.titleCased)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textMuted)
             }
@@ -114,7 +107,7 @@ struct UPSSpeciesDetailView: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 12)
-        .padding(.bottom, 40)
+        .padding(.bottom, 100)
     }
 
     // MARK: - Conservation Status Card
@@ -292,7 +285,7 @@ struct UPSSpeciesDetailView: View {
     }
 
     private var defaultDescription: String {
-        "\(species.commonName) (\(species.scientificName)) is listed as \(species.category.rawValue) by United Plant Savers. \(species.category.description) This species deserves attention from botanists and conservationists alike."
+        "\(species.commonName.titleCased) (\(species.scientificName)) is listed as \(species.category.rawValue) by United Plant Savers. \(species.category.description) This species deserves attention from botanists and conservationists alike."
     }
 
     private var defaultThreats: String {
@@ -313,17 +306,17 @@ struct UPSSpeciesDetailView: View {
     private var speciesData: [String: SpeciesInfo] {
         [
             "Chamaelirium luteum": SpeciesInfo(
-                description: "False Unicorn is a perennial herb prized in traditional herbalism for reproductive health. Its slow growth and specific habitat requirements make wild populations extremely vulnerable to overharvesting.",
+                description: "False Unicorn is a perennial herb used in traditional herbalism for reproductive health. Slow growth and specific habitat requirements make wild populations extremely vulnerable to overharvesting.",
                 threats: "Commercial overharvesting for herbal trade, habitat loss in eastern deciduous forests",
                 habitat: "Moist, rich woodlands in eastern North America"
             ),
             "Cypripedium spp.": SpeciesInfo(
-                description: "Lady's Slipper Orchids are among the most iconic wild orchids in North America. These exquisite flowers require specific mycorrhizal fungi to germinate and grow, making transplantation nearly impossible.",
+                description: "Lady's Slipper Orchids are among the rarest wild orchids in North America. The species requires specific mycorrhizal fungi to germinate and grow, making transplantation nearly impossible.",
                 threats: "Collection for gardens, habitat destruction, extremely slow reproduction",
                 habitat: "Bogs, wetlands, and shaded woodlands across temperate regions"
             ),
             "Lophophora williamsii": SpeciesInfo(
-                description: "Peyote is a small, spineless cactus with profound cultural significance to indigenous peoples. It grows extremely slowly and faces severe pressure from illegal harvesting and habitat conversion.",
+                description: "Peyote is a small, spineless cactus with deep cultural importance to indigenous peoples. The species grows extremely slowly and faces severe pressure from illegal harvesting and habitat conversion.",
                 threats: "Illegal harvesting, cultural extraction, ranching habitat conversion",
                 habitat: "Chihuahuan Desert scrublands of southern Texas and northern Mexico"
             ),
@@ -333,57 +326,57 @@ struct UPSSpeciesDetailView: View {
                 habitat: "Tropical and subtropical dry forests across Asia and Pacific islands"
             ),
             "Drosera spp.": SpeciesInfo(
-                description: "Sundews are carnivorous plants that capture insects with glistening, sticky tentacles. These fascinating plants inhabit nutrient-poor wetlands that are rapidly disappearing worldwide.",
+                description: "Sundews are carnivorous plants that capture insects with sticky, glandular tentacles. These plants inhabit nutrient-poor wetlands that are rapidly disappearing worldwide.",
                 threats: "Wetland drainage, peat harvesting, collection for herbal trade",
                 habitat: "Bogs, fens, and acidic wetlands globally"
             ),
             "Trillium spp.": SpeciesInfo(
-                description: "Trilliums are beloved spring wildflowers recognizable by their three-petaled blooms. They take 7-10 years to flower from seed and are highly sensitive to habitat disturbance and deer browsing.",
+                description: "Trilliums are spring wildflowers with three-petaled blooms. The species takes 7-10 years to flower from seed and is highly sensitive to habitat disturbance and deer browsing.",
                 threats: "Forest fragmentation, deer overpopulation, slow reproduction cycle",
                 habitat: "Rich, deciduous woodlands across eastern North America"
             ),
             "Aletris farinosa": SpeciesInfo(
-                description: "True Unicorn is a grasslike perennial with a distinctive white, mealy flower spike. It has been overharvested for traditional medicine use and is now increasingly rare in its range.",
+                description: "True Unicorn is a grasslike perennial with a distinctive white, mealy flower spike, overharvested for traditional medicine and now increasingly rare throughout the range.",
                 threats: "Overharvesting for herbal trade, grassland habitat loss",
                 habitat: "Moist meadows, savannas, and open woodlands in eastern North America"
             ),
             "Dionaea muscipula": SpeciesInfo(
-                description: "The Venus Fly Trap is one of nature's most recognizable plants, capable of snapping shut on insect prey in milliseconds. It exists naturally in only a tiny range of coastal Carolina wetlands.",
+                description: "The Venus Fly Trap is a carnivorous plant that snaps shut on insect prey within milliseconds. The species occurs naturally only within a narrow range of coastal Carolina wetlands.",
                 threats: "Poaching (a federal crime), habitat loss, fire suppression",
                 habitat: "Longleaf pine savannas within 100 miles of Wilmington, North Carolina"
             ),
             "Panax quinquefolius": SpeciesInfo(
-                description: "American Ginseng is one of the most economically valuable wild-harvested plants in North America. Its slow growth, high market value, and specific habitat needs make it particularly vulnerable.",
+                description: "American Ginseng is one of the most commercially valuable wild-harvested plants in North America. Slow growth, high market value, and specific habitat requirements compound vulnerability to overharvesting.",
                 threats: "Commercial overharvesting for Asian market, habitat loss, deer browsing",
                 habitat: "Rich, shaded hardwood forests of eastern North America"
             ),
             "Actaea racemosa": SpeciesInfo(
-                description: "Black Cohosh is a tall, elegant woodland perennial widely used in herbal medicine for menopausal symptoms. Increasing global demand has put severe pressure on wild populations.",
+                description: "Black Cohosh is a perennial woodland plant widely used in herbal medicine for menopausal symptoms. Increasing global demand has put severe pressure on wild populations.",
                 threats: "Commercial overharvesting, pharmaceutical demand, forest habitat loss",
                 habitat: "Rich, moist deciduous forests of eastern North America"
             ),
             "Sanguinaria canadensis": SpeciesInfo(
-                description: "Bloodroot is named for the vivid red-orange sap in its rhizome. This early spring ephemeral produces pure white flowers that last only a day or two. It has been extensively harvested for sanguinarine.",
+                description: "Bloodroot is named for the vivid red-orange sap in the rhizome. This early spring ephemeral produces white flowers lasting only a day or two and has been extensively harvested for sanguinarine.",
                 threats: "Overharvesting for alkaloid extraction, woodland habitat fragmentation",
                 habitat: "Rich, moist deciduous woodlands across eastern North America"
             ),
             "Hydrastis canadensis": SpeciesInfo(
-                description: "Goldenseal is one of the most heavily traded wild medicinal plants in North America. Its bright yellow root contains berberine, driving intense commercial harvesting that has devastated populations.",
+                description: "Goldenseal is one of the most heavily traded wild medicinal plants in North America. The bright yellow root contains berberine, driving intense commercial harvesting that has devastated populations.",
                 threats: "Massive commercial overharvesting, habitat loss, slow reproduction",
                 habitat: "Rich, moist hardwood forests of the Ohio River Valley and Appalachians"
             ),
             "Monotropa uniflora": SpeciesInfo(
-                description: "Ghost Pipe is a hauntingly beautiful, entirely white plant that contains no chlorophyll. It parasitizes fungi that connect to tree roots, making it impossible to cultivate and deeply tied to forest ecosystems.",
+                description: "Ghost Pipe is an entirely white, achlorophyllous plant. The species parasitizes mycorrhizal fungi connected to tree roots, making cultivation impossible and tying the plant closely to intact forest ecosystems.",
                 threats: "Social media-driven overharvesting, forest ecosystem disruption",
                 habitat: "Shaded, humus-rich floors of mature forests across North America"
             ),
             "Asclepias tuberosa": SpeciesInfo(
-                description: "Butterfly Weed is a vibrant orange milkweed critical for monarch butterfly populations. Unlike common milkweed, it has a deep taproot making transplantation difficult.",
+                description: "Butterfly Weed is an orange-flowered milkweed important for monarch butterfly populations. Unlike common milkweed, the species has a deep taproot that makes transplantation difficult.",
                 threats: "Habitat loss from agriculture, herbicide use, prairie conversion",
                 habitat: "Dry prairies, meadows, and open woodlands across eastern North America"
             ),
             "Ulmus rubra": SpeciesInfo(
-                description: "Slippery Elm is valued for its mucilaginous inner bark, used medicinally for sore throats and digestive issues. Trees are often killed by bark stripping, compounding losses from Dutch elm disease.",
+                description: "Slippery Elm is valued for the mucilaginous inner bark, used medicinally for sore throats and digestive issues. Trees are often killed by bark stripping, compounding losses from Dutch elm disease.",
                 threats: "Destructive bark harvesting, Dutch elm disease, habitat loss",
                 habitat: "Moist lowlands and floodplains across eastern North America"
             ),
@@ -393,22 +386,22 @@ struct UPSSpeciesDetailView: View {
                 habitat: "Coastal sage scrub of southern California and Baja Mexico"
             ),
             "Adiantum pedatum": SpeciesInfo(
-                description: "Maidenhair Fern is prized for its delicate, fan-shaped fronds on glossy black stems. This elegant fern is a woodland indicator species sensitive to air quality and habitat disturbance.",
+                description: "Maidenhair Fern has fan-shaped fronds on glossy black stems. The species is a woodland indicator sensitive to air quality and habitat disturbance.",
                 threats: "Habitat loss, collection for gardens, air pollution sensitivity",
                 habitat: "Rich, moist woodlands and ravines across North America and Asia"
             ),
             "Podophyllum peltatum": SpeciesInfo(
-                description: "Mayapple forms large colonies of umbrella-like leaves on forest floors each spring. Its rhizome contains podophyllotoxin, a compound used in cancer treatment, driving pharmaceutical harvesting.",
+                description: "Mayapple forms large colonies on forest floors each spring, with broad umbrella-shaped leaves. The rhizome contains podophyllotoxin, a compound used in cancer treatment, driving pharmaceutical harvesting.",
                 threats: "Pharmaceutical harvesting of podophyllotoxin, habitat loss",
                 habitat: "Rich deciduous forests and moist woodlands of eastern North America"
             ),
             "Piper methysticum": SpeciesInfo(
-                description: "Kava is a culturally significant plant in Pacific Island societies, used for centuries in ceremonial and social beverages. Growing global demand for its calming properties threatens wild sources.",
+                description: "Kava is a culturally significant plant in Pacific Island societies, used for centuries in ceremonial and social contexts. Growing global demand for the calming properties threatens wild sources.",
                 threats: "Expanding global demand, unsustainable wild harvesting, climate vulnerability",
                 habitat: "Tropical forests and cultivated plots across Pacific Island nations"
             ),
             "Baptisia tinctoria": SpeciesInfo(
-                description: "Wild Indigo is a native legume once used to produce blue dye. Its deep taproot fixes nitrogen in soil, making it ecologically valuable in prairie and woodland edge habitats.",
+                description: "Wild Indigo is a native legume once used to produce blue dye. The deep taproot fixes nitrogen in soil, providing ecological value in prairie and woodland edge habitats.",
                 threats: "Prairie habitat loss, agricultural conversion, herbicide drift",
                 habitat: "Dry, open woodlands and prairies of eastern North America"
             ),

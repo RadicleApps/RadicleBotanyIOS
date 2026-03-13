@@ -15,8 +15,6 @@ struct OnboardingView: View {
     @State private var selectedExperience: BotanicalExperience? = nil
     @State private var selectedGoals: Set<BotanicalGoal> = []
 
-    // Pricing page selected tier (Path pre-selected)
-    @State private var pricingPathSelected = true
 
     private let totalPages = 7
 
@@ -132,16 +130,15 @@ struct OnboardingView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            Image("Logo")
+            Image("Actinomorphic (symmetry) color")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 140, height: 140)
-                .clipShape(RoundedRectangle(cornerRadius: 32))
-                .shadow(color: AppColors.primaryAmber.opacity(0.15), radius: 24, y: 8)
+                .frame(maxWidth: 220)
+                .shadow(color: Color.black.opacity(0.2), radius: 16, y: 6)
 
             VStack(spacing: 8) {
                 Text("RadicleBotany")
-                    .font(Font.custom("Inter18pt-Black", size: 34))
+                    .font(.cormorant(size: 40, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
 
                 Text("A Modern Botanical Field Guide")
@@ -169,11 +166,11 @@ struct OnboardingView: View {
                 .shadow(color: Color.black.opacity(0.2), radius: 16, y: 6)
 
             VStack(spacing: 10) {
-                Text("Identify Any Plant")
+                Text("Observe & Identify Plants")
                     .font(AppTypography.headerTitle)
                     .foregroundStyle(AppColors.textPrimary)
 
-                Text("Answer guided questions, point your camera, or combine both methods to identify plants with confidence.")
+                Text("Choose from illustrated botanical terms, use camera, or combine both methods to identify plants.")
                     .font(AppTypography.bodyText)
                     .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -205,11 +202,11 @@ struct OnboardingView: View {
                 .shadow(color: Color.black.opacity(0.2), radius: 16, y: 6)
 
             VStack(spacing: 10) {
-                Text("Master Botanical Anatomy")
+                Text("Illustrated Botanical Terminology")
                     .font(AppTypography.headerTitle)
                     .foregroundStyle(AppColors.textPrimary)
 
-                Text("Explore 179 species, 183 families, and 464 terms with detailed morphological traits. Every species cross-links to its family and related terminology.")
+                Text("Explore 2,330+ species, 190+ families, and 460+ terms with detailed morphological traits. Every species cross-links to plant family and related terminology.")
                     .font(AppTypography.bodyText)
                     .foregroundStyle(AppColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -429,21 +426,8 @@ struct OnboardingView: View {
                         .foregroundStyle(AppColors.textSecondary)
                 }
 
-                // RadicleBotany Card (Tier 1)
-                Button {
-                    pricingPathSelected = false
-                } label: {
-                    pricingAnnualCardContent
-                }
-                .buttonStyle(.plain)
-
-                // RadicleBotany Path Card (Tier 2 — default)
-                Button {
-                    pricingPathSelected = true
-                } label: {
-                    pricingPathCardContent
-                }
-                .buttonStyle(.plain)
+                // RadicleBotany Card
+                pricingAnnualCardContent
 
                 // Primary CTA
                 Button {
@@ -455,9 +439,7 @@ struct OnboardingView: View {
                 .disabled(storeManager.isLoading || purchaseInProgress)
 
                 // Sub-price label
-                let selectedPrice = pricingPathSelected
-                    ? (storeManager.pathProduct?.displayPrice ?? "$63.99")
-                    : (storeManager.annualProduct?.displayPrice ?? "$33.99")
+                let selectedPrice = storeManager.annualProduct?.displayPrice ?? "$33.99"
                 Text("Then \(selectedPrice)/year · cancel anytime")
                     .font(AppTypography.tagText)
                     .foregroundStyle(AppColors.textMuted)
@@ -488,8 +470,7 @@ struct OnboardingView: View {
                             .foregroundStyle(AppColors.textMuted)
                     }
 
-                    let tierName = pricingPathSelected ? "RadicleBotany Path" : "RadicleBotany"
-                    Text("\(tierName) subscription: \(selectedPrice)/year after 7-day free trial. Payment charged to Apple ID at confirmation. Auto-renews yearly unless cancelled at least 24 hours before period end. Manage in Apple ID Account Settings.")
+                    Text("RadicleBotany subscription: \(selectedPrice)/year after 7-day free trial. Payment charged to Apple ID at confirmation. Auto-renews yearly unless cancelled at least 24 hours before period end. Manage in Apple ID Account Settings.")
                         .font(AppTypography.inter(size: 10))
                         .foregroundStyle(AppColors.textMuted)
                         .multilineTextAlignment(.center)
@@ -505,15 +486,14 @@ struct OnboardingView: View {
     }
 
     private var pricingAnnualCardContent: some View {
-        let isSelected = !pricingPathSelected
-        return VStack(spacing: 16) {
+        VStack(spacing: 16) {
             HStack {
                 Text("RADICLEBOTANY")
                     .font(AppTypography.tagText)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.primaryAmber)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(AppColors.cardElevated)
+                    .background(AppColors.primaryAmber.opacity(0.15))
                     .clipShape(Capsule())
 
                 Spacer()
@@ -525,64 +505,16 @@ struct OnboardingView: View {
 
                     Text("7-day free trial")
                         .font(AppTypography.tagText)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-            }
-
-            VStack(alignment: .leading, spacing: 10) {
-                pricingFeatureRow("All 179 species & 183 families")
-                pricingFeatureRow("464 botanical terms")
-                pricingFeatureRow("Unlimited Observe mode")
-                pricingFeatureRow("Journal & Collections")
-                pricingFeatureRow("Flashcards & study streaks")
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(20)
-        .background(AppColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
-        .overlay(
-            RoundedRectangle(cornerRadius: AppRadius.card)
-                .stroke(
-                    isSelected ? AppColors.textSecondary.opacity(0.6) : AppColors.cardElevated,
-                    lineWidth: isSelected ? 2 : 1
-                )
-        )
-    }
-
-    private var pricingPathCardContent: some View {
-        let isSelected = pricingPathSelected
-        return VStack(spacing: 16) {
-            HStack {
-                HStack(spacing: 6) {
-                    Text("RADICLEBOTANY PATH")
-                        .font(AppTypography.tagText)
-                        .foregroundStyle(AppColors.primaryAmber)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(AppColors.primaryAmber.opacity(0.15))
-                        .clipShape(Capsule())
-
-                    Text("Best Value")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.primaryAmber)
-                }
-
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(storeManager.pathProduct?.displayPrice ?? "$63.99")
-                        .font(AppTypography.headerTitle)
-                        .foregroundStyle(AppColors.textPrimary)
-
-                    Text("7-day free trial")
-                        .font(AppTypography.tagText)
                         .foregroundStyle(AppColors.primaryAmber)
                 }
             }
 
             VStack(alignment: .leading, spacing: 10) {
-                pricingFeatureRow("Everything in RadicleBotany", color: .orangePrimary)
+                pricingFeatureRow("All species & families", color: .orangePrimary)
+                pricingFeatureRow("Botanical terms", color: .orangePrimary)
+                pricingFeatureRow("Unlimited Observe mode", color: .orangePrimary)
+                pricingFeatureRow("Journal & Collections", color: .orangePrimary)
+                pricingFeatureRow("Flashcards & study streaks", color: .orangePrimary)
                 pricingFeatureRow("Photo Identification", color: .orangePrimary)
                 pricingFeatureRow("Both mode", color: .orangePrimary)
                 pricingFeatureRow("Plant Assistant", color: .orangePrimary)
@@ -595,10 +527,7 @@ struct OnboardingView: View {
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
         .overlay(
             RoundedRectangle(cornerRadius: AppRadius.card)
-                .stroke(
-                    isSelected ? AppColors.primaryAmber.opacity(0.6) : AppColors.cardElevated,
-                    lineWidth: isSelected ? 2 : 1
-                )
+                .stroke(AppColors.primaryAmber.opacity(0.6), lineWidth: 2)
         )
     }
 
@@ -628,7 +557,19 @@ struct OnboardingView: View {
         }
     }
 
-    // MARK: - Onboarding Feature Chip
+    // MARK: - Onboarding Feature Row (non-interactive, informational only)
+
+    private func onboardingFeatureRow(icon: String, text: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(AppColors.textMuted)
+                .frame(width: 18)
+            Text(text)
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textSecondary)
+        }
+    }
 
     private func onboardingFeatureChip(icon: String, text: String, color: Color) -> some View {
         VStack(spacing: 6) {
@@ -670,8 +611,7 @@ struct OnboardingView: View {
     // MARK: - Purchase Action
 
     private func purchaseSelectedTier() async {
-        let product = pricingPathSelected ? storeManager.pathProduct : storeManager.annualProduct
-        guard let product else {
+        guard let product = storeManager.annualProduct else {
             await storeManager.fetchProducts()
             return
         }

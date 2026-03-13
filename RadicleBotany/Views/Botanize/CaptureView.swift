@@ -83,9 +83,8 @@ struct CaptureView: View {
                     quickResultsPreview(result)
                         .padding(.horizontal, 16)
                 }
-
-                Spacer(minLength: 40)
             }
+            .padding(.bottom, 100)
         }
         .background(AppColors.appBackground)
         .fullScreenCover(isPresented: $viewModel.showCamera) {
@@ -154,7 +153,7 @@ struct CaptureView: View {
                                 .font(AppTypography.tagText)
                                 .foregroundStyle(AppColors.textMuted)
 
-                            Text(best.commonName)
+                            Text(best.titleCasedCommonName)
                                 .font(AppTypography.headerTitle)
                                 .foregroundStyle(AppColors.textPrimary)
 
@@ -259,7 +258,7 @@ struct CaptureView: View {
             }
             .safeAreaInset(edge: .bottom) {
                 SaveToJournalBar(
-                    isUnlocked: storeManager.isFeatureUnlocked(.journal),
+                    isUnlocked: true,
                     accentColor: .orangePrimary,
                     onSave: {
                         viewModel.saveToJournal(modelContext: modelContext)
@@ -281,7 +280,7 @@ struct CaptureView: View {
         var content = ""
 
         if let match = bestMatch {
-            content += "\(match.commonName) (\(match.scientificName))\n"
+            content += "\(match.titleCasedCommonName) (\(match.scientificName))\n"
             content += "Confidence: \(Int(match.score * 100))%\n\n"
         }
 

@@ -60,7 +60,7 @@ struct ObservationsListView: View {
             observationsList
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Observations")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -137,7 +137,7 @@ struct ObservationsListView: View {
                         }
                     }
                     .padding(.horizontal, 16)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, 80)
                 }
             }
         }

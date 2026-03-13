@@ -48,10 +48,10 @@ struct ResourcesView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
-            .padding(.bottom, 32)
+            .padding(.bottom, 80)
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Resources")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .featureGuide(.resources)
         .onAppear {

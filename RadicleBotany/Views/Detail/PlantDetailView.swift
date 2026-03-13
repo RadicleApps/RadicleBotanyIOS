@@ -19,18 +19,24 @@ struct PlantDetailView: View {
     @State private var fullscreenImage: ImageSource? = nil
     @State private var fullscreenCaption: String? = nil
 
-    // MARK: - Filtered Data
+    // MARK: - Cached Data (computed once, updated on change)
 
-    private var familyMatch: Family? {
-        allFamilies.first { $0.familyLatin == plant.familyLatin }
+    @State private var cachedFamilyMatch: Family? = nil
+    @State private var cachedRelatedSpecies: [Plant] = []
+    @State private var cachedFilteredRelated: [Plant] = []
+    @State private var cachedRelatedGenera: [String] = []
+    @State private var cachedObservedNames: Set<String> = []
+
+    private func recomputeRelatedData() {
+        cachedFamilyMatch = allFamilies.first { $0.familyLatin == plant.familyLatin }
+        cachedRelatedSpecies = allPlants.filter { $0.familyLatin == plant.familyLatin && $0.scientificName != plant.scientificName }
+        cachedRelatedGenera = Set(cachedRelatedSpecies.map(\.genus).filter { !$0.isEmpty }).sorted()
+        cachedObservedNames = Set(allObservations.compactMap { $0.plantScientificName })
+        recomputeFilteredRelated()
     }
 
-    private var relatedSpecies: [Plant] {
-        allPlants.filter { $0.familyLatin == plant.familyLatin && $0.scientificName != plant.scientificName }
-    }
-
-    private var filteredRelatedSpecies: [Plant] {
-        var result = relatedSpecies
+    private func recomputeFilteredRelated() {
+        var result = cachedRelatedSpecies
 
         if let genus = selectedGenus {
             result = result.filter { $0.genus == genus }
@@ -44,16 +50,7 @@ struct PlantDetailView: View {
             }
         }
 
-        return result
-    }
-
-    private var relatedGenera: [String] {
-        let genera = Set(relatedSpecies.map(\.genus).filter { !$0.isEmpty })
-        return genera.sorted()
-    }
-
-    private var observedScientificNames: Set<String> {
-        Set(allObservations.compactMap { $0.plantScientificName })
+        cachedFilteredRelated = result
     }
 
     // MARK: - Body
@@ -78,12 +75,12 @@ struct PlantDetailView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.top, 16)
-                    .padding(.bottom, 32)
+                    .padding(.bottom, 100)
                 }
             }
 
             // Floating flashcard study button
-            NavigationLink(destination: PlantFlashcardView(familyFilter: plant.familyLatin).navigationTitle("\(plant.familyLatin) Species").navigationBarTitleDisplayMode(.inline)) {
+            NavigationLink(destination: PlantFlashcardView(familyFilter: plant.familyLatin).navigationTitle("").navigationBarTitleDisplayMode(.inline)) {
                 VStack(spacing: 3) {
                     Image(systemName: "rectangle.on.rectangle.angled")
                         .font(AppTypography.inter(size: 18, weight: .semibold))
@@ -105,18 +102,21 @@ struct PlantDetailView: View {
             .padding(.bottom, 20)
         }
         .background(AppColors.appBackground)
-        .navigationTitle(plant.commonName)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(item: $fullscreenImage) { source in
             FullscreenImageViewer(source: source, caption: fullscreenCaption)
         }
+        .onAppear { if cachedRelatedSpecies.isEmpty && !allPlants.isEmpty { recomputeRelatedData() } }
+        .onChange(of: relatedSearchText) { _, _ in recomputeFilteredRelated() }
+        .onChange(of: selectedGenus) { _, _ in recomputeFilteredRelated() }
         .task {
             // Request location early so GPS coordinates are available for "Save to Journal"
             LocationManager.shared.requestLocation()
 
-            // Lazily cache this plant's image for offline access.
-            // Only runs if the plant has a URL but no locally cached data yet.
-            if plant.cachedImageData == nil, let urlString = plant.bestImageURL, let url = URL(string: urlString) {
+            // Lazily cache full-size image for offline access.
+            // Runs when no cached data exists OR when only a bundled small (240px) image is cached.
+            if !plant.hasFullSizeCachedImage, let urlString = plant.bestImageURL, let _ = URL(string: urlString) {
                 await DataLoader.shared.cacheSinglePlantImage(plant: plant, modelContext: modelContext)
             }
         }
@@ -140,16 +140,6 @@ struct PlantDetailView: View {
 
             // Bottom-left info overlays
             HStack(spacing: 8) {
-                if !plant.genus.isEmpty {
-                    Text(plant.genus)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
-                }
-
                 if plant.isAtRisk, let status = plant.atRiskStatus {
                     HStack(spacing: 4) {
                         Image(systemName: "exclamationmark.triangle.fill")
@@ -172,18 +162,6 @@ struct PlantDetailView: View {
         .frame(height: 260)
     }
 
-    /// Minimal placeholder for mini species cards
-    private var miniPlantPlaceholder: some View {
-        AppColors.cardElevated.opacity(0.3)
-            .frame(width: 140, height: 100)
-            .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-            .overlay {
-                Image(systemName: "leaf.fill")
-                    .font(AppTypography.inter(size: 20))
-                    .foregroundStyle(AppColors.success.opacity(0.12))
-            }
-    }
-
     // MARK: - Header
 
     private var headerSection: some View {
@@ -193,7 +171,7 @@ struct PlantDetailView: View {
                 .italic()
                 .foregroundStyle(AppColors.textPrimary)
 
-            Text(plant.commonName)
+            Text(plant.titleCasedCommonName)
                 .font(AppTypography.displayMedium)
                 .foregroundStyle(AppColors.textSecondary)
 
@@ -204,10 +182,23 @@ struct PlantDetailView: View {
             }
 
             HStack(spacing: 8) {
-                if let family = familyMatch {
+                if let family = cachedFamilyMatch {
                     NavigationLink(destination: FamilyDetailView(family: family)) {
-                        CategoryPill(text: plant.familyLatin, color: .orangePrimary)
+                        HStack(spacing: 5) {
+                            Text(plant.familyLatin)
+                                .font(AppTypography.tagText)
+                                .foregroundStyle(Color.orangePrimary)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundStyle(Color.orangePrimary.opacity(0.7))
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.orangePrimary.opacity(0.15))
+                        .clipShape(Capsule())
+                        .overlay(Capsule().strokeBorder(Color.orangePrimary.opacity(0.35), lineWidth: 0.5))
                     }
+                    .buttonStyle(.plain)
                 } else {
                     CategoryPill(text: plant.familyLatin, color: .orangePrimary)
                 }
@@ -284,25 +275,18 @@ struct PlantDetailView: View {
     private func organImageCard(organ: PlantOrgan, urlString: String) -> some View {
         VStack(spacing: 6) {
             if let url = URL(string: urlString) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 120, height: 120)
-                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-                    default:
-                        RoundedRectangle(cornerRadius: AppRadius.button)
-                            .fill(organ.color.opacity(0.06))
-                            .frame(width: 120, height: 120)
-                            .overlay {
-                                Image(systemName: organ.icon)
-                                    .font(.title2)
-                                    .foregroundStyle(organ.color.opacity(0.2))
-                            }
-                    }
+                ThrottledAsyncImage(url: url, contentMode: .fill) {
+                    RoundedRectangle(cornerRadius: AppRadius.button)
+                        .fill(organ.color.opacity(0.06))
+                        .frame(width: 120, height: 120)
+                        .overlay {
+                            Image(systemName: organ.icon)
+                                .font(.title2)
+                                .foregroundStyle(organ.color.opacity(0.2))
+                        }
                 }
+                .frame(width: 120, height: 120)
+                .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
             }
 
         }
@@ -310,7 +294,7 @@ struct PlantDetailView: View {
         .contentShape(Rectangle())
         .onTapGesture {
             fullscreenImage = .url(urlString)
-            fullscreenCaption = plant.commonName
+            fullscreenCaption = plant.titleCasedCommonName
         }
     }
 
@@ -320,7 +304,7 @@ struct PlantDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("TRAITS")
                 .font(AppTypography.sectionHeader)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(AppColors.primaryAmber)
                 .kerning(1.8)
                 .padding(.horizontal, 4)
 
@@ -527,19 +511,19 @@ struct PlantDetailView: View {
 
     @ViewBuilder
     private var relatedSpeciesSection: some View {
-        if !relatedSpecies.isEmpty {
+        if !cachedRelatedSpecies.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 // Header with count
                 CollectionHeader(
                     icon: "leaf.fill",
                     title: "Related Species",
-                    count: filteredRelatedSpecies.count,
-                    total: relatedSpecies.count,
+                    count: cachedFilteredRelated.count,
+                    total: cachedRelatedSpecies.count,
                     color: .greenSecondary
                 )
 
                 // Inline search (show when more than 4 species)
-                if relatedSpecies.count > 4 {
+                if cachedRelatedSpecies.count > 4 {
                     InlineSearchField(
                         text: $relatedSearchText,
                         placeholder: "Search related species..."
@@ -547,13 +531,13 @@ struct PlantDetailView: View {
                 }
 
                 // Genus filter chips
-                if relatedGenera.count > 1 {
+                if cachedRelatedGenera.count > 1 {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 6) {
                             MiniFilterChip(name: "All", isSelected: selectedGenus == nil, color: .greenSecondary) {
                                 withAnimation(.easeInOut(duration: 0.15)) { selectedGenus = nil }
                             }
-                            ForEach(relatedGenera, id: \.self) { genus in
+                            ForEach(cachedRelatedGenera, id: \.self) { genus in
                                 MiniFilterChip(name: genus, isSelected: selectedGenus == genus, color: .greenSecondary) {
                                     withAnimation(.easeInOut(duration: 0.15)) { selectedGenus = genus }
                                 }
@@ -563,13 +547,16 @@ struct PlantDetailView: View {
                 }
 
                 // Results
-                if filteredRelatedSpecies.isEmpty {
+                if cachedFilteredRelated.isEmpty {
                     MiniEmptyState(icon: "leaf", text: "No matching species", color: .greenSecondary)
                 } else {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 14) {
-                            ForEach(filteredRelatedSpecies, id: \.scientificName) { relatedPlant in
-                                NavigationLink(destination: PlantDetailView(plant: relatedPlant)) {
+                            ForEach(cachedFilteredRelated, id: \.scientificName) { relatedPlant in
+                                let index = cachedFilteredRelated.firstIndex(where: { $0.id == relatedPlant.id }) ?? 0
+                                NavigationLink(destination: CollectionPagerView(items: cachedFilteredRelated, startIndex: index) { p in
+                                    PlantDetailView(plant: p)
+                                }) {
                                     relatedSpeciesCard(relatedPlant)
                                 }
                             }
@@ -581,47 +568,10 @@ struct PlantDetailView: View {
     }
 
     private func relatedSpeciesCard(_ relatedPlant: Plant) -> some View {
-        let hasObservation = observedScientificNames.contains(relatedPlant.scientificName)
+        let hasObservation = cachedObservedNames.contains(relatedPlant.scientificName)
 
         return VStack(alignment: .leading, spacing: 0) {
-            // Image area — borderless
-            ZStack(alignment: .bottomLeading) {
-                if let cachedImage = relatedPlant.cachedImage {
-                    Image(uiImage: cachedImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 140, height: 100)
-                        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-                } else if let imageURL = relatedPlant.bestImageURL, let url = URL(string: imageURL) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 140, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-                        default:
-                            miniPlantPlaceholder
-                        }
-                    }
-                } else {
-                    miniPlantPlaceholder
-                }
-
-                if !relatedPlant.genus.isEmpty {
-                    Text(relatedPlant.genus)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
-                        .padding(6)
-                }
-            }
-
-            // Observed indicator: thin green line below image
+            // Observed indicator: thin green line
             if hasObservation {
                 RoundedRectangle(cornerRadius: 1)
                     .fill(AppColors.success)
@@ -636,7 +586,7 @@ struct PlantDetailView: View {
                     .font(AppTypography.fieldLabel)
                     .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
-                Text(relatedPlant.commonName)
+                Text(relatedPlant.titleCasedCommonName)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)
@@ -680,7 +630,7 @@ struct PlantDetailView: View {
             latitude: currentLocation?.coordinate.latitude,
             longitude: currentLocation?.coordinate.longitude,
             date: .now,
-            notes: "Saved from plant profile: \(plant.commonName)"
+            notes: "Saved from plant profile: \(plant.titleCasedCommonName)"
         )
         modelContext.insert(observation)
         showSavedConfirmation = true

@@ -20,7 +20,7 @@ struct NotesListView: View {
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Notes")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -87,7 +87,7 @@ struct NotesListView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
-            .padding(.bottom, 32)
+            .padding(.bottom, 80)
         }
     }
 

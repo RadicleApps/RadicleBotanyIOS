@@ -13,35 +13,35 @@ struct AppToolbarModifier<Trailing: View>: ViewModifier {
         content
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                // Leading: Optional help button
+                // Leading: Optional contextual help button (per-tab)
                 ToolbarItem(placement: .topBarLeading) {
                     if let guide {
                         InfoButton(guide: guide, style: .toolbar)
                     }
                 }
 
-                // Center: Compact search capsule — short text prevents cramping
+                // Center: RadicleBotany wordmark — Cormorant Garamond italic serif
                 ToolbarItem(placement: .principal) {
-                    Button {
-                        navigationState.showSearch = true
-                    } label: {
-                        HStack(spacing: 5) {
-                            Image(systemName: "magnifyingglass")
-                                .font(AppTypography.inter(size: 11, weight: .medium))
-                            Text("Search...")
-                                .font(AppTypography.inter(size: 13, weight: .regular))
-                        }
-                        .foregroundStyle(AppColors.textMuted)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 7)
-                        .background(AppColors.cardElevated)
-                        .clipShape(Capsule())
-                    }
+                    Text("RadicleBotany")
+                        .font(.cormorant(size: 20, weight: .bold))
+                        .foregroundStyle(AppColors.textPrimary)
                 }
 
-                // Trailing: Configurable (default spacer, or custom e.g. + button)
+                // Trailing: Search icon + configurable action (default: profile)
                 ToolbarItem(placement: .topBarTrailing) {
-                    trailing
+                    HStack(spacing: 6) {
+                        Button {
+                            navigationState.showSearch = true
+                        } label: {
+                            Image(systemName: "magnifyingglass")
+                                .font(AppTypography.inter(size: 14))
+                                .foregroundColor(AppColors.textMuted)
+                                .frame(width: 32, height: 32)
+                                .background(AppColors.cardElevated)
+                                .clipShape(Circle())
+                        }
+                        trailing
+                    }
                 }
             }
             .safeAreaInset(edge: .top, spacing: 0) {

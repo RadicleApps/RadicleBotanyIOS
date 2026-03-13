@@ -59,7 +59,7 @@
     },
     {
       "question": "What is photosynthesis?",
-      "answer": "Photosynthesis is the process by which plants convert light energy, carbon dioxide, and water into glucose (sugar) and oxygen. It occurs primarily in chloroplasts within leaf mesophyll cells. The light-dependent reactions happen in the thylakoid membranes, producing ATP and NADPH. The Calvin cycle (light-independent reactions) occurs in the stroma, using CO2 to build sugars. The overall equation: 6CO2 + 6H2O + light energy -> C6H12O6 + 6O2.",
+      "answer": "Photosynthesis is the process by which plants convert light energy, carbon dioxide, and water into glucose (sugar) and oxygen. This occurs primarily in chloroplasts within leaf mesophyll cells. The light-dependent reactions happen in the thylakoid membranes, producing ATP and NADPH. The Calvin cycle (light-independent reactions) occurs in the stroma, using CO2 to build sugars. The overall equation: 6CO2 + 6H2O + light energy -> C6H12O6 + 6O2.",
       "category": "physiology",
       "tags": ["photosynthesis", "chloroplast", "light", "carbon dioxide", "glucose"],
       "sources": [{"title": "Photosynthesis", "type": "term"}]
@@ -108,7 +108,7 @@
     },
     {
       "question": "How do seeds disperse?",
-      "answer": "Seed dispersal mechanisms include: wind (dandelion plumes, maple samaras, elm wings), water (coconut, lotus), animals (fleshy fruits eaten by birds, burrs on fur, nuts cached by squirrels), ballistic/explosive (touch-me-not, witch hazel pods), and gravity (heavy seeds like acorns). Dispersal is crucial for species survival — it reduces competition with parent plants, colonizes new habitats, and maintains genetic diversity. The dispersal method often determines seed and fruit morphology.",
+      "answer": "Seed dispersal mechanisms include: wind (dandelion plumes, maple samaras, elm wings), water (coconut, lotus), animals (fleshy fruits eaten by birds, burrs on fur, nuts cached by squirrels), ballistic/explosive (touch-me-not, witch hazel pods), and gravity (heavy seeds like acorns). Dispersal is crucial for species survival — this reduces competition with parent plants, colonizes new habitats, and maintains genetic diversity. The dispersal method often determines seed and fruit morphology.",
       "category": "ecology",
       "tags": ["seed", "dispersal", "wind", "animal", "fruit"],
       "sources": [{"title": "Seed dispersal", "type": "term"}]
@@ -157,7 +157,7 @@
     },
     {
       "question": "What is transpiration?",
-      "answer": "Transpiration is the evaporation of water from plant leaves through stomata (tiny pores on the leaf surface). It drives the upward movement of water and dissolved minerals from roots through the xylem (transpiration pull). Guard cells control stomatal opening — they open for gas exchange during photosynthesis and close to conserve water during drought. A large tree can transpire hundreds of liters of water per day. Factors affecting transpiration rate include temperature, humidity, wind, and light intensity.",
+      "answer": "Transpiration is the evaporation of water from plant leaves through stomata (tiny pores on the leaf surface). This drives the upward movement of water and dissolved minerals from roots through the xylem (transpiration pull). Guard cells control stomatal opening — they open for gas exchange during photosynthesis and close to conserve water during drought. A large tree can transpire hundreds of liters of water per day. Factors affecting transpiration rate include temperature, humidity, wind, and light intensity.",
       "category": "physiology",
       "tags": ["transpiration", "stomata", "water", "xylem", "guard cell"],
       "sources": [{"title": "Transpiration", "type": "term"}, {"title": "Stomata", "type": "term"}]
@@ -171,7 +171,7 @@
     },
     {
       "question": "What is the difference between a fruit and a vegetable?",
-      "answer": "Botanically, a fruit is the mature ovary of a flowering plant, containing seeds. This includes tomatoes, peppers, cucumbers, squash, and beans — all botanical fruits used as culinary vegetables. A vegetable is a culinary term with no strict botanical definition — it can refer to roots (carrots), stems (celery), leaves (lettuce), or flower buds (broccoli). The confusion arises because culinary and botanical classifications serve different purposes. Nuts are also fruits — specifically dry, indehiscent fruits with a hard shell.",
+      "answer": "Botanically, a fruit is the mature ovary of a flowering plant, containing seeds. This includes tomatoes, peppers, cucumbers, squash, and beans — all botanical fruits used as culinary vegetables. A vegetable is a culinary term with no strict botanical definition and can refer to roots (carrots), stems (celery), leaves (lettuce), or flower buds (broccoli). The confusion arises because culinary and botanical classifications serve different purposes. Nuts are also fruits — specifically dry, indehiscent fruits with a hard shell.",
       "category": "morphology",
       "tags": ["fruit", "vegetable", "ovary", "seed", "nut"],
       "sources": [{"title": "Fruit", "type": "term"}]

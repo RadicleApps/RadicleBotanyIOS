@@ -10,7 +10,7 @@ final class DataLoader {
 
     private let dataLoadedKey = "com.radicle.radiclebotany.dataLoaded"
     private let dataVersionKey = "com.radicle.radiclebotany.dataVersion"
-    private let currentDataVersion = 4
+    private let currentDataVersion = 5
 
     // MARK: - Main Load
 
@@ -390,6 +390,7 @@ final class DataLoader {
                     descriptionShort: json.descriptionShort ?? "",
                     descriptionLong: json.descriptionLong ?? "",
                     imageURL: json.imageURL,
+                    colorImageURL: json.colorImageURL,
                     showPlantID: json.showPlantID,
                     isFree: json.isFree ?? false
                 )
@@ -430,11 +431,11 @@ final class DataLoader {
             ("First Observation", "Record your first plant observation", "observe", nil, nil),
             ("Keen Eye", "Observe 10 different species", "observe", nil, nil),
             ("Botanist", "Observe 50 different species", "observe", nil, nil),
-            ("Master Botanist", "Observe all 179 species", "observe", nil, nil),
+            ("Master Botanist", "Observe all species", "observe", nil, nil),
             ("Family Ties", "Explore 10 plant families", "learn", "flashcard_families_mastered", 10),
             ("Taxonomist", "Explore all 183 families", "learn", nil, nil),
             ("Vocabulary", "Learn 50 botanical terms", "learn", "flashcard_terms_mastered", 50),
-            ("Lexicon", "Learn all 464 terms", "learn", nil, nil),
+            ("Lexicon", "Learn all 461 terms", "learn", nil, nil),
             ("Streak Starter", "Maintain a 3-day streak", "streak", "flashcard_study_streak", 3),
             ("Week Warrior", "Maintain a 7-day streak", "streak", "flashcard_study_streak", 7),
             ("Month Master", "Maintain a 30-day streak", "streak", "flashcard_study_streak", 30),
@@ -866,13 +867,14 @@ final class DataLoader {
             return
         }
 
-        print("[DataLoader] 💾 Caching images for \(plantsWithURLs.count) plants...")
+        print("[DataLoader] Caching images for \(plantsWithURLs.count) plants...")
         let startTime = Date()
         var successCount = 0
         var failCount = 0
 
-        // Process in batches of 5 concurrent downloads
-        let batchSize = 5
+        // Process in batches of 4 concurrent downloads — gentle on CPU/battery.
+        // Larger batches (10-20) cause UI freezing from concurrent JPEG decode + SwiftData writes.
+        let batchSize = 4
         for batchStart in stride(from: 0, to: plantsWithURLs.count, by: batchSize) {
             let batchEnd = min(batchStart + batchSize, plantsWithURLs.count)
             let batch = Array(plantsWithURLs[batchStart..<batchEnd])
@@ -893,20 +895,12 @@ final class DataLoader {
                                 return (index, nil)
                             }
 
-                            // Verify it's actually image data by checking if UIImage can decode it
-                            // (Runs on background, but UIImage init from data is thread-safe)
-                            guard UIImage(data: data) != nil else {
+                            guard let uiImage = UIImage(data: data),
+                                  let compressed = uiImage.jpegData(compressionQuality: 0.85) else {
                                 return (index, nil)
                             }
 
-                            // Compress to JPEG at 0.7 quality to save storage
-                            // Average iNaturalist medium image is ~100-200KB → compressed ~50-100KB
-                            if let uiImage = UIImage(data: data),
-                               let compressed = uiImage.jpegData(compressionQuality: 0.7) {
-                                return (index, compressed)
-                            }
-
-                            return (index, data)
+                            return (index, compressed)
                         } catch {
                             return (index, nil)
                         }
@@ -929,18 +923,97 @@ final class DataLoader {
             // Save after each batch to persist progress incrementally
             try? modelContext.save()
 
-            // Small pause between batches
-            try? await Task.sleep(nanoseconds: 200_000_000) // 200ms
+            // 500ms yield between batches — this runs at .background priority
+            // so it should barely impact UI, but the yield ensures it doesn't
+            // accumulate CPU pressure over hundreds of batches.
+            try? await Task.sleep(nanoseconds: 500_000_000) // 500ms
         }
 
         let elapsed = Date().timeIntervalSince(startTime)
-        print("[DataLoader] 💾 Image caching complete in \(String(format: "%.1f", elapsed))s")
-        print("[DataLoader]   Cached: \(successCount), Failed: \(failCount)")
+        print("[DataLoader] Image caching complete in \(String(format: "%.1f", elapsed))s — Cached: \(successCount), Failed: \(failCount)")
     }
 
-    /// Downloads and caches the image for a single plant (used for refresh).
+    // MARK: - Bundled Plant Images
+
+    private let plantImagesLoadedKey = "com.radicle.radiclebotany.bundledPlantImagesLoaded.v2"
+
+    /// Loads pre-bundled 240px plant images from the app bundle into SwiftData.
+    /// Runs once on first launch — every plant gets an instant image with zero network.
+    /// Images are ~15-30KB each, stored via @externalStorage for efficient access.
+    /// PlantDetailView upgrades these to full-resolution (~1024px) when viewed.
+    nonisolated func loadBundledPlantImages(modelContext: ModelContext) {
+        guard !UserDefaults.standard.bool(forKey: plantImagesLoadedKey) else {
+            print("[DataLoader] Bundled plant images already loaded, skipping.")
+            return
+        }
+
+        let startTime = Date()
+
+        // Try PlantImages first (240px), fall back to PlantThumbnails (75×75) for legacy
+        let imageDir: URL?
+        if let dir = Bundle.main.url(forResource: "PlantImages", withExtension: nil) {
+            imageDir = dir
+        } else if let dir = Bundle.main.url(forResource: "PlantThumbnails", withExtension: nil) {
+            imageDir = dir
+            print("[DataLoader] ⚠️ PlantImages not found, falling back to PlantThumbnails")
+        } else {
+            print("[DataLoader] ⚠️ No bundled plant images folder found in bundle")
+            return
+        }
+
+        guard let dir = imageDir else { return }
+
+        // Fetch all plants
+        let descriptor = FetchDescriptor<Plant>()
+        guard let allPlants = try? modelContext.fetch(descriptor) else {
+            print("[DataLoader] ⚠️ Failed to fetch plants for image loading")
+            return
+        }
+
+        var loadedCount = 0
+        var upgradedCount = 0
+        var missedCount = 0
+
+        for plant in allPlants {
+            // Skip if already has a full-size cached image (>50KB = network-downloaded)
+            if let existingData = plant.cachedImageData, existingData.count > 50_000 {
+                continue
+            }
+
+            // Match scientific name to filename: "Abies amabilis" → "Abies_amabilis.jpg"
+            let filename = plant.scientificName
+                .replacingOccurrences(of: " ", with: "_")
+                .replacingOccurrences(of: "/", with: "_")
+                .replacingOccurrences(of: "'", with: "")
+                .replacingOccurrences(of: "\"", with: "") + ".jpg"
+
+            let fileURL = dir.appendingPathComponent(filename)
+
+            if let data = try? Data(contentsOf: fileURL) {
+                let wasUpgrade = plant.cachedImageData != nil
+                plant.cachedImageData = data
+                if wasUpgrade {
+                    upgradedCount += 1
+                } else {
+                    loadedCount += 1
+                }
+            } else {
+                missedCount += 1
+            }
+        }
+
+        // Save all at once
+        try? modelContext.save()
+
+        UserDefaults.standard.set(true, forKey: plantImagesLoadedKey)
+        let elapsed = Date().timeIntervalSince(startTime)
+        print("[DataLoader] ✅ Bundled plant images loaded in \(String(format: "%.2f", elapsed))s — New: \(loadedCount), Upgraded: \(upgradedCount), Missing: \(missedCount)")
+    }
+
+    /// Downloads and caches a large-resolution image for a single plant (used on detail view).
+    /// Uses largeImageURL (~1024px) for Retina-sharp offline display.
     func cacheSinglePlantImage(plant: Plant, modelContext: ModelContext) async {
-        guard let urlString = plant.bestImageURL,
+        guard let urlString = plant.largeImageURL,
               let url = URL(string: urlString) else { return }
 
         do {
@@ -948,7 +1021,7 @@ final class DataLoader {
             guard let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200,
                   let uiImage = UIImage(data: data),
-                  let compressed = uiImage.jpegData(compressionQuality: 0.7) else { return }
+                  let compressed = uiImage.jpegData(compressionQuality: 0.85) else { return }
 
             plant.cachedImageData = compressed
             try? modelContext.save()

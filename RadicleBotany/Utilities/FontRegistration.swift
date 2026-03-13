@@ -2,15 +2,22 @@ import UIKit
 import CoreGraphics
 import CoreText
 
-/// Registers Inter 18pt static fonts from the asset catalog at launch.
-/// Only the 6 weights used by AppTypography are loaded.
+/// Registers custom fonts from the asset catalog at launch.
 ///
-/// Call `FontRegistration.registerInter()` from `RadicleBotanyApp.init()`.
+/// - `registerInter()`   — Inter 18pt (UI / body / labels)
+/// - `registerCormorant()` — Cormorant Garamond (display / titles / wordmark)
+///
+/// Call both from `RadicleBotanyApp.init()`.
+///
+/// Cormorant Garamond files live at:
+///     Assets.xcassets / Fonts / Cormorant / static / [weight].ttf
+///     (8 static weights from fonts.google.com/specimen/Cormorant+Garamond)
 
 enum FontRegistration {
 
-    /// Asset catalog dataset names → PostScript font names after registration.
-    private static let fontAssets = [
+    // MARK: - Inter
+
+    private static let interFontAssets = [
         "Inter_18pt-Regular",
         "Inter_18pt-Medium",
         "Inter_18pt-SemiBold",
@@ -22,9 +29,35 @@ enum FontRegistration {
     /// Loads Inter 18pt fonts from `Assets.xcassets/Fonts/Inter/attachments/`.
     /// Safe to call multiple times — skips fonts that are already registered.
     static func registerInter() {
-        for assetName in fontAssets {
-            guard let dataAsset = NSDataAsset(name: "Fonts/Inter/attachments/\(assetName)") else {
-                print("[FontRegistration] ⚠️ Missing asset: \(assetName)")
+        register(assets: interFontAssets, pathPrefix: "Fonts/Inter/attachments")
+    }
+
+    // MARK: - Cormorant Garamond
+
+    private static let cormorantFontAssets = [
+        "CormorantGaramond-Light",
+        "CormorantGaramond-LightItalic",
+        "CormorantGaramond-Regular",
+        "CormorantGaramond-Italic",
+        "CormorantGaramond-SemiBold",
+        "CormorantGaramond-SemiBoldItalic",
+        "CormorantGaramond-Bold",
+        "CormorantGaramond-BoldItalic"
+    ]
+
+    /// Loads Cormorant Garamond fonts from `Assets.xcassets/Fonts/Cormorant/static/`.
+    /// Safe to call multiple times — skips fonts that are already registered.
+    /// If font files are missing, display tokens gracefully fall back to system serif.
+    static func registerCormorant() {
+        register(assets: cormorantFontAssets, pathPrefix: "Fonts/Cormorant/static")
+    }
+
+    // MARK: - Shared Registration
+
+    private static func register(assets: [String], pathPrefix: String) {
+        for assetName in assets {
+            guard let dataAsset = NSDataAsset(name: "\(pathPrefix)/\(assetName)") else {
+                print("[FontRegistration] ⚠️ Missing asset: \(pathPrefix)/\(assetName)")
                 continue
             }
 
@@ -36,7 +69,6 @@ enum FontRegistration {
 
             var error: Unmanaged<CFError>?
             if !CTFontManagerRegisterGraphicsFont(cgFont, &error) {
-                // kCTFontManagerErrorAlreadyRegistered is fine — means we already loaded it
                 let nsError = error?.takeRetainedValue() as Error? as? NSError
                 let alreadyRegistered = (nsError?.code == CTFontManagerError.alreadyRegistered.rawValue)
                 if !alreadyRegistered {

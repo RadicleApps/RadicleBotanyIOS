@@ -32,10 +32,10 @@ struct ObservationDetailView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
-            .padding(.bottom, 32)
+            .padding(.bottom, 80)
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Observation")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             editableNotes = observation.notes ?? ""
@@ -95,7 +95,7 @@ struct ObservationDetailView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("SPECIES")
                     .font(AppTypography.tagText)
-                    .foregroundStyle(AppColors.textMuted)
+                    .foregroundStyle(AppColors.primaryAmber)
 
                 if let plant = matchedPlant {
                     NavigationLink {
@@ -108,7 +108,7 @@ struct ObservationDetailView: View {
                                     .foregroundStyle(AppColors.textPrimary)
                                     .italic()
 
-                                Text(plant.commonName)
+                                Text(plant.titleCasedCommonName)
                                     .font(AppTypography.bodyText)
                                     .foregroundStyle(AppColors.textSecondary)
                             }
@@ -134,7 +134,7 @@ struct ObservationDetailView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("SPECIES")
                     .font(AppTypography.tagText)
-                    .foregroundStyle(AppColors.textMuted)
+                    .foregroundStyle(AppColors.primaryAmber)
 
                 HStack(spacing: 8) {
                     Image(systemName: "questionmark.circle")
@@ -154,7 +154,7 @@ struct ObservationDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("LOCATION")
                 .font(AppTypography.tagText)
-                .foregroundStyle(AppColors.textMuted)
+                .foregroundStyle(AppColors.primaryAmber)
 
             if let latitude = observation.latitude, let longitude = observation.longitude {
                 let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -224,7 +224,7 @@ struct ObservationDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("DATE & TIME")
                 .font(AppTypography.tagText)
-                .foregroundStyle(AppColors.textMuted)
+                .foregroundStyle(AppColors.primaryAmber)
 
             HStack(spacing: 8) {
                 Image(systemName: "calendar")
@@ -253,7 +253,7 @@ struct ObservationDetailView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("VERIFIED TRAITS")
                     .font(AppTypography.tagText)
-                    .foregroundStyle(AppColors.textMuted)
+                    .foregroundStyle(AppColors.primaryAmber)
 
                 FlowLayout(spacing: 8) {
                     ForEach(observation.verifiedTraits, id: \.self) { trait in
@@ -271,7 +271,7 @@ struct ObservationDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("NOTES")
                 .font(AppTypography.tagText)
-                .foregroundStyle(AppColors.textMuted)
+                .foregroundStyle(AppColors.primaryAmber)
 
             TextField("Add notes about this observation...", text: $editableNotes, axis: .vertical)
                 .font(AppTypography.bodyText)

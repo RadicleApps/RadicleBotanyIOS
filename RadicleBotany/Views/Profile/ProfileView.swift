@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import PhotosUI
+import CoreLocation
 
 struct ProfileView: View {
     @Environment(\.dismiss) private var dismiss
@@ -14,6 +15,8 @@ struct ProfileView: View {
     @Query private var allFamilies: [Family]
     @Query private var allTerms: [BotanyTerm]
     @Query private var flashcardProgress: [FlashcardProgress]
+
+    @ObservedObject private var locationManager = LocationManager.shared
 
     @State private var showEditProfile = false
     @State private var showShareSheet = false
@@ -88,7 +91,7 @@ struct ProfileView: View {
                 achievementsSection
                     .padding(.top, 24)
             }
-            .padding(.bottom, 40)
+            .padding(.bottom, 100)
         }
         .background(AppColors.appBackground)
         .navigationTitle("")
@@ -110,7 +113,7 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showShareSheet) {
             ShareSheet(activityItems: [
-                "Hey check out this awesome plant ID app! https://apps.apple.com/app/radiclebotany/id6759073523"
+                "Hey check out this awesome plant ID app! https://apps.apple.com/us/app/radiclebotany/id6759073523"
             ])
             .presentationDetents([.medium])
         }
@@ -216,7 +219,7 @@ struct ProfileView: View {
 
                 // Name
                 Text(profileDisplayName)
-                    .font(AppTypography.inter(size: 24, weight: .bold))
+                    .font(.cormorant(size: 28, weight: .bold))
                     .foregroundStyle(AppColors.textPrimary)
 
                 // Tier pill + streak
@@ -386,14 +389,17 @@ struct ProfileView: View {
             // Plan + Upgrade
             planRow
 
+            // Location
+            locationRow
+
             // Navigation actions
-            HStack(spacing: 8) {
+            VStack(spacing: 8) {
                 NavigationLink {
                     SettingsView()
                 } label: {
                     actionCardLabel(
                         icon: "gearshape.fill",
-                        label: "Dashboard",
+                        label: "Settings",
                         color: AppColors.textSecondary
                     )
                 }
@@ -480,14 +486,123 @@ struct ProfileView: View {
         )
     }
 
+    // MARK: - Location Row
+
+    private var locationRow: some View {
+        Button {
+            handleLocationTap()
+        } label: {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(locationStatusColor.opacity(0.12))
+                        .frame(width: 36, height: 36)
+
+                    Image(systemName: locationStatusIcon)
+                        .font(AppTypography.inter(size: 14))
+                        .foregroundStyle(locationStatusColor)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Location")
+                        .font(AppTypography.buttonText)
+                        .foregroundStyle(AppColors.textPrimary)
+
+                    Text(locationStatusText)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.textMuted)
+                }
+
+                Spacer()
+
+                if locationManager.authorizationStatus == .authorizedWhenInUse ||
+                   locationManager.authorizationStatus == .authorizedAlways {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(AppTypography.inter(size: 16))
+                        .foregroundStyle(AppColors.success)
+                } else {
+                    Text(locationActionText)
+                        .font(AppTypography.inter(size: 12, weight: .semibold))
+                        .foregroundStyle(AppColors.primaryAmber)
+                }
+            }
+            .padding(14)
+            .background(AppColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.card)
+                    .stroke(locationStatusColor.opacity(0.2), lineWidth: 0.5)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var locationStatusIcon: String {
+        switch locationManager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            return "location.fill"
+        case .denied, .restricted:
+            return "location.slash.fill"
+        default:
+            return "location.circle"
+        }
+    }
+
+    private var locationStatusColor: Color {
+        switch locationManager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            return AppColors.success
+        case .denied, .restricted:
+            return AppColors.error
+        default:
+            return AppColors.primaryAmber
+        }
+    }
+
+    private var locationStatusText: String {
+        switch locationManager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            return "Enabled — used for Plants Near Me"
+        case .denied:
+            return "Denied — tap to open Settings"
+        case .restricted:
+            return "Restricted by device policy"
+        default:
+            return "Not set — needed for Plants Near Me"
+        }
+    }
+
+    private var locationActionText: String {
+        switch locationManager.authorizationStatus {
+        case .denied:
+            return "Settings"
+        default:
+            return "Enable"
+        }
+    }
+
+    private func handleLocationTap() {
+        switch locationManager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            // Already enabled — refresh location
+            locationManager.requestLocation()
+        case .denied, .restricted:
+            // Open iOS Settings
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
+        default:
+            // Request permission
+            locationManager.requestLocationPermission()
+        }
+    }
+
     private var planDescription: String {
         switch storeManager.userTier {
         case .free:
             return "Limited access to species and features"
         case .annual:
             return "Full access to all species and tools"
-        case .path:
-            return "Full access, photo identification, and more"
         }
     }
 
@@ -495,7 +610,6 @@ struct ProfileView: View {
         switch tier {
         case .free: return "leaf"
         case .annual: return "star.fill"
-        case .path: return "crown.fill"
         }
     }
 
@@ -507,7 +621,7 @@ struct ProfileView: View {
             HStack(alignment: .firstTextBaseline) {
                 Text("ACHIEVEMENTS")
                     .font(.system(size: 10, weight: .heavy, design: .monospaced))
-                    .foregroundStyle(AppColors.textMuted)
+                    .foregroundStyle(AppColors.primaryAmber)
                     .kerning(2)
 
                 Spacer()
@@ -693,7 +807,7 @@ struct ProfileView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("NAME")
                         .font(.system(size: 10, weight: .heavy, design: .monospaced))
-                        .foregroundStyle(AppColors.textMuted)
+                        .foregroundStyle(AppColors.primaryAmber)
                         .kerning(1.5)
 
                     TextField("Enter your name", text: $editName)
@@ -714,7 +828,7 @@ struct ProfileView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("EMAIL")
                         .font(.system(size: 10, weight: .heavy, design: .monospaced))
-                        .foregroundStyle(AppColors.textMuted)
+                        .foregroundStyle(AppColors.primaryAmber)
                         .kerning(1.5)
 
                     TextField("Enter your email", text: $editEmail)
@@ -838,7 +952,6 @@ struct ProfileView: View {
         switch tier {
         case .free: return AppColors.textMuted
         case .annual: return .orangePrimary
-        case .path: return .orangePrimary
         }
     }
 }

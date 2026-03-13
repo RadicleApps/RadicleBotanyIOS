@@ -8,29 +8,26 @@ struct BloomCalendarView: View {
     @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
 
     private let columns = [
-        GridItem(.flexible(), spacing: 1.5),
-        GridItem(.flexible(), spacing: 1.5)
+        GridItem(.flexible())
     ]
 
     private let monthNames = Calendar.current.monthSymbols
     private let currentMonth = Calendar.current.component(.month, from: Date())
 
-    // MARK: - Computed Properties
+    // MARK: - Cached Data (computed once, updated on change)
 
-    private var plantsWithBloomData: [Plant] {
-        allPlants.filter { !$0.bloomMonthArray.isEmpty }
-    }
+    @State private var cachedBloomCounts: [Int: Int] = [:]
+    @State private var cachedBloomingPlants: [Plant] = []
+    @State private var cachedPlantsWithBloom: [Plant] = []
 
-    private var bloomingPlants: [Plant] {
-        plantsWithBloomData.filter { $0.bloomMonthArray.contains(selectedMonth) }
-    }
-
-    private var monthBloomCounts: [Int: Int] {
+    private func recomputeBloomData() {
+        cachedPlantsWithBloom = allPlants.filter { !$0.bloomMonthArray.isEmpty }
         var counts: [Int: Int] = [:]
         for month in 1...12 {
-            counts[month] = plantsWithBloomData.filter { $0.bloomMonthArray.contains(month) }.count
+            counts[month] = cachedPlantsWithBloom.filter { $0.bloomMonthArray.contains(month) }.count
         }
-        return counts
+        cachedBloomCounts = counts
+        cachedBloomingPlants = cachedPlantsWithBloom.filter { $0.bloomMonthArray.contains(selectedMonth) }
     }
 
     // MARK: - Body
@@ -43,23 +40,28 @@ struct BloomCalendarView: View {
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
 
-            if bloomingPlants.isEmpty {
+            if cachedBloomingPlants.isEmpty {
                 emptyState
             } else {
                 ScrollView {
-                    LazyVGrid(columns: columns, spacing: 1.5) {
-                        ForEach(bloomingPlants) { plant in
+                    LazyVGrid(columns: columns, spacing: 8) {
+                        ForEach(cachedBloomingPlants) { plant in
                             bloomPlantCell(plant)
                         }
                     }
-                    .padding(.bottom, 32)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 100)
                 }
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Bloom Calendar")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .featureGuide(.bloomCalendar)
+        .onAppear { if cachedPlantsWithBloom.isEmpty { recomputeBloomData() } }
+        .onChange(of: selectedMonth) { _, _ in
+            cachedBloomingPlants = cachedPlantsWithBloom.filter { $0.bloomMonthArray.contains(selectedMonth) }
+        }
     }
 
     // MARK: - Month Selector
@@ -87,7 +89,7 @@ struct BloomCalendarView: View {
     private func monthChip(month: Int) -> some View {
         let isSelected = month == selectedMonth
         let isCurrent = month == currentMonth
-        let count = monthBloomCounts[month] ?? 0
+        let count = cachedBloomCounts[month] ?? 0
 
         let bgColor: Color = isSelected ? .orangePrimary : AppColors.cardElevated
         let fgColor: Color = isSelected ? .white : AppColors.textSecondary
@@ -133,7 +135,7 @@ struct BloomCalendarView: View {
 
     private var resultHeader: some View {
         HStack {
-            Text("\(bloomingPlants.count) species blooming in \(monthNames[selectedMonth - 1])")
+            Text("\(cachedBloomingPlants.count) species blooming in \(monthNames[selectedMonth - 1])")
                 .font(AppTypography.tagText)
                 .foregroundStyle(AppColors.textSecondary)
 
@@ -156,83 +158,59 @@ struct BloomCalendarView: View {
     // MARK: - Bloom Plant Cell
 
     private func bloomPlantCell(_ plant: Plant) -> some View {
-        NavigationLink(destination: PlantDetailView(plant: plant)) {
+        let index = cachedBloomingPlants.firstIndex(where: { $0.id == plant.id }) ?? 0
+        return NavigationLink(destination: CollectionPagerView(items: cachedBloomingPlants, startIndex: index) { p in
+            PlantDetailView(plant: p)
+        }) {
             bloomCellContent(plant: plant, isLocked: false)
         }
         .buttonStyle(BloomCellButtonStyle())
     }
 
     private func bloomCellContent(plant: Plant, isLocked: Bool) -> some View {
-        GeometryReader { geo in
-            ZStack(alignment: .bottom) {
-                // Square image — cached first, then URL fallback
-                CachedPlantGridImage(plant: plant, size: geo.size.width)
+        VStack(alignment: .leading, spacing: 4) {
+            // Common name
+            Text(plant.titleCasedCommonName)
+                .font(AppTypography.bodyText)
+                .fontWeight(.semibold)
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(2)
 
-                // Bottom label overlay
-                VStack(spacing: 2) {
-                    Text(plant.commonName)
-                        .font(AppTypography.tagText)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
+            // Scientific name
+            Text(plant.scientificName)
+                .font(.system(size: 12, weight: .regular, design: .serif))
+                .italic()
+                .foregroundStyle(AppColors.textSecondary)
+                .lineLimit(1)
 
-                    Text(plant.scientificName)
-                        .font(.system(size: 10, weight: .regular, design: .serif))
-                        .italic()
-                        .foregroundStyle(.white.opacity(0.7))
-                        .lineLimit(1)
-
-                    // Bloom badges
-                    HStack(spacing: 4) {
-                        if let bloomText = plant.bloomPeriodText {
-                            Text(bloomText)
-                                .font(AppTypography.inter(size: 8, weight: .medium))
-                                .foregroundStyle(AppColors.primaryAmber)
-                        }
-
-                        if plant.bloomMonthArray.contains(currentMonth) {
-                            Text("· Blooming Now")
-                                .font(AppTypography.inter(size: 8, weight: .bold))
-                                .foregroundStyle(AppColors.success)
-                        }
-                    }
-                    .padding(.top, 1)
+            // Bloom badges
+            HStack(spacing: 4) {
+                if let bloomText = plant.bloomPeriodText {
+                    Text(bloomText)
+                        .font(AppTypography.inter(size: 9, weight: .medium))
+                        .foregroundStyle(AppColors.primaryAmber)
                 }
-                .frame(width: geo.size.width, alignment: .center)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 7)
-                .background(
-                    LinearGradient(
-                        colors: [.clear, Color.black.opacity(0.85)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
 
-                // Lock overlay
-                if isLocked {
-                    Color.black.opacity(0.55)
-                        .frame(width: geo.size.width, height: geo.size.width)
-                    Image(systemName: "lock.fill")
-                        .font(AppTypography.inter(size: 18))
-                        .foregroundStyle(.white.opacity(0.6))
+                if plant.bloomMonthArray.contains(currentMonth) {
+                    Text("Now")
+                        .font(AppTypography.inter(size: 8, weight: .bold))
+                        .foregroundStyle(AppColors.success)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(AppColors.success.opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: 3))
                 }
             }
-            .frame(width: geo.size.width, height: geo.size.width)
         }
-        .aspectRatio(1.0, contentMode: .fit)
-        .clipped()
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.button)
+                .stroke(AppColors.border, lineWidth: 0.5)
+        )
         .contentShape(Rectangle())
-    }
-
-    private func bloomCellPlaceholder(size: CGFloat) -> some View {
-        AppColors.cardElevated
-            .frame(width: size, height: size)
-            .overlay {
-                Image(systemName: "camera.macro")
-                    .font(AppTypography.inter(size: 28))
-                    .foregroundStyle(AppColors.primaryAmber.opacity(0.2))
-            }
     }
 
     // MARK: - Empty State

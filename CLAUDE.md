@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-RadicleBotany is a native iOS botanical learning and plant identification app. Users can identify plants through trait-based keying (Observe mode), photo identification via PlantNet API (Capture mode), or a hybrid approach (Both mode). The app includes a curated database of 2,311 species, 183 families, and 461 botanical terms with full cross-referencing. A freemium model gates content behind two annual subscription tiers: RadicleBotany ($33.99/yr) and RadicleBotany Path ($63.99/yr), both with 7-day free trials.
+RadicleBotany is a native iOS botanical learning and plant identification app. Users can identify plants through trait-based keying (Observe mode), photo identification via PlantNet API (Capture mode), or a hybrid approach (Both mode). The app includes a curated database of 2,327 species, 183 families, and 461 botanical terms with full cross-referencing. A freemium model gates content behind a single annual subscription: RadicleBotany ($33.99/yr) with a 7-day free trial.
 
 **Repo:** https://github.com/RadicleApps/RadicleBotanyIOS
 
@@ -26,7 +26,7 @@ RadicleBotanyIOS/
 ├── CLAUDE.md
 ├── .gitignore
 ├── Families.json                          # Source data (183 families)
-├── RadicleBotany_Plants.json              # Source data (2,311 species)
+├── RadicleBotany_Plants.json              # Source data (2,327 species)
 ├── RadicleBotany_Botany.json              # Source data (461 terms)
 └── RadicleBotany/
     ├── RadicleBotanyApp.swift             # @main entry, SwiftData container, onboarding gate
@@ -113,26 +113,25 @@ RadicleBotanyIOS/
 
 | ID | Type | Price | Trial |
 |----|------|-------|-------|
-| com.radicle.radiclebotany.annual | Auto-renewable | $33.99/yr | 7-day free |
-| com.radicle.radiclebotany.path.annual | Auto-renewable | $63.99/yr | 7-day free |
+| com.radicle.radiclebotany.botanist.annual | Auto-renewable | $33.99/yr | 7-day free |
 
 ## Feature Gating
 
-| Feature | Free | RadicleBotany | RadicleBotany Path |
-|---------|------|---------------|-------------------|
-| First 30 species | ✅ | ✅ | ✅ |
-| All 2,311 species | ❌ | ✅ | ✅ |
-| All 183 families | ❌ | ✅ | ✅ |
-| First 50 terms | ✅ | ✅ | ✅ |
-| All 461 terms | ❌ | ✅ | ✅ |
-| Observe mode (unlimited) | ✅ | ✅ | ✅ |
-| Journal & Collections | ❌ | ✅ | ✅ |
-| Flashcards & Study Streaks | ❌ | ✅ | ✅ |
-| Plants Near Me | ✅ | ✅ | ✅ |
-| Photo Identification (Capture) | ❌ | ❌ | ✅ |
-| Both mode | ❌ | ❌ | ✅ |
-| Plant Assistant | ❌ | ❌ | ✅ |
-| iCloud sync | ❌ | ❌ | ✅ |
+| Feature | Free | RadicleBotany |
+|---------|------|---------------|
+| First 30 species | ✅ | ✅ |
+| All 2,327 species | ❌ | ✅ |
+| All 183 families | ❌ | ✅ |
+| First 50 terms | ✅ | ✅ |
+| All 461 terms | ❌ | ✅ |
+| Observe mode (unlimited) | ✅ | ✅ |
+| Journal & Collections | ❌ | ✅ |
+| Flashcards & Study Streaks | ❌ | ✅ |
+| Plants Near Me | ✅ | ✅ |
+| Photo Identification (Capture) | ❌ | ✅ |
+| Both mode | ❌ | ✅ |
+| Plant Assistant | ❌ | ✅ |
+| iCloud sync | ❌ | ✅ |
 
 ## App Flow
 

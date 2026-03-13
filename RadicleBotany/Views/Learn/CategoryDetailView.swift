@@ -17,6 +17,9 @@ struct CategoryDetailView: View {
         GridItem(.flexible(), spacing: 10),
         GridItem(.flexible(), spacing: 10)
     ]
+    private let singleColumn = [
+        GridItem(.flexible())
+    ]
 
     // MARK: - Category → Term Category Mapping
 
@@ -130,9 +133,20 @@ struct CategoryDetailView: View {
             .sorted { $0.name < $1.name }
     }
 
-    /// Terms with illustrations.
+    /// Terms with illustrations (color or diagram).
     private var illustratedTerms: [BotanyTerm] {
-        filteredTerms.filter { $0.imageURL != nil && !($0.imageURL?.isEmpty ?? true) }
+        filteredTerms.filter {
+            ($0.colorImageURL != nil && !($0.colorImageURL?.isEmpty ?? true)) ||
+            ($0.imageURL != nil && !($0.imageURL?.isEmpty ?? true))
+        }
+    }
+
+    /// Terms without any illustration.
+    private var textOnlyTerms: [BotanyTerm] {
+        filteredTerms.filter {
+            ($0.colorImageURL == nil || ($0.colorImageURL?.isEmpty ?? true)) &&
+            ($0.imageURL == nil || ($0.imageURL?.isEmpty ?? true))
+        }
     }
 
     // MARK: - Species Data
@@ -193,7 +207,7 @@ struct CategoryDetailView: View {
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle(category)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .featureGuide(.categoryDetail)
     }
@@ -350,40 +364,67 @@ struct CategoryDetailView: View {
             if filteredTerms.isEmpty {
                 emptyState(icon: "text.book.closed", message: "No terms found")
             } else {
-                // Result count
                 termsResultBar
 
-                // Illustrated terms grid grouped by subcategory
-                ForEach(termsBySubcategory, id: \.name) { group in
-                    // Subcategory header
+                // 1. Illustrated terms — 2-column grid with images
+                if !illustratedTerms.isEmpty {
                     HStack(spacing: 6) {
-                        RoundedRectangle(cornerRadius: 1)
-                            .fill(accentColor.opacity(0.5))
-                            .frame(width: 3, height: 14)
+                        Image(systemName: "photo.fill")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(accentColor.opacity(0.7))
 
-                        Text(group.name)
+                        Text("Illustrated")
                             .font(AppTypography.tagText)
                             .foregroundStyle(AppColors.textSecondary)
 
-                        Text("\(group.terms.count)")
+                        Text("\(illustratedTerms.count)")
                             .font(AppTypography.caption)
                             .foregroundStyle(AppColors.textMuted)
 
                         Spacer()
                     }
                     .padding(.horizontal, 16)
-                    .padding(.top, 16)
+                    .padding(.top, 12)
                     .padding(.bottom, 6)
 
-                    // Grid of term cells
                     LazyVGrid(columns: gridColumns, spacing: 10) {
-                        ForEach(group.terms) { term in
+                        ForEach(illustratedTerms) { term in
                             termCell(term)
                         }
                     }
                     .padding(.horizontal, 16)
                 }
-                .padding(.bottom, 40)
+
+                // 2. Text-only terms — clean list rows
+                if !textOnlyTerms.isEmpty {
+                    HStack(spacing: 6) {
+                        Image(systemName: "text.book.closed")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textMuted.opacity(0.7))
+
+                        Text("Definitions")
+                            .font(AppTypography.tagText)
+                            .foregroundStyle(AppColors.textSecondary)
+
+                        Text("\(textOnlyTerms.count)")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textMuted)
+
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, illustratedTerms.isEmpty ? 12 : 24)
+                    .padding(.bottom, 6)
+
+                    LazyVStack(spacing: 6) {
+                        ForEach(textOnlyTerms) { term in
+                            textOnlyTermCell(term)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                }
+
+                Color.clear.frame(height: 120)
             }
         }
     }
@@ -424,9 +465,14 @@ struct CategoryDetailView: View {
 
     @ViewBuilder
     private func termCell(_ term: BotanyTerm) -> some View {
-        let hasImage = term.imageURL != nil && !(term.imageURL?.isEmpty ?? true)
+        let hasImage = (term.colorImageURL != nil && !(term.colorImageURL?.isEmpty ?? true)) ||
+                       (term.imageURL != nil && !(term.imageURL?.isEmpty ?? true))
 
-        NavigationLink(destination: TermDetailView(term: term)) {
+        let allFiltered = filteredTerms
+        let index = allFiltered.firstIndex(where: { $0.id == term.id }) ?? 0
+        NavigationLink(destination: CollectionPagerView(items: allFiltered, startIndex: index) { t in
+            TermDetailView(term: t)
+        }) {
             termCellContent(term, hasImage: hasImage, isLocked: false)
         }
         .buttonStyle(.plain)
@@ -436,20 +482,16 @@ struct CategoryDetailView: View {
         VStack(alignment: .leading, spacing: 6) {
             // Image or placeholder
             ZStack {
-                if hasImage, let urlString = term.imageURL, let url = URL(string: urlString) {
+                let bestURL: URL? = {
+                    if let c = term.colorImageURL, !c.isEmpty, let u = URL(string: c) { return u }
+                    if let d = term.imageURL, !d.isEmpty, let u = URL(string: d) { return u }
+                    return nil
+                }()
+                if hasImage, let url = bestURL {
                     AppColors.appBackground
                         .overlay {
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image.resizable().aspectRatio(contentMode: .fit)
-                                case .failure:
-                                    termImagePlaceholder
-                                case .empty:
-                                    ProgressView().tint(AppColors.textMuted)
-                                @unknown default:
-                                    termImagePlaceholder
-                                }
+                            ThrottledAsyncImage(url: url, contentMode: .fit) {
+                                termImagePlaceholder
                             }
                         }
                         .frame(height: 90)
@@ -485,6 +527,42 @@ struct CategoryDetailView: View {
         .padding(.bottom, 4)
     }
 
+    private func textOnlyTermCell(_ term: BotanyTerm) -> some View {
+        let allFiltered = filteredTerms
+        let index = allFiltered.firstIndex(where: { $0.id == term.id }) ?? 0
+        return NavigationLink(destination: CollectionPagerView(items: allFiltered, startIndex: index) { t in
+            TermDetailView(term: t)
+        }) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(term.term)
+                        .font(AppTypography.tagText)
+                        .fontWeight(.medium)
+                        .foregroundStyle(AppColors.textPrimary)
+                        .lineLimit(1)
+
+                    if !term.descriptionShort.isEmpty {
+                        Text(term.descriptionShort)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textMuted)
+                            .lineLimit(2)
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundStyle(AppColors.textMuted.opacity(0.4))
+            }
+            .padding(.vertical, 11)
+            .padding(.horizontal, 14)
+            .background(AppColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+        }
+        .buttonStyle(.plain)
+    }
+
     private var termImagePlaceholder: some View {
         Image(systemName: categoryIcon)
             .font(.title3)
@@ -501,15 +579,15 @@ struct CategoryDetailView: View {
                 // Result count
                 speciesResultBar
 
-                // Species grid
-                LazyVGrid(columns: gridColumns, spacing: 12) {
+                // Species grid — single column for text-only items
+                LazyVGrid(columns: singleColumn, spacing: 8) {
                     ForEach(filteredPlants) { plant in
                         speciesCell(plant)
                     }
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 4)
-                .padding(.bottom, 40)
+                .padding(.bottom, 120)
             }
         }
     }
@@ -548,7 +626,11 @@ struct CategoryDetailView: View {
     // MARK: - Species Cell
 
     private func speciesCell(_ plant: Plant) -> some View {
-        NavigationLink(destination: PlantDetailView(plant: plant)) {
+        let plants = filteredPlants
+        let index = plants.firstIndex(where: { $0.id == plant.id }) ?? 0
+        return NavigationLink(destination: CollectionPagerView(items: plants, startIndex: index) { p in
+            PlantDetailView(plant: p)
+        }) {
             speciesCellContent(plant: plant, isLocked: false)
         }
         .buttonStyle(.plain)
@@ -597,7 +679,7 @@ struct CategoryDetailView: View {
                     .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
 
-                Text(plant.commonName)
+                Text(plant.titleCasedCommonName)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)

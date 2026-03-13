@@ -2,7 +2,6 @@ import SwiftUI
 import SwiftData
 
 struct TermsListView: View {
-    @EnvironmentObject var storeManager: StoreManager
     @Query(sort: \BotanyTerm.term) private var terms: [BotanyTerm]
 
     @State private var searchText = ""
@@ -29,10 +28,6 @@ struct TermsListView: View {
     ]
 
     // MARK: - Computed Properties
-
-    private var hasFullAccess: Bool {
-        storeManager.isFeatureUnlocked(.fullTermAccess)
-    }
 
     private func parentGroup(for category: String) -> String {
         let lower = category.lowercased()
@@ -94,10 +89,11 @@ struct TermsListView: View {
         return result
     }
 
-    /// Filtered terms that have an illustration, grouped by subcategory.
+    /// Filtered terms that have an illustration (color or diagram), grouped by subcategory.
     private var illustratedBySubcategory: [TermSubcategory] {
         let illustrated: [BotanyTerm] = filteredTerms.filter {
-            $0.imageURL != nil && !($0.imageURL?.isEmpty ?? true)
+            ($0.colorImageURL != nil && !($0.colorImageURL?.isEmpty ?? true)) ||
+            ($0.imageURL != nil && !($0.imageURL?.isEmpty ?? true))
         }
         guard !illustrated.isEmpty else { return [] }
 
@@ -112,10 +108,11 @@ struct TermsListView: View {
         illustratedBySubcategory.reduce(0) { $0 + $1.terms.count }
     }
 
-    /// Filtered terms without images, grouped by parent group → subcategory.
+    /// Filtered terms without any images, grouped by parent group → subcategory.
     private var textOnlyGroups: [TermParentGroup] {
         let textOnly: [BotanyTerm] = filteredTerms.filter {
-            $0.imageURL == nil || ($0.imageURL?.isEmpty ?? true)
+            ($0.colorImageURL == nil || ($0.colorImageURL?.isEmpty ?? true)) &&
+            ($0.imageURL == nil || ($0.imageURL?.isEmpty ?? true))
         }
         return buildHierarchy(from: textOnly)
     }
@@ -170,7 +167,7 @@ struct TermsListView: View {
                             textListSection
                         }
                     }
-                    .padding(.bottom, 32)
+                    .padding(.bottom, 80)
                 }
             }
         }
@@ -221,7 +218,7 @@ struct TermsListView: View {
     private var groupFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                filterChip(name: "All", color: .purpleSecondary, isSelected: selectedGroup == nil) {
+                filterChip(name: "All", isSelected: selectedGroup == nil) {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         selectedGroup = nil
                         selectedSubcategory = nil
@@ -229,8 +226,7 @@ struct TermsListView: View {
                 }
 
                 ForEach(availableGroups, id: \.self) { group in
-                    let def = groupDef(for: group)
-                    filterChip(name: group, color: def.color, isSelected: selectedGroup == group) {
+                    filterChip(name: group, isSelected: selectedGroup == group) {
                         withAnimation(.easeInOut(duration: 0.2)) {
                             selectedGroup = group
                             selectedSubcategory = nil
@@ -270,10 +266,11 @@ struct TermsListView: View {
 
     // MARK: - Chip Components
 
-    private func filterChip(name: String, color: Color, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        let bgColor: Color = isSelected ? color : AppColors.cardElevated
+    private func filterChip(name: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        let accent: Color = AppColors.brandPurple
+        let bgColor: Color = isSelected ? accent : AppColors.cardElevated
         let fgColor: Color = isSelected ? .white : AppColors.textSecondary
-        let borderColor: Color = isSelected ? color : AppColors.border
+        let borderColor: Color = isSelected ? accent : AppColors.border
 
         return Button(action: action) {
             Text(name)
@@ -292,7 +289,7 @@ struct TermsListView: View {
     }
 
     private func subFilterChip(name: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        let color: Color = activeGroupColor
+        let color: Color = AppColors.brandPurple
         let bgColor: Color = isSelected ? color.opacity(0.2) : Color.clear
         let fgColor: Color = isSelected ? color : AppColors.textMuted
         let borderColor: Color = isSelected ? color.opacity(0.5) : AppColors.border.opacity(0.6)
@@ -338,7 +335,7 @@ struct TermsListView: View {
                 } label: {
                     Text("Clear")
                         .font(AppTypography.tagText)
-                        .foregroundStyle(AppColors.brandPurple)
+                        .foregroundStyle(AppColors.primaryAmber)
                 }
                 .buttonStyle(.plain)
             }
@@ -372,7 +369,7 @@ struct TermsListView: View {
                 } label: {
                     Text("Clear filters")
                         .font(AppTypography.tagText)
-                        .foregroundStyle(AppColors.brandPurple)
+                        .foregroundStyle(AppColors.primaryAmber)
                 }
                 .buttonStyle(.plain)
             }
@@ -393,10 +390,10 @@ struct TermsListView: View {
 
                 Text("\(illustratedCount)")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.brandPurple.opacity(0.7))
+                    .foregroundStyle(AppColors.primaryAmber.opacity(0.7))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(AppColors.brandPurple.opacity(0.1))
+                    .background(AppColors.primaryAmber.opacity(0.1))
                     .clipShape(Capsule())
 
                 Spacer()
@@ -429,7 +426,7 @@ struct TermsListView: View {
 
                 LazyVGrid(columns: gridColumns, spacing: 10) {
                     ForEach(subcategory.terms) { term in
-                        illustratedTermCell(term)
+                        illustratedTermCell(term, subcategoryTerms: subcategory.terms)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -438,8 +435,11 @@ struct TermsListView: View {
     }
 
     @ViewBuilder
-    private func illustratedTermCell(_ term: BotanyTerm) -> some View {
-        NavigationLink(destination: TermDetailView(term: term)) {
+    private func illustratedTermCell(_ term: BotanyTerm, subcategoryTerms: [BotanyTerm]) -> some View {
+        let index = subcategoryTerms.firstIndex(where: { $0.id == term.id }) ?? 0
+        return NavigationLink(destination: CollectionPagerView(items: subcategoryTerms, startIndex: index) { t in
+            TermDetailView(term: t)
+        }) {
             illustratedCellBody(term, isLocked: false)
         }
         .buttonStyle(.plain)
@@ -469,28 +469,26 @@ struct TermsListView: View {
         .contentShape(Rectangle())
     }
 
+    /// Prefer colorImageURL, fall back to imageURL (diagram)
     @ViewBuilder
     private func illustratedCellImage(_ term: BotanyTerm) -> some View {
-        if let urlString = term.imageURL, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 100)
-                        .clipped()
-                case .failure:
-                    cellImagePlaceholder
-                case .empty:
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 100)
-                @unknown default:
-                    cellImagePlaceholder
-                }
+        let bestURL: URL? = {
+            if let colorStr = term.colorImageURL, !colorStr.isEmpty, let url = URL(string: colorStr) {
+                return url
             }
+            if let imgStr = term.imageURL, !imgStr.isEmpty, let url = URL(string: imgStr) {
+                return url
+            }
+            return nil
+        }()
+
+        if let url = bestURL {
+            ThrottledAsyncImage(url: url, contentMode: .fit) {
+                cellImagePlaceholder
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 100)
+            .clipped()
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
         } else {
             cellImagePlaceholder
@@ -529,7 +527,7 @@ struct TermsListView: View {
                     subcategoryHeader(subcategory, color: group.color)
 
                     ForEach(subcategory.terms) { term in
-                        termRow(term)
+                        termRow(term, subcategoryTerms: subcategory.terms)
                     }
                 }
             }
@@ -585,8 +583,11 @@ struct TermsListView: View {
     // MARK: - Term Row
 
     @ViewBuilder
-    private func termRow(_ term: BotanyTerm) -> some View {
-        NavigationLink(destination: TermDetailView(term: term)) {
+    private func termRow(_ term: BotanyTerm, subcategoryTerms: [BotanyTerm]) -> some View {
+        let index = subcategoryTerms.firstIndex(where: { $0.id == term.id }) ?? 0
+        return NavigationLink(destination: CollectionPagerView(items: subcategoryTerms, startIndex: index) { t in
+            TermDetailView(term: t)
+        }) {
             termRowContent(term)
         }
         .buttonStyle(.plain)

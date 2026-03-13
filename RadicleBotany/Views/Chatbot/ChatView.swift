@@ -54,7 +54,7 @@ struct ChatView: View {
                         }
                         .padding(.horizontal, AppSpacing.screenPadding)
                         .padding(.top, 12)
-                        .padding(.bottom, 16)
+                        .padding(.bottom, 80)
                     }
                     .onAppear { scrollProxy = proxy }
                     .onChange(of: chatbotService.messages.count) { _ in

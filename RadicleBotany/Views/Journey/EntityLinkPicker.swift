@@ -209,7 +209,7 @@ struct EntityLinkPicker: View {
                         .foregroundStyle(AppColors.textPrimary)
                         .lineLimit(1)
 
-                    Text(plant.commonName)
+                    Text(plant.titleCasedCommonName)
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColors.textMuted)
                         .lineLimit(1)

@@ -95,7 +95,7 @@ struct RegionMapView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("TOP SPECIES")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textMuted)
+                        .foregroundStyle(AppColors.primaryAmber)
 
                     Text(topSpecies.prefix(3).joined(separator: " · "))
                         .font(AppTypography.fieldLabel)

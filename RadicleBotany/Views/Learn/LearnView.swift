@@ -12,106 +12,31 @@ struct LearnView: View {
         GridItem(.flexible(), spacing: 10)
     ]
 
-    private let discoverColumns = [
-        GridItem(.flexible(), spacing: 10),
-        GridItem(.flexible(), spacing: 10)
-    ]
-
     // MARK: - Category Data
 
     private struct CategoryInfo {
         let title: String
         let icon: String
         let isAssetIcon: Bool
-        let color: Color
         let subtitle: String
 
-        init(title: String, icon: String, isAssetIcon: Bool = false, color: Color, subtitle: String) {
+        init(title: String, icon: String, isAssetIcon: Bool = false, subtitle: String) {
             self.title = title
             self.icon = icon
             self.isAssetIcon = isAssetIcon
-            self.color = color
             self.subtitle = subtitle
         }
     }
 
     private var categoryData: [CategoryInfo] {
         [
-            CategoryInfo(
-                title: "Flowers",
-                icon: "ph-flower-tulip",
-                isAssetIcon: true,
-                color: .orangePrimary,
-                subtitle: "Color, symmetry & form"
-            ),
-            CategoryInfo(
-                title: "Leaves",
-                icon: "ph-leaf",
-                isAssetIcon: true,
-                color: .orangePrimary,
-                subtitle: "Shape, margin & venation"
-            ),
-            CategoryInfo(
-                title: "Fruits",
-                icon: "ph-cherries",
-                isAssetIcon: true,
-                color: .orangePrimary,
-                subtitle: "Seed types & dispersal"
-            ),
-            CategoryInfo(
-                title: "Bark",
-                icon: "ph-tree",
-                isAssetIcon: true,
-                color: .orangePrimary,
-                subtitle: "Texture & growth habit"
-            ),
-            CategoryInfo(
-                title: "Stems",
-                icon: "ph-plant",
-                isAssetIcon: true,
-                color: .orangePrimary,
-                subtitle: "Structure & branching"
-            ),
-            CategoryInfo(
-                title: "Roots",
-                icon: "carrot.fill",
-                color: .orangePrimary,
-                subtitle: "Root systems & types"
-            )
+            CategoryInfo(title: "Flowers", icon: "ph-flower-tulip", isAssetIcon: true, subtitle: "Color, symmetry & form"),
+            CategoryInfo(title: "Leaves",  icon: "ph-leaf",         isAssetIcon: true, subtitle: "Shape, margin & venation"),
+            CategoryInfo(title: "Fruits",  icon: "ph-cherries",     isAssetIcon: true, subtitle: "Seed types & dispersal"),
+            CategoryInfo(title: "Bark",    icon: "ph-tree",         isAssetIcon: true, subtitle: "Texture & growth habit"),
+            CategoryInfo(title: "Stems",   icon: "ph-plant",        isAssetIcon: true, subtitle: "Structure & branching"),
+            CategoryInfo(title: "Roots",   icon: "carrot.fill",                        subtitle: "Root systems & types")
         ]
-    }
-
-    // MARK: - Featured Species
-
-    private var featuredSpecies: [Plant] {
-        let freePlants = plants.filter { $0.isFree }
-        guard !freePlants.isEmpty else { return [] }
-        let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 1
-        let shuffled = freePlants.sorted { a, b in
-            let hashA = abs(a.scientificName.hashValue &+ dayOfYear)
-            let hashB = abs(b.scientificName.hashValue &+ dayOfYear)
-            return hashA < hashB
-        }
-        return Array(shuffled.prefix(6))
-    }
-
-    // MARK: - Stats
-
-    private var uniqueFamilyCount: Int {
-        Set(plants.map { $0.familyLatin }).count
-    }
-
-    private var uniqueOrderCount: Int {
-        Set(families.map { $0.order }.filter { !$0.isEmpty }).count
-    }
-
-    private var uniqueTermCategories: Int {
-        Set(terms.map { $0.category }).count
-    }
-
-    private var bloomingNowCount: Int {
-        let currentMonth = Calendar.current.component(.month, from: Date())
-        return plants.filter { $0.bloomMonthArray.contains(currentMonth) }.count
     }
 
     // MARK: - Body
@@ -119,24 +44,21 @@ struct LearnView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                // Section 1: Seasonal Spotlight Strip
-                seasonalSpotlightStrip
+                // Section 1: Study Tools
+                studySection
+                    .padding(.top, 12)
 
-                // Section 2: Browse by Category
+                // Section 2: Browse by Trait
                 categoriesSection
-                    .padding(.top, 24)
+                    .padding(.top, 28)
 
-                // Section 3: Featured Species
-                featuredSpeciesSection
-                    .padding(.top, 24)
-
-                // Section 4: Library
+                // Section 3: Library
                 librarySection
-                    .padding(.top, 24)
+                    .padding(.top, 28)
 
-                // Section 5: Discover
+                // Section 4: Discover
                 discoverSection
-                    .padding(.top, 24)
+                    .padding(.top, 28)
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 100)
@@ -146,52 +68,115 @@ struct LearnView: View {
         .toolbarBackground(.hidden, for: .navigationBar)
     }
 
-    // MARK: - Section 1: Seasonal Spotlight Strip
+    // MARK: - Section 1: Study Tools
 
-    private var seasonalSpotlightStrip: some View {
-        HStack(spacing: 16) {
-            NavigationLink(destination: BloomCalendarView()) {
-                spotlightCircle(icon: "camera.macro", color: AppColors.primaryAmber)
+    private var studySection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            sectionHeader("Study")
+
+            // Flash Cards + Quiz — equal side-by-side
+            HStack(spacing: 10) {
+                NavigationLink(destination: FlashcardHubView()) {
+                    studyToolCard(
+                        title: "Flash Cards",
+                        subtitle: "Swipe to learn terms & species",
+                        color: AppColors.primaryAmber
+                    )
+                }
+                .buttonStyle(SpotlightCardButtonStyle())
+
+                NavigationLink(destination: QuizView()) {
+                    studyToolCard(
+                        title: "Quiz",
+                        subtitle: "Multiple-choice knowledge test",
+                        color: AppColors.brandPurple
+                    )
+                }
+                .buttonStyle(SpotlightCardButtonStyle())
             }
-            .buttonStyle(SpotlightCardButtonStyle())
 
-            NavigationLink(destination: PlantsNearMeView()) {
-                spotlightCircle(icon: "location.fill", color: AppColors.primaryAmber)
-            }
-            .buttonStyle(SpotlightCardButtonStyle())
-
-            NavigationLink(destination: FlashcardHubView()) {
-                spotlightCircle(icon: "rectangle.on.rectangle.angled", color: AppColors.primaryAmber)
+            // Botanizing — full-width hero
+            NavigationLink(destination: BotanizingListView()) {
+                botanizingHeroCard
             }
             .buttonStyle(SpotlightCardButtonStyle())
         }
-        .frame(maxWidth: .infinity)
     }
 
-    private func spotlightCircle(icon: String, color: Color) -> some View {
-        Image(systemName: icon)
-            .font(AppTypography.inter(size: 18))
-            .foregroundStyle(color)
-            .frame(width: 44, height: 44)
-            .background(color.opacity(0.12))
-            .clipShape(Circle())
-            .overlay(
-                Circle()
-                    .stroke(color.opacity(0.4), lineWidth: 1.5)
+    private func studyToolCard(title: String, subtitle: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(title)
+                .font(.cormorant(size: 17, weight: .bold))
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(1)
+
+            Text(subtitle)
+                .font(AppTypography.bodySmall)
+                .foregroundStyle(AppColors.textMuted)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 5)
+        }
+        .frame(maxWidth: .infinity, minHeight: 90, alignment: .topLeading)
+        .padding(16)
+        .background(
+            LinearGradient(
+                colors: [color.opacity(0.12), color.opacity(0.04)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
             )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.card)
+                .stroke(color.opacity(0.2), lineWidth: 0.75)
+        )
     }
 
-    // MARK: - Section 2: Categories
+    private var botanizingHeroCard: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text("Botanizing")
+                .font(.cormorant(size: 20, weight: .bold))
+                .foregroundStyle(AppColors.textPrimary)
+
+            Text("Field scenarios — observe and identify plants through pattern recognition")
+                .font(AppTypography.bodySmall)
+                .foregroundStyle(AppColors.textMuted)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            LinearGradient(
+                colors: [Color.greenSecondary.opacity(0.12), Color.greenSecondary.opacity(0.03)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.card)
+                .stroke(Color.greenSecondary.opacity(0.25), lineWidth: 0.75)
+        )
+    }
+
+    // MARK: - Section 2: Browse by Trait
 
     private var categoriesSection: some View {
-        LazyVGrid(columns: categoryColumns, spacing: 10) {
+        VStack(alignment: .leading, spacing: 14) {
+            sectionHeader("Browse by Trait")
+
+            LazyVGrid(columns: categoryColumns, spacing: 10) {
                 ForEach(categoryData, id: \.title) { info in
-                    NavigationLink(destination: CategoryDetailView(category: info.title, accentColor: info.color)) {
+                    NavigationLink(destination: CategoryDetailView(category: info.title, accentColor: AppColors.brandPurple)) {
                         compactCategoryCard(info: info)
                     }
                     .buttonStyle(SpotlightCardButtonStyle())
                 }
             }
+        }
     }
 
     private func compactCategoryCard(info: CategoryInfo) -> some View {
@@ -201,13 +186,13 @@ struct LearnView: View {
                     Image(info.icon)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 22, height: 22)
+                        .frame(width: 20, height: 20)
                 } else {
                     Image(systemName: info.icon)
-                        .font(AppTypography.inter(size: 18))
+                        .font(.system(size: 17))
                 }
             }
-            .foregroundStyle(info.color)
+            .foregroundStyle(AppColors.brandPurple)
             .frame(width: 22)
 
             Text(info.title)
@@ -217,11 +202,11 @@ struct LearnView: View {
             Spacer()
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.vertical, 11)
         .frame(maxWidth: .infinity, minHeight: 48)
         .background(
             LinearGradient(
-                colors: [info.color.opacity(0.15), info.color.opacity(0.06)],
+                colors: [AppColors.brandPurple.opacity(0.12), AppColors.brandPurple.opacity(0.05)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -229,163 +214,17 @@ struct LearnView: View {
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
     }
 
-    // MARK: - Section 3: Featured Species
-
-    private var featuredSpeciesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                sectionHeader("Featured Plants")
-                Spacer()
-                Image(systemName: "sparkles")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.primaryAmber.opacity(0.6))
-            }
-
-            if featuredSpecies.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(0..<6, id: \.self) { _ in
-                            VStack(alignment: .leading, spacing: 6) {
-                                RoundedRectangle(cornerRadius: AppRadius.button)
-                                    .fill(AppColors.cardElevated)
-                                    .frame(width: 150, height: 100)
-
-                                VStack(alignment: .leading, spacing: 4) {
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .fill(AppColors.cardElevated)
-                                        .frame(width: 100, height: 12)
-
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .fill(AppColors.cardElevated.opacity(0.6))
-                                        .frame(width: 70, height: 10)
-                                }
-                            }
-                            .frame(width: 150)
-                            .padding(.bottom, 4)
-                        }
-                    }
-                }
-                .redacted(reason: .placeholder)
-            } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(featuredSpecies) { plant in
-                            NavigationLink(value: plant) {
-                                featuredSpeciesCard(plant: plant)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-                .mask(
-                    HStack(spacing: 0) {
-                        Color.black
-                        LinearGradient(
-                            colors: [.black, .clear],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                        .frame(width: 24)
-                    }
-                )
-            }
-        }
-    }
-
-    private func featuredSpeciesCard(plant: Plant) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ZStack(alignment: .bottomLeading) {
-                if let cachedImage = plant.cachedImage {
-                    Image(uiImage: cachedImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 150, height: 100)
-                        .clipped()
-                } else if let imageURL = plant.bestImageURL, let url = URL(string: imageURL) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 150, height: 100)
-                                .clipped()
-                        default:
-                            featuredPlantGradient
-                        }
-                    }
-                } else {
-                    featuredPlantGradient
-                }
-
-                if !plant.familyLatin.isEmpty {
-                    Text(plant.familyLatin)
-                        .font(AppTypography.tagText)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(AppColors.primaryAmber.opacity(0.7))
-                        .clipShape(Capsule())
-                        .padding(5)
-                }
-            }
-            .frame(width: 150, height: 100)
-            .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(plant.commonName)
-                    .font(AppTypography.tagText)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.textPrimary)
-                    .lineLimit(1)
-
-                Text(plant.scientificName)
-                    .font(AppTypography.fieldLabel)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .lineLimit(1)
-            }
-
-            if plant.isAtRisk, let status = plant.atRiskStatus {
-                AtRiskBadge(status: status)
-            }
-        }
-        .frame(width: 150)
-        .padding(.bottom, 4)
-    }
-
-    private var featuredPlantGradient: some View {
-        RoundedRectangle(cornerRadius: AppRadius.button)
-            .fill(
-                LinearGradient(
-                    colors: [AppColors.primaryAmber.opacity(0.25), AppColors.primaryAmber.opacity(0.08)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .frame(width: 150, height: 100)
-            .overlay {
-                Image("AppIconDark")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32, height: 32)
-                    .opacity(0.2)
-            }
-    }
-
-    // MARK: - Section 4: Library
+    // MARK: - Section 3: Library
 
     private var librarySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             sectionHeader("Library")
 
             VStack(spacing: 0) {
                 NavigationLink(destination: TermsListView()) {
                     libraryRow(
-                        icon: "text.book.closed.fill",
                         title: "Terms",
-                        subtitle: "\(uniqueTermCategories) categories",
-                        count: terms.count,
-                        color: .orangePrimary
+                        count: terms.count
                     )
                 }
                 .buttonStyle(.plain)
@@ -394,11 +233,8 @@ struct LearnView: View {
 
                 NavigationLink(destination: SpeciesGridView()) {
                     libraryRow(
-                        icon: "leaf.fill",
                         title: "Species",
-                        subtitle: "\(uniqueFamilyCount) families",
-                        count: plants.count,
-                        color: .orangePrimary
+                        count: plants.count
                     )
                 }
                 .buttonStyle(.plain)
@@ -407,11 +243,8 @@ struct LearnView: View {
 
                 NavigationLink(destination: FamiliesListView()) {
                     libraryRow(
-                        icon: "leaf.circle.fill",
                         title: "Families",
-                        subtitle: "\(uniqueOrderCount) botanical orders",
-                        count: families.count,
-                        color: .orangePrimary
+                        count: families.count
                     )
                 }
                 .buttonStyle(.plain)
@@ -425,116 +258,127 @@ struct LearnView: View {
         }
     }
 
-    private func libraryRow(icon: String, title: String, subtitle: String, count: Int, color: Color) -> some View {
+    private func libraryRow(title: String, count: Int) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(color)
-                .frame(width: 36, height: 36)
-                .background(color.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(AppTypography.bodyText)
-                    .foregroundStyle(AppColors.textPrimary)
-
-                Text(subtitle)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textMuted)
-            }
+            Text(title)
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textPrimary)
 
             Spacer()
 
             Text("\(count)")
                 .font(AppTypography.sectionHeader)
-                .foregroundStyle(color)
+                .foregroundStyle(AppColors.primaryAmber)
 
             Image(systemName: "chevron.right")
-                .font(AppTypography.caption)
+                .font(.system(size: 11))
                 .foregroundStyle(AppColors.textMuted)
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .padding(.vertical, 13)
     }
 
-    // MARK: - Section 5: Discover
+    // MARK: - Section 4: Discover
+    // Note: "Plants Near Me" is temporarily hidden — NavigationLink preserved below.
 
     private var discoverSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             sectionHeader("Discover")
 
-            LazyVGrid(columns: discoverColumns, spacing: 10) {
-                NavigationLink(destination: BloomCalendarView()) {
-                    discoverCard(
-                        icon: "calendar",
-                        title: "Bloom Calendar",
-                        subtitle: "See what's flowering each month",
-                        color: .orangePrimary
-                    )
-                }
-                .buttonStyle(SpotlightCardButtonStyle())
+            // Bloom Calendar — full-width hero card
+            NavigationLink(destination: BloomCalendarView()) {
+                discoverHeroCard(
+                    title: "Bloom Calendar",
+                    subtitle: "See blooms each month across plants",
+                    color: AppColors.primaryAmber
+                )
+            }
+            .buttonStyle(SpotlightCardButtonStyle())
 
+            // At-Risk Plants + Resources — equal side-by-side
+            HStack(spacing: 10) {
                 NavigationLink(destination: ConservationView()) {
                     discoverCard(
-                        icon: "exclamationmark.triangle.fill",
                         title: "At-Risk Plants",
                         subtitle: "United Plant Savers list",
-                        color: .orangePrimary
-                    )
-                }
-                .buttonStyle(SpotlightCardButtonStyle())
-
-                NavigationLink(destination: PlantsNearMeView()) {
-                    discoverCard(
-                        icon: "location.fill",
-                        title: "Plants Near Me",
-                        subtitle: "Predicted species in your area",
-                        color: .orangePrimary
+                        color: AppColors.brandPurple
                     )
                 }
                 .buttonStyle(SpotlightCardButtonStyle())
 
                 NavigationLink(destination: ResourcesView()) {
                     discoverCard(
-                        icon: "book.closed.fill",
                         title: "Resources",
                         subtitle: "Conservation orgs & societies",
-                        color: .orangePrimary
+                        color: AppColors.success
                     )
                 }
                 .buttonStyle(SpotlightCardButtonStyle())
             }
+
+            // Plants Near Me — hidden until location issues resolved; keep code for re-enable:
+            // NavigationLink(destination: PlantsNearMeView()) {
+            //     discoverCard(
+            //         title: "Plants Near Me",
+            //         subtitle: "Predicted species in your area",
+            //         icon: "location.circle",
+            //         color: AppColors.primaryAmber
+            //     )
+            // }
+            // .buttonStyle(SpotlightCardButtonStyle())
         }
     }
 
-    private func discoverCard(icon: String, title: String, subtitle: String, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Image(systemName: icon)
-                .font(AppTypography.inter(size: 16))
-                .foregroundStyle(color)
-                .frame(width: 32, height: 32)
-                .background(color.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-
+    private func discoverHeroCard(title: String, subtitle: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
             Text(title)
-                .font(AppTypography.buttonText)
+                .font(.cormorant(size: 18, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
-                .lineLimit(1)
 
             Text(subtitle)
-                .font(AppTypography.caption)
+                .font(AppTypography.bodySmall)
                 .foregroundStyle(AppColors.textMuted)
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 16)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            LinearGradient(
+                colors: [color.opacity(0.1), color.opacity(0.03)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.card)
+                .stroke(color.opacity(0.2), lineWidth: 0.75)
+        )
+    }
+
+    private func discoverCard(title: String, subtitle: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(title)
+                .font(.cormorant(size: 17, weight: .bold))
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(1)
+
+            Text(subtitle)
+                .font(AppTypography.bodySmall)
+                .foregroundStyle(AppColors.textMuted)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 4)
+        }
+        .frame(maxWidth: .infinity, minHeight: 72, alignment: .topLeading)
         .padding(14)
         .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
         .overlay(
             RoundedRectangle(cornerRadius: AppRadius.card)
-                .stroke(color.opacity(0.15), lineWidth: 0.5)
+                .stroke(color.opacity(0.18), lineWidth: 0.5)
         )
     }
 
@@ -543,13 +387,13 @@ struct LearnView: View {
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
             .font(AppTypography.sectionHeader)
-            .foregroundStyle(AppColors.textSecondary)
+            .foregroundStyle(AppColors.primaryAmber)
             .textCase(.uppercase)
             .tracking(1.2)
     }
 }
 
-// MARK: - Button Styles
+// MARK: - Button Style
 
 private struct SpotlightCardButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {

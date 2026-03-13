@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 // MARK: - Deck Type Enum
 
@@ -23,7 +22,11 @@ enum FlashcardDeck: String, CaseIterable {
     }
 
     var color: Color {
-        return .orangePrimary
+        switch self {
+        case .botany: return .orangePrimary
+        case .family: return .purpleSecondary
+        case .species: return .greenSecondary
+        }
     }
 }
 
@@ -31,102 +34,33 @@ enum FlashcardDeck: String, CaseIterable {
 
 struct FlashcardHubView: View {
     @State private var selectedDeck: FlashcardDeck = .botany
-    @Query private var userSettingsResults: [UserSettings]
-    @Query private var flashcardProgress: [FlashcardProgress]
-
-    private var userSettings: UserSettings? { userSettingsResults.first }
-
-    private var totalMastered: Int {
-        flashcardProgress.filter { $0.status == "known" }.count
-    }
-
-    private var totalCards: Int {
-        flashcardProgress.count
-    }
-
-    private var masteryPercent: Int {
-        guard totalCards > 0 else { return 0 }
-        return Int(Double(totalMastered) / Double(totalCards) * 100)
-    }
 
     var body: some View {
         VStack(spacing: 0) {
-            // Stats header
-            statsHeader
+            // Deck toggle pills
+            deckToggle
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
                 .padding(.bottom, 4)
 
-            // Deck toggle pills
-            deckToggle
-                .padding(.horizontal, 20)
-                .padding(.bottom, 4)
-
-            // Active deck content
-            switch selectedDeck {
-            case .botany:
-                FlashcardView()
-            case .family:
-                FamilyFlashcardView()
-            case .species:
-                PlantFlashcardView()
+            // Active deck content — frame(maxHeight: .infinity) constrains the inner
+            // ScrollView to the remaining space so it scrolls correctly
+            Group {
+                switch selectedDeck {
+                case .botany:
+                    FlashcardView()
+                case .family:
+                    FamilyFlashcardView()
+                case .species:
+                    PlantFlashcardView()
+                }
             }
+            .frame(maxHeight: .infinity)
         }
         .background(AppColors.appBackground)
-        .navigationTitle("\(selectedDeck.title) Flashcards")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .featureGuide(.flashCards)
-    }
-
-    // MARK: - Stats Header
-
-    private var statsHeader: some View {
-        HStack(spacing: 0) {
-            statPill(
-                icon: "flame.fill",
-                value: "\(userSettings?.safeStudyStreak ?? 0)",
-                label: "Streak",
-                color: .orangePrimary
-            )
-
-            Spacer()
-
-            statPill(
-                icon: "star.fill",
-                value: formatXP(userSettings?.safeTotalXP ?? 0),
-                label: "XP",
-                color: .orangePrimary
-            )
-
-            Spacer()
-
-            statPill(
-                icon: "chart.bar.fill",
-                value: "\(masteryPercent)%",
-                label: "Mastery",
-                color: .orangePrimary
-            )
-        }
-    }
-
-    private func statPill(icon: String, value: String, label: String, color: Color) -> some View {
-        HStack(spacing: 5) {
-            Image(systemName: icon)
-                .font(AppTypography.inter(size: 11))
-                .foregroundStyle(color)
-
-            Text(value)
-                .font(AppTypography.buttonText)
-                .foregroundStyle(AppColors.textPrimary)
-
-            Text(label)
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textMuted)
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(AppColors.cardElevated)
-        .clipShape(Capsule())
     }
 
     // MARK: - Deck Toggle
@@ -146,15 +80,19 @@ struct FlashcardHubView: View {
                         Text(deck.title)
                             .font(AppTypography.buttonText)
                     }
-                    .foregroundStyle(selectedDeck == deck ? .white : AppColors.textSecondary)
+                    .foregroundStyle(selectedDeck == deck ? deck.color : AppColors.textSecondary)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
                     .background(
                         selectedDeck == deck
-                            ? deck.color
+                            ? deck.color.opacity(0.14)
                             : AppColors.cardElevated
                     )
                     .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(selectedDeck == deck ? deck.color.opacity(0.35) : Color.clear, lineWidth: 0.5)
+                    )
                 }
             }
         }

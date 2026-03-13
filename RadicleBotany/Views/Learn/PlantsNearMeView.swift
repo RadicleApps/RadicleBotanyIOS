@@ -21,33 +21,22 @@ struct PlantsNearMeView: View {
     }
 
     private let columns = [
-        GridItem(.flexible(), spacing: 1.5),
-        GridItem(.flexible(), spacing: 1.5)
+        GridItem(.flexible())
     ]
 
-    // MARK: - Bloom Fallback (Tier 2)
+    // MARK: - Cached Fallback Data (computed once)
 
-    private var bloomingPlants: [Plant] {
+    @State private var cachedBloomingPlants: [Plant] = []
+    @State private var cachedSuggestedPlants: [Plant] = []
+    @State private var cachedMonthName: String = ""
+
+    private func recomputeFallbackData() {
         let currentMonth = Calendar.current.component(.month, from: Date())
-        return plants.filter { plant in
-            guard let months = plant.bloomMonths, !months.isEmpty else { return false }
-            let monthArray = months.split(separator: ",").compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
-            return monthArray.contains(currentMonth)
-        }
-    }
-
-    // MARK: - Suggested Fallback (Tier 3)
-
-    private var suggestedPlants: [Plant] {
-        // Free species first (most common/recognizable), then alphabetical
-        let free = plants.filter { $0.isFree }.prefix(12)
-        return Array(free)
-    }
-
-    private var currentMonthName: String {
+        cachedBloomingPlants = plants.filter { $0.bloomMonthArray.contains(currentMonth) }
+        cachedSuggestedPlants = Array(plants.shuffled().prefix(12))
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM"
-        return formatter.string(from: Date())
+        cachedMonthName = formatter.string(from: Date())
     }
 
     var body: some View {
@@ -65,10 +54,8 @@ struct PlantsNearMeView: View {
                         if !isAuthorized {
                             locationPermissionCard
                                 .padding(.horizontal, 16)
-                        } else if isLoading || (!hasFetched && predictions.isEmpty) {
+                        } else if isLoading || (!hasFetched && predictions.isEmpty && errorMessage == nil) {
                             loadingView
-                        } else if let error = errorMessage, predictions.isEmpty {
-                            errorView(error)
                         } else if !predictions.isEmpty {
                             dataSourcePill("Predicted Species", color: .orangePrimary)
                                 .padding(.horizontal, 16)
@@ -77,12 +64,14 @@ struct PlantsNearMeView: View {
                                 .padding(.horizontal, 16)
                                 .padding(.bottom, 8)
                             predictionGrid
-                        } else if !bloomingPlants.isEmpty {
-                            dataSourcePill("In Bloom — \(currentMonthName)", color: .orangePrimary)
-                                .padding(.horizontal, 16)
-                                .padding(.bottom, 8)
-                            bloomSection
-                        } else if !suggestedPlants.isEmpty {
+                        } else if let msg = errorMessage {
+                            // API error — show actual error and retry option
+                            errorView(msg)
+                                .padding(.horizontal, 24)
+                        } else if hasFetched {
+                            // API returned zero predictions — show informative empty state
+                            noPredictionsView
+                        } else if !cachedSuggestedPlants.isEmpty {
                             dataSourcePill("Suggested Species", color: .orangePrimary)
                                 .padding(.horizontal, 16)
                                 .padding(.bottom, 8)
@@ -92,12 +81,12 @@ struct PlantsNearMeView: View {
                         }
                     }
                     .padding(.top, 8)
-                    .padding(.bottom, 32)
+                    .padding(.bottom, 100)
                 }
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Plants Near Me")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -120,6 +109,7 @@ struct PlantsNearMeView: View {
                 Task { await fetchPredictions() }
             }
         }
+        .onAppear { if cachedBloomingPlants.isEmpty && !plants.isEmpty { recomputeFallbackData() } }
         .task {
             if !hasFetched {
                 locationManager.requestLocation()
@@ -159,7 +149,7 @@ struct PlantsNearMeView: View {
     // MARK: - Prediction Grid
 
     private var predictionGrid: some View {
-        LazyVGrid(columns: columns, spacing: 1.5) {
+        LazyVGrid(columns: columns, spacing: 8) {
             // Database matches first, then others — both sorted by score
             let sorted = predictions.sorted { a, b in
                 let aInDB = matchedPlant(for: a) != nil
@@ -174,12 +164,22 @@ struct PlantsNearMeView: View {
         }
     }
 
+    /// All database-matched plants from predictions, sorted by score (for pager navigation).
+    private var matchedPredictionPlants: [Plant] {
+        let sorted = predictions.sorted { ($0.score ?? 0) > ($1.score ?? 0) }
+        return sorted.compactMap { matchedPlant(for: $0) }
+    }
+
     private func predictionCard(_ prediction: GeoPrediction) -> some View {
         let localPlant = matchedPlant(for: prediction)
 
         return Group {
             if let plant = localPlant {
-                NavigationLink(destination: PlantDetailView(plant: plant)) {
+                let matched = matchedPredictionPlants
+                let index = matched.firstIndex(where: { $0.id == plant.id }) ?? 0
+                NavigationLink(destination: CollectionPagerView(items: matched, startIndex: index) { p in
+                    PlantDetailView(plant: p)
+                }) {
                     predictionCardContent(prediction, isInDatabase: true, plant: plant)
                 }
                 .buttonStyle(NearMeCellButtonStyle())
@@ -190,81 +190,47 @@ struct PlantsNearMeView: View {
     }
 
     private func predictionCardContent(_ prediction: GeoPrediction, isInDatabase: Bool, plant: Plant?) -> some View {
-        GeometryReader { geo in
-            ZStack(alignment: .bottom) {
-                if let plant = plant, let cachedImage = plant.cachedImage {
-                    // Priority 1: Persistent cached image from matched database plant
-                    Image(uiImage: cachedImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: geo.size.width, height: geo.size.width)
-                        .clipped()
-                } else if let imageURL = plant?.bestImageURL ?? prediction.bestImageURL,
-                          let url = URL(string: imageURL) {
-                    // Priority 2: URL-based image
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geo.size.width, height: geo.size.width)
-                                .clipped()
-                        default:
-                            gridCellPlaceholder(size: geo.size.width)
-                        }
-                    }
-                } else {
-                    gridCellPlaceholder(size: geo.size.width)
+        VStack(alignment: .leading, spacing: 4) {
+            // Common name
+            Text(prediction.displayName.titleCased)
+                .font(AppTypography.bodyText)
+                .fontWeight(.semibold)
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(2)
+
+            // Scientific name
+            Text(prediction.scientificName)
+                .font(.system(size: 12, weight: .regular, design: .serif))
+                .italic()
+                .foregroundStyle(AppColors.textSecondary)
+                .lineLimit(1)
+
+            // Bottom row: score
+            HStack(spacing: 0) {
+                if isInDatabase {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(AppTypography.inter(size: 9))
+                        .foregroundStyle(AppColors.success)
                 }
 
-                // Bottom label overlay
-                VStack(spacing: 2) {
-                    Text(prediction.displayName)
-                        .font(AppTypography.tagText)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
+                Spacer(minLength: 4)
 
-                    Text(prediction.scientificName)
-                        .font(.system(size: 10, weight: .regular, design: .serif))
-                        .italic()
-                        .foregroundStyle(.white.opacity(0.7))
-                        .lineLimit(1)
-
-                    if isInDatabase {
-                        Text("IN DATABASE")
-                            .font(AppTypography.inter(size: 8, weight: .bold))
-                            .foregroundStyle(AppColors.success)
-                            .padding(.top, 1)
-                    }
+                if let score = prediction.score {
+                    Text("\(Int(score * 100))%")
+                        .font(AppTypography.inter(size: 10, weight: .semibold))
+                        .foregroundStyle(AppColors.primaryAmber)
                 }
-                .frame(width: geo.size.width, alignment: .center)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 7)
-                .background(
-                    LinearGradient(
-                        colors: [.clear, Color.black.opacity(0.85)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
             }
-            .frame(width: geo.size.width, height: geo.size.width)
         }
-        .aspectRatio(1.0, contentMode: .fit)
-        .clipped()
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.button)
+                .stroke(isInDatabase ? AppColors.success.opacity(0.3) : AppColors.border, lineWidth: 0.5)
+        )
         .contentShape(Rectangle())
-    }
-
-    private func gridCellPlaceholder(size: CGFloat) -> some View {
-        AppColors.cardElevated
-            .frame(width: size, height: size)
-            .overlay {
-                Image(systemName: "location.fill")
-                    .font(AppTypography.inter(size: 28))
-                    .foregroundStyle(AppColors.success.opacity(0.2))
-            }
     }
 
     // MARK: - Permission Card
@@ -334,6 +300,40 @@ struct PlantsNearMeView: View {
         .padding(.top, 60)
     }
 
+    private var noPredictionsView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "leaf.circle")
+                .font(AppTypography.inter(size: 48))
+                .foregroundStyle(AppColors.textMuted)
+
+            Text("No Predictions Available")
+                .font(AppTypography.headerTitle)
+                .foregroundStyle(AppColors.textPrimary)
+
+            Text("Species prediction data isn't available for your current area. Try again later or explore plants using Observe or Capture mode.")
+                .font(AppTypography.bodyText)
+                .foregroundStyle(AppColors.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+
+            Button {
+                hasFetched = false
+                Task { await fetchPredictions() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(AppTypography.inter(size: 12))
+                    Text("Retry")
+                        .font(AppTypography.sectionHeader)
+                }
+                .foregroundStyle(AppColors.success)
+            }
+            .padding(.top, 4)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 60)
+    }
+
     private var emptyView: some View {
         VStack(spacing: 12) {
             Image(systemName: "leaf.circle")
@@ -374,11 +374,12 @@ struct PlantsNearMeView: View {
                 .foregroundStyle(AppColors.textMuted)
                 .padding(.horizontal, 16)
 
-            LazyVGrid(columns: columns, spacing: 1.5) {
-                ForEach(bloomingPlants) { plant in
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(cachedBloomingPlants) { plant in
                     localPlantCell(plant, showBloom: true)
                 }
             }
+            .padding(.horizontal, 16)
         }
     }
 
@@ -391,59 +392,66 @@ struct PlantsNearMeView: View {
                 .foregroundStyle(AppColors.textMuted)
                 .padding(.horizontal, 16)
 
-            LazyVGrid(columns: columns, spacing: 1.5) {
-                ForEach(suggestedPlants) { plant in
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(cachedSuggestedPlants) { plant in
                     localPlantCell(plant, showBloom: false)
                 }
             }
+            .padding(.horizontal, 16)
         }
     }
 
     // MARK: - Local Plant Cell (Tier 2/3)
 
-    private func localPlantCell(_ plant: Plant, showBloom: Bool) -> some View {
-        NavigationLink(destination: PlantDetailView(plant: plant)) {
-            GeometryReader { geo in
-                ZStack(alignment: .bottom) {
-                    // Cached first, then URL fallback
-                    CachedPlantGridImage(plant: plant, size: geo.size.width)
+    private func localPlantCell(_ plant: Plant, showBloom: Bool, collection: [Plant]? = nil) -> some View {
+        let items = collection ?? (showBloom ? cachedBloomingPlants : cachedSuggestedPlants)
+        let index = items.firstIndex(where: { $0.id == plant.id }) ?? 0
+        return NavigationLink(destination: CollectionPagerView(items: items, startIndex: index) { p in
+            PlantDetailView(plant: p)
+        }) {
+            VStack(alignment: .leading, spacing: 4) {
+                // Common name
+                Text(plant.titleCasedCommonName)
+                    .font(AppTypography.bodyText)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(AppColors.textPrimary)
+                    .lineLimit(2)
 
-                    // Bottom label overlay
-                    VStack(spacing: 2) {
-                        Text(plant.commonName)
-                            .font(AppTypography.tagText)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .lineLimit(1)
+                // Scientific name
+                Text(plant.scientificName)
+                    .font(.system(size: 12, weight: .regular, design: .serif))
+                    .italic()
+                    .foregroundStyle(AppColors.textSecondary)
+                    .lineLimit(1)
 
-                        Text(plant.scientificName)
-                            .font(.system(size: 10, weight: .regular, design: .serif))
-                            .italic()
-                            .foregroundStyle(.white.opacity(0.7))
-                            .lineLimit(1)
+                // Bottom row
+                HStack(spacing: 0) {
+                    Text(plant.familyLatin)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.textMuted)
+                        .lineLimit(1)
 
-                        if showBloom {
-                            Text("BLOOMING NOW")
-                                .font(AppTypography.inter(size: 8, weight: .bold))
-                                .foregroundStyle(AppColors.success)
-                                .padding(.top, 1)
-                        }
+                    Spacer(minLength: 4)
+
+                    if showBloom {
+                        Text("BLOOMING")
+                            .font(AppTypography.inter(size: 8, weight: .bold))
+                            .foregroundStyle(AppColors.success)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(AppColors.success.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 3))
                     }
-                    .frame(width: geo.size.width, alignment: .center)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 7)
-                    .background(
-                        LinearGradient(
-                            colors: [.clear, Color.black.opacity(0.85)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
                 }
-                .frame(width: geo.size.width, height: geo.size.width)
             }
-            .aspectRatio(1.0, contentMode: .fit)
-            .clipped()
+            .padding(10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(AppColors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.button)
+                    .stroke(AppColors.border, lineWidth: 0.5)
+            )
             .contentShape(Rectangle())
         }
         .buttonStyle(NearMeCellButtonStyle())
@@ -468,11 +476,15 @@ struct PlantsNearMeView: View {
                 maxLon: bbox.maxLon
             )
             predictions = results
-            hasFetched = true
+        } catch let geoError as PlantNetGeoError {
+            errorMessage = geoError.errorDescription ?? "Could not load predictions."
+            print("[PlantsNearMeView] geo error: \(geoError)")
         } catch {
-            errorMessage = "Failed to load predictions: \(error.localizedDescription)"
+            errorMessage = "Could not load predictions: \(error.localizedDescription)"
+            print("[PlantsNearMeView] fetch error: \(error)")
         }
 
+        hasFetched = true
         isLoading = false
     }
 

@@ -92,7 +92,7 @@
           },
           "localizations" : [
             {
-              "description" : "All species, families, terms, unlimited Observe, Journal, Flashcards.",
+              "description" : "All 2,327 species, 183 families, 461 terms. Unlimited Observe, Journal, Flashcards, Photo ID, Both mode, Plant Assistant, iCloud sync.",
               "displayName" : "RadicleBotany",
               "locale" : "en_US"
             }
@@ -100,39 +100,6 @@
           "productID" : "com.radicle.radiclebotany.botanist.annual",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "RadicleBotany",
-          "subscriptionGroupID" : "300001",
-          "type" : "RecurringSubscription",
-          "winbackOffers" : [
-
-          ]
-        },
-        {
-          "adHocOffers" : [
-
-          ],
-          "codeOffers" : [
-
-          ],
-          "displayPrice" : "63.99",
-          "familyShareable" : false,
-          "groupNumber" : 2,
-          "internalID" : "300004",
-          "introductoryOffer" : {
-            "displayPrice" : "0",
-            "internalID" : "300005",
-            "paymentMode" : "free",
-            "subscriptionPeriod" : "P1W"
-          },
-          "localizations" : [
-            {
-              "description" : "Everything in RadicleBotany plus Photo Identification, Both mode, Plant Assistant, iCloud sync.",
-              "displayName" : "RadicleBotany Path",
-              "locale" : "en_US"
-            }
-          ],
-          "productID" : "com.radicle.radiclebotany.path.annual",
-          "recurringSubscriptionPeriod" : "P1Y",
-          "referenceName" : "RadicleBotany Path",
           "subscriptionGroupID" : "300001",
           "type" : "RecurringSubscription",
           "winbackOffers" : [

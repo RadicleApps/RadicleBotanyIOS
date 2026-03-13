@@ -8,6 +8,7 @@ final class BotanyTerm {
     var descriptionShort: String
     var descriptionLong: String
     var imageURL: String?
+    var colorImageURL: String?
     var showPlantID: Bool
     var isFree: Bool
 
@@ -17,6 +18,7 @@ final class BotanyTerm {
         descriptionShort: String = "",
         descriptionLong: String = "",
         imageURL: String? = nil,
+        colorImageURL: String? = nil,
         showPlantID: Bool = false,
         isFree: Bool = false
     ) {
@@ -25,6 +27,7 @@ final class BotanyTerm {
         self.descriptionShort = descriptionShort
         self.descriptionLong = descriptionLong
         self.imageURL = imageURL
+        self.colorImageURL = colorImageURL
         self.showPlantID = showPlantID
         self.isFree = isFree
     }
@@ -38,6 +41,7 @@ struct BotanyTermJSON: Codable {
     let descriptionShort: String?
     let descriptionLong: String?
     let imageURL: String?
+    let colorImageURL: String?
     let showPlantID: Bool
     let isFree: Bool?
 }

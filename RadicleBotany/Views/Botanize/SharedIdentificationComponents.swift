@@ -43,20 +43,12 @@ struct ReferenceImageStrip: View {
                         Button {
                             onImageTap?(urlStr)
                         } label: {
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 56, height: 56)
-                                        .clipped()
-                                default:
-                                    RoundedRectangle(cornerRadius: AppRadius.small)
-                                        .fill(AppColors.cardElevated)
-                                        .frame(width: 56, height: 56)
-                                }
+                            ThrottledAsyncImage(url: url, contentMode: .fill) {
+                                RoundedRectangle(cornerRadius: AppRadius.small)
+                                    .fill(AppColors.cardElevated)
+                                    .frame(width: 56, height: 56)
                             }
+                            .frame(width: 56, height: 56)
                             .clipShape(RoundedRectangle(cornerRadius: AppRadius.small))
                             .overlay(
                                 RoundedRectangle(cornerRadius: AppRadius.small)
@@ -85,7 +77,7 @@ struct OrganSelector: View {
             if showLabel {
                 Text("ORGAN TYPE")
                     .font(AppTypography.tagText)
-                    .foregroundStyle(AppColors.textMuted)
+                    .foregroundStyle(AppColors.primaryAmber)
             }
 
             HStack(spacing: 8) {
@@ -363,7 +355,7 @@ struct IdentificationResultRow: View {
                             .italic()
                             .fixedSize(horizontal: false, vertical: true)
 
-                        Text(match.commonName)
+                        Text(match.titleCasedCommonName)
                             .font(AppTypography.bodyText)
                             .foregroundStyle(AppColors.textSecondary)
                             .fixedSize(horizontal: false, vertical: true)

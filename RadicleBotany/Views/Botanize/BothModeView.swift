@@ -50,7 +50,7 @@ struct BothModeView: View {
                 capturePhase
             }
         }
-        .navigationTitle("Both Mode")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $viewModel.showCamera) {
             CameraView(image: $viewModel.capturedImage)
@@ -145,9 +145,8 @@ struct BothModeView: View {
                     instructionsCard
                         .padding(.horizontal, 16)
                 }
-
-                Spacer(minLength: 40)
             }
+            .padding(.bottom, 100)
         }
     }
 
@@ -245,7 +244,7 @@ struct BothModeView: View {
         HStack {
             if let best = viewModel.identificationResult?.bestMatch {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Verifying: \(best.commonName)")
+                    Text("Verifying: \(best.titleCasedCommonName)")
                         .font(AppTypography.sectionHeader)
                         .foregroundStyle(AppColors.textPrimary)
                         .lineLimit(1)
@@ -307,6 +306,7 @@ struct BothModeView: View {
                         verificationOptionButton(term: term, card: card)
                     }
                 }
+                .padding(.bottom, 16)
             }
 
             // Confirm or Skip
@@ -396,28 +396,22 @@ struct BothModeView: View {
         )
     }
 
+    /// Prefer colorImageURL, fall back to imageURL (diagram)
     @ViewBuilder
     private func verificationTermImage(term: BotanyTerm) -> some View {
-        if let imageURL = term.imageURL, let url = URL(string: imageURL) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 70)
-                        .clipped()
-                case .failure:
-                    verificationPlaceholder
-                case .empty:
-                    ProgressView()
-                        .tint(AppColors.textMuted)
-                        .frame(height: 60)
-                @unknown default:
-                    verificationPlaceholder
-                }
+        let bestURL: URL? = {
+            if let c = term.colorImageURL, !c.isEmpty, let u = URL(string: c) { return u }
+            if let d = term.imageURL, !d.isEmpty, let u = URL(string: d) { return u }
+            return nil
+        }()
+
+        if let url = bestURL {
+            ThrottledAsyncImage(url: url, contentMode: .fit) {
+                verificationPlaceholder
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 70)
+            .clipped()
         } else {
             verificationPlaceholder
         }
@@ -507,7 +501,7 @@ struct BothModeView: View {
             }
             .safeAreaInset(edge: .bottom) {
                 SaveToJournalBar(
-                    isUnlocked: storeManager.isFeatureUnlocked(.journal),
+                    isUnlocked: true,
                     accentColor: .orangePrimary,
                     onSave: {
                         saveToJournal()
@@ -569,7 +563,7 @@ struct BothModeView: View {
                             .italic()
                             .fixedSize(horizontal: false, vertical: true)
 
-                        Text(result.match.commonName)
+                        Text(result.match.titleCasedCommonName)
                             .font(AppTypography.bodyText)
                             .foregroundStyle(AppColors.textSecondary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -750,7 +744,7 @@ struct BothModeView: View {
         var content = ""
 
         if let match = bestMatch {
-            content += "\(match.commonName) (\(match.scientificName))\n"
+            content += "\(match.titleCasedCommonName) (\(match.scientificName))\n"
             let originalScore = Int(match.score * 100)
             let adjustedScore = Int((topAdjusted?.adjustedScore ?? match.score) * 100)
             content += "Confidence: \(originalScore)% \u{2192} Adjusted: \(adjustedScore)%\n\n"

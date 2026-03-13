@@ -12,52 +12,33 @@ struct SpeciesGridView: View {
     @State private var selectedGenus: String? = nil
     @State private var selectedCommonName: String? = nil
 
+    // MARK: - Cached Filter Results (avoid recomputing on every render)
+    @State private var cachedCategoryPlants: [Plant] = []
+    @State private var cachedFilteredPlants: [Plant] = []
+    @State private var cachedFamilies: [(name: String, count: Int)] = []
+    @State private var cachedGenera: [(name: String, count: Int)] = []
+    @State private var cachedCommonNames: [(name: String, count: Int)] = []
+
     private let columns = [
-        GridItem(.flexible(), spacing: 1.5),
-        GridItem(.flexible(), spacing: 1.5)
+        GridItem(.flexible())
     ]
 
-    // MARK: - Computed Properties
-
-    private var allFamilies: [(name: String, count: Int)] {
-        let basePlants = categoryFilteredPlants
-        let grouped = Dictionary(grouping: basePlants.filter { !$0.familyLatin.isEmpty }) { $0.familyLatin }
-        return grouped
-            .map { (name: $0.key, count: $0.value.count) }
-            .sorted { $0.name < $1.name }
+    private var hasActiveFilters: Bool {
+        selectedFamily != nil || selectedGenus != nil || selectedCommonName != nil || !searchText.isEmpty
     }
 
-    private var allGenera: [(name: String, count: Int)] {
-        // Contextual: if family selected, only genera within that family
-        var basePlants = categoryFilteredPlants
-        if let family = selectedFamily {
-            basePlants = basePlants.filter { $0.familyLatin == family }
-        }
-        let grouped = Dictionary(grouping: basePlants.filter { !$0.genus.isEmpty }) { $0.genus }
-        return grouped
-            .map { (name: $0.key, count: $0.value.count) }
-            .sorted { $0.name < $1.name }
+    // MARK: - Recompute Helpers
+
+    private func recomputeAll() {
+        cachedCategoryPlants = computeCategoryFiltered()
+        cachedFamilies = computeFamilies(from: cachedCategoryPlants)
+        cachedGenera = computeGenera(from: cachedCategoryPlants, family: selectedFamily)
+        cachedCommonNames = computeCommonNames(from: cachedCategoryPlants, family: selectedFamily, genus: selectedGenus)
+        cachedFilteredPlants = computeFiltered(from: cachedCategoryPlants)
     }
 
-    private var allCommonNames: [(name: String, count: Int)] {
-        // Contextual: respects family and genus filters
-        var basePlants = categoryFilteredPlants
-        if let family = selectedFamily {
-            basePlants = basePlants.filter { $0.familyLatin == family }
-        }
-        if let genus = selectedGenus {
-            basePlants = basePlants.filter { $0.genus == genus }
-        }
-        let grouped = Dictionary(grouping: basePlants.filter { !$0.commonName.isEmpty }) { $0.commonName }
-        return grouped
-            .map { (name: $0.key, count: $0.value.count) }
-            .sorted { $0.name < $1.name }
-    }
-
-    /// Plants filtered only by parent category (before family/search filters).
-    private var categoryFilteredPlants: [Plant] {
+    private func computeCategoryFiltered() -> [Plant] {
         guard let category = filterCategory else { return allPlants }
-
         switch category {
         case "Flowers":
             return allPlants.filter { $0.flowerColor != nil && !($0.flowerColor?.isEmpty ?? true) }
@@ -79,25 +60,31 @@ struct SpeciesGridView: View {
         }
     }
 
-    private var filteredPlants: [Plant] {
-        var result = categoryFilteredPlants
+    private func computeFamilies(from base: [Plant]) -> [(name: String, count: Int)] {
+        let grouped = Dictionary(grouping: base.filter { !$0.familyLatin.isEmpty }) { $0.familyLatin }
+        return grouped.map { (name: $0.key, count: $0.value.count) }.sorted { $0.name < $1.name }
+    }
 
-        // Apply family filter
-        if let family = selectedFamily {
-            result = result.filter { $0.familyLatin == family }
-        }
+    private func computeGenera(from base: [Plant], family: String?) -> [(name: String, count: Int)] {
+        var plants = base
+        if let family { plants = plants.filter { $0.familyLatin == family } }
+        let grouped = Dictionary(grouping: plants.filter { !$0.genus.isEmpty }) { $0.genus }
+        return grouped.map { (name: $0.key, count: $0.value.count) }.sorted { $0.name < $1.name }
+    }
 
-        // Apply genus filter
-        if let genus = selectedGenus {
-            result = result.filter { $0.genus == genus }
-        }
+    private func computeCommonNames(from base: [Plant], family: String?, genus: String?) -> [(name: String, count: Int)] {
+        var plants = base
+        if let family { plants = plants.filter { $0.familyLatin == family } }
+        if let genus { plants = plants.filter { $0.genus == genus } }
+        let grouped = Dictionary(grouping: plants.filter { !$0.commonName.isEmpty }) { $0.commonName }
+        return grouped.map { (name: $0.key, count: $0.value.count) }.sorted { $0.name < $1.name }
+    }
 
-        // Apply common name filter
-        if let commonName = selectedCommonName {
-            result = result.filter { $0.commonName == commonName }
-        }
-
-        // Apply search filter
+    private func computeFiltered(from base: [Plant]) -> [Plant] {
+        var result = base
+        if let family = selectedFamily { result = result.filter { $0.familyLatin == family } }
+        if let genus = selectedGenus { result = result.filter { $0.genus == genus } }
+        if let commonName = selectedCommonName { result = result.filter { $0.commonName == commonName } }
         if !searchText.isEmpty {
             result = result.filter {
                 $0.scientificName.localizedCaseInsensitiveContains(searchText) ||
@@ -106,12 +93,7 @@ struct SpeciesGridView: View {
                 $0.genus.localizedCaseInsensitiveContains(searchText)
             }
         }
-
         return result
-    }
-
-    private var hasActiveFilters: Bool {
-        selectedFamily != nil || selectedGenus != nil || selectedCommonName != nil || !searchText.isEmpty
     }
 
     var body: some View {
@@ -120,41 +102,56 @@ struct SpeciesGridView: View {
             filterDropdownBar
             resultCountBar
 
-            if filteredPlants.isEmpty {
+            if cachedFilteredPlants.isEmpty {
                 emptyState
             } else {
                 ScrollView {
-                    LazyVGrid(columns: columns, spacing: 1.5) {
-                        ForEach(filteredPlants) { plant in
+                    LazyVGrid(columns: columns, spacing: 8) {
+                        ForEach(cachedFilteredPlants) { plant in
                             plantCell(plant)
                         }
                     }
-                    .padding(.bottom, 32)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 100)
                 }
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle(navigationTitle)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .featureGuide(.species)
+        .onAppear { if cachedCategoryPlants.isEmpty { recomputeAll() } }
+        .onChange(of: allPlants.count) { _, _ in recomputeAll() }
+        .onChange(of: searchText) { _, _ in
+            cachedFilteredPlants = computeFiltered(from: cachedCategoryPlants)
+        }
         .onChange(of: selectedFamily) { _, _ in
+            // Recompute dependent filters
+            cachedGenera = computeGenera(from: cachedCategoryPlants, family: selectedFamily)
+            cachedCommonNames = computeCommonNames(from: cachedCategoryPlants, family: selectedFamily, genus: selectedGenus)
+            cachedFilteredPlants = computeFiltered(from: cachedCategoryPlants)
             // Reset genus if no longer valid for new family
             if let genus = selectedGenus,
-               !allGenera.contains(where: { $0.name == genus }) {
+               !cachedGenera.contains(where: { $0.name == genus }) {
                 selectedGenus = nil
             }
             // Reset common name if no longer valid
             if let common = selectedCommonName,
-               !allCommonNames.contains(where: { $0.name == common }) {
+               !cachedCommonNames.contains(where: { $0.name == common }) {
                 selectedCommonName = nil
             }
         }
         .onChange(of: selectedGenus) { _, _ in
+            cachedCommonNames = computeCommonNames(from: cachedCategoryPlants, family: selectedFamily, genus: selectedGenus)
+            cachedFilteredPlants = computeFiltered(from: cachedCategoryPlants)
             // Reset common name if no longer valid for new genus
             if let common = selectedCommonName,
-               !allCommonNames.contains(where: { $0.name == common }) {
+               !cachedCommonNames.contains(where: { $0.name == common }) {
                 selectedCommonName = nil
             }
+        }
+        .onChange(of: selectedCommonName) { _, _ in
+            cachedFilteredPlants = computeFiltered(from: cachedCategoryPlants)
         }
     }
 
@@ -213,7 +210,7 @@ struct SpeciesGridView: View {
 
                 Divider()
 
-                ForEach(allFamilies, id: \.name) { family in
+                ForEach(cachedFamilies, id: \.name) { family in
                     Button {
                         selectedFamily = family.name
                     } label: {
@@ -248,7 +245,7 @@ struct SpeciesGridView: View {
 
                 Divider()
 
-                ForEach(allGenera, id: \.name) { genus in
+                ForEach(cachedGenera, id: \.name) { genus in
                     Button {
                         selectedGenus = genus.name
                     } label: {
@@ -283,7 +280,7 @@ struct SpeciesGridView: View {
 
                 Divider()
 
-                ForEach(allCommonNames, id: \.name) { common in
+                ForEach(cachedCommonNames, id: \.name) { common in
                     Button {
                         selectedCommonName = common.name
                     } label: {
@@ -346,8 +343,8 @@ struct SpeciesGridView: View {
 
     private var resultCountBar: some View {
         HStack(spacing: 4) {
-            let count = filteredPlants.count
-            let total = categoryFilteredPlants.count
+            let count = cachedFilteredPlants.count
+            let total = cachedCategoryPlants.count
 
             Text("\(count) of \(total) species")
                 .font(AppTypography.tagText)
@@ -403,11 +400,9 @@ struct SpeciesGridView: View {
         VStack(spacing: 16) {
             Spacer()
 
-            Image("Ipomoea purpurea")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 100)
-                .opacity(0.5)
+            Image(systemName: "leaf.circle")
+                .font(AppTypography.inter(size: 40))
+                .foregroundStyle(AppColors.textMuted.opacity(0.5))
 
             Text("No species found")
                 .font(AppTypography.bodyText)
@@ -454,75 +449,60 @@ struct SpeciesGridView: View {
     // MARK: - Plant Cell
 
     private func plantCell(_ plant: Plant) -> some View {
-        NavigationLink(destination: PlantDetailView(plant: plant)) {
-            plantCellContent(plant: plant, isLocked: false)
+        let index = cachedFilteredPlants.firstIndex(where: { $0.id == plant.id }) ?? 0
+        return NavigationLink(destination: CollectionPagerView(items: cachedFilteredPlants, startIndex: index) { p in
+            PlantDetailView(plant: p)
+        }) {
+            plantCellContent(plant: plant)
         }
         .buttonStyle(GridCellButtonStyle())
     }
 
-    private func plantCellContent(plant: Plant, isLocked: Bool) -> some View {
-        GeometryReader { geo in
-            ZStack(alignment: .bottom) {
-                // Square image — cached first, then URL fallback
-                CachedPlantGridImage(plant: plant, size: geo.size.width)
+    private func plantCellContent(plant: Plant) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            // Common name
+            Text(plant.titleCasedCommonName)
+                .font(AppTypography.bodyText)
+                .fontWeight(.semibold)
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(2)
 
-                // Bottom label overlay
-                VStack(spacing: 2) {
-                    Text(plant.commonName)
-                        .font(AppTypography.tagText)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.white)
-                        .lineLimit(1)
+            // Scientific name (italic)
+            Text(plant.scientificName)
+                .font(.system(size: 12, weight: .regular, design: .serif))
+                .italic()
+                .foregroundStyle(AppColors.textSecondary)
+                .lineLimit(1)
 
-                    Text(plant.scientificName)
-                        .font(.system(size: 10, weight: .regular, design: .serif))
-                        .italic()
-                        .foregroundStyle(.white.opacity(0.7))
-                        .lineLimit(1)
+            // Family + at-risk badge
+            HStack(spacing: 0) {
+                Text(plant.familyLatin)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textMuted)
+                    .lineLimit(1)
 
-                    if plant.isAtRisk, let status = plant.atRiskStatus {
-                        Text(status.uppercased())
-                            .font(AppTypography.inter(size: 8, weight: .bold))
-                            .foregroundStyle(status.contains("Critically") || status.contains("Endangered") ? AppColors.error : AppColors.warning)
-                            .padding(.top, 1)
-                    }
-                }
-                .frame(width: geo.size.width, alignment: .center)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 7)
-                .background(
-                    LinearGradient(
-                        colors: [.clear, Color.black.opacity(0.85)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
+                Spacer(minLength: 4)
 
-                // Lock overlay
-                if isLocked {
-                    Color.black.opacity(0.55)
-                        .frame(width: geo.size.width, height: geo.size.width)
-                    Image(systemName: "lock.fill")
-                        .font(AppTypography.inter(size: 18))
-                        .foregroundStyle(.white.opacity(0.6))
+                if plant.isAtRisk, let status = plant.atRiskStatus {
+                    Text(status.contains("Critically") ? "CR" : status.contains("Endangered") ? "EN" : "AR")
+                        .font(AppTypography.inter(size: 8, weight: .bold))
+                        .foregroundStyle(status.contains("Critically") || status.contains("Endangered") ? AppColors.error : AppColors.warning)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background((status.contains("Critically") || status.contains("Endangered") ? AppColors.error : AppColors.warning).opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: 3))
                 }
             }
-            .frame(width: geo.size.width, height: geo.size.width)
         }
-        .aspectRatio(1.0, contentMode: .fit)
-        .clipped()
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.button)
+                .stroke(AppColors.border, lineWidth: 0.5)
+        )
         .contentShape(Rectangle())
-    }
-
-    /// Placeholder for grid cells when no image is available
-    private func gridCellPlaceholder(size: CGFloat) -> some View {
-        AppColors.cardElevated
-            .frame(width: size, height: size)
-            .overlay {
-                Image(systemName: "leaf.fill")
-                    .font(AppTypography.inter(size: 28))
-                    .foregroundStyle(AppColors.success.opacity(0.2))
-            }
     }
 }
 

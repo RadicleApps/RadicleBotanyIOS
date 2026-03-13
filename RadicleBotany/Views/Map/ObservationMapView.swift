@@ -87,7 +87,7 @@ struct ObservationMapView: View {
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Observation Map")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(for: PlantObservation.self) { observation in
             ObservationDetailView(observation: observation)
@@ -125,20 +125,6 @@ struct ObservationMapView: View {
     private var emptyState: some View {
         VStack(spacing: 16) {
             Spacer()
-
-            ZStack {
-                Circle()
-                    .fill(AppColors.success.opacity(0.08))
-                    .frame(width: 120, height: 120)
-
-                Circle()
-                    .fill(AppColors.success.opacity(0.05))
-                    .frame(width: 160, height: 160)
-
-                Image(systemName: "map.fill")
-                    .font(AppTypography.inter(size: 40))
-                    .foregroundStyle(AppColors.success.opacity(0.6))
-            }
 
             Text("No Mapped Observations")
                 .font(AppTypography.headerTitle)

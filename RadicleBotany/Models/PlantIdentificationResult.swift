@@ -28,6 +28,10 @@ struct PlantMatch: Codable, Identifiable {
         species.commonNames?.first ?? species.scientificNameWithoutAuthor
     }
 
+    var titleCasedCommonName: String {
+        commonName.titleCased
+    }
+
     var scientificName: String {
         species.scientificNameWithoutAuthor
     }

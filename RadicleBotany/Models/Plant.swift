@@ -81,21 +81,86 @@ final class Plant {
     // GBIF species ID (from PlantNet enrichment, used for Tier 2 image fetching)
     var gbifId: Int?
 
+    /// Returns the common name in Title Case (e.g., "desert sand verbena" → "Desert Sand Verbena").
+    var titleCasedCommonName: String {
+        commonName.titleCased
+    }
+
     /// Returns the best available image URL — checks organ images first, then general imageURL.
     var bestImageURL: String? {
         // Prefer flower, then habit, then leaf, then general
         flowerImageURL ?? habitImageURL ?? leafImageURL ?? imageURL ?? fruitImageURL ?? barkImageURL ?? stemImageURL
     }
 
-    /// Returns a UIImage from the persistently cached data, if available.
+    /// Returns a small square thumbnail URL (75×75) for tiny previews only.
+    /// Derives from bestImageURL by swapping iNaturalist's `/medium.` to `/square.`.
+    /// Falls back to the full URL for non-iNaturalist sources.
+    var thumbnailURL: String? {
+        guard let url = bestImageURL else { return nil }
+        if url.contains("/medium.") {
+            return url.replacingOccurrences(of: "/medium.", with: "/square.")
+        }
+        return url
+    }
+
+    /// Returns a large-resolution image URL (~1024px) for hero/detail views.
+    /// Swaps iNaturalist `/medium.` to `/large.` for Retina-sharp rendering.
+    /// Falls back to the original URL for non-iNaturalist sources.
+    var largeImageURL: String? {
+        guard let url = bestImageURL else { return nil }
+        if url.contains("/medium.") {
+            return url.replacingOccurrences(of: "/medium.", with: "/large.")
+        }
+        return url
+    }
+
+    // MARK: - In-Memory Image Cache (NSCache)
+    // Prevents repeated JPEG decoding from @externalStorage on every view render.
+    // Key includes data size so thumbnail → full-size upgrades invalidate automatically.
+    private static let _imageCache: NSCache<NSString, UIImage> = {
+        let cache = NSCache<NSString, UIImage>()
+        cache.countLimit = 200 // ~200 decoded images in memory, auto-evicts under pressure
+        return cache
+    }()
+
+    /// Returns a decoded UIImage from cache (instant) or decodes once from stored data.
+    /// Uses NSCache so subsequent accesses never re-decode JPEG data.
     var cachedImage: UIImage? {
         guard let data = cachedImageData else { return nil }
-        return UIImage(data: data)
+        let key = "\(scientificName)_\(data.count)" as NSString
+        if let cached = Plant._imageCache.object(forKey: key) {
+            return cached
+        }
+        guard let image = UIImage(data: data) else { return nil }
+        Plant._imageCache.setObject(image, forKey: key)
+        return image
     }
 
     /// Whether this plant has a cached fallback image stored locally.
     var hasCachedImage: Bool {
         cachedImageData != nil
+    }
+
+    /// Whether the cached image is full-size (not a bundled small/thumbnail).
+    /// Bundled small images (240px) are ~15-40 KB; network-fetched large images are 50 KB+.
+    var hasFullSizeCachedImage: Bool {
+        guard let data = cachedImageData else { return false }
+        return data.count > 50_000
+    }
+
+    /// Returns (image, isFullSize) reading @externalStorage only ONCE.
+    /// Grid cells use this instead of separate cachedImage + hasFullSizeCachedImage
+    /// to avoid double file I/O on each render. Returns nil if no cached data.
+    var cachedImageInfo: (image: UIImage, isFullSize: Bool)? {
+        guard let data = cachedImageData else { return nil }
+        let isFullSize = data.count > 50_000
+        let key = "\(scientificName)_\(data.count)" as NSString
+        if let cached = Plant._imageCache.object(forKey: key) {
+            return (cached, isFullSize)
+        }
+        guard let image = UIImage(data: data) else { return nil }
+        Plant._imageCache.setObject(image, forKey: key)
+        return (image, isFullSize)
     }
 
     /// Returns an image URL for a specific organ category, or nil.
@@ -107,7 +172,7 @@ final class Plant {
         case .bark: return barkImageURL
         case .stem: return stemImageURL
         case .habit: return habitImageURL
-        case .habitat: return nil  // No image for habitat (text-only trait)
+        case .root, .habitat: return nil  // No image for root/habitat (text-only traits)
         }
     }
 
@@ -120,7 +185,7 @@ final class Plant {
         case .bark: barkImageURL = url
         case .stem: stemImageURL = url
         case .habit: habitImageURL = url
-        case .habitat: break  // No image storage for habitat
+        case .root, .habitat: break  // No image storage for root/habitat
         }
     }
 
@@ -211,6 +276,7 @@ enum PlantOrgan: String, CaseIterable, Codable, Identifiable {
     case stem = "Stem"
     case flower = "Flower"
     case fruit = "Fruit"
+    case root = "Root"
     case bark = "Bark"
     case habit = "Habit"
     case habitat = "Habitat"
@@ -227,6 +293,7 @@ enum PlantOrgan: String, CaseIterable, Codable, Identifiable {
         case .stem: return "laurel.leading"
         case .flower: return "camera.macro"
         case .fruit: return "drop.fill"
+        case .root: return "carrot.fill"
         case .bark: return "tree.fill"
         case .habit: return "tree.fill"
         case .habitat: return "mountain.2.fill"
@@ -240,6 +307,7 @@ enum PlantOrgan: String, CaseIterable, Codable, Identifiable {
         case .stem: return .greenLight
         case .flower: return .orangePrimary
         case .fruit: return .warningAmber
+        case .root: return .orangeLight
         case .bark: return .orangeLight
         case .habit: return .purpleSecondary
         case .habitat: return .purpleSecondary
@@ -303,14 +371,17 @@ enum PlantOrgan: String, CaseIterable, Codable, Identifiable {
         case .fruit:
             return [
                 TraitQuestion(title: "Fruit Type", category: "Fruit Type", keyPath: \.fruitType),
-                TraitQuestion(title: "Seed Trait", category: "Seed Trait", keyPath: \.fruitSeedTrait),
+                TraitQuestion(title: "Seed Trait", category: "Seed Trait", keyPath: \.fruitSeedTrait)
+            ]
+        case .root:
+            return [
                 TraitQuestion(title: "Root Type", category: "Root Type", keyPath: \.rootType)
             ]
         case .bark:
             return []
         case .habit:
             return [
-                TraitQuestion(title: "Growth Habit", category: "Growth Habit", keyPath: \.growthHabit)
+                TraitQuestion(title: "Growth Habit", category: "Growth Habit", keyPath: \.stemHabit)
             ]
         case .habitat:
             return [
@@ -330,6 +401,25 @@ struct TraitQuestion: Identifiable {
 }
 
 // MARK: - JSON Decoding Structure
+
+// MARK: - Title Case String Extension
+
+extension String {
+    /// Converts a string to Title Case, preserving common botanical lowercase words.
+    /// "desert sand verbena" → "Desert Sand Verbena"
+    /// Words always lowercase (unless first): of, the, and, in, on, at, for, with, a, an
+    var titleCased: String {
+        let lowercaseWords: Set<String> = ["of", "the", "and", "in", "on", "at", "for", "with", "a", "an"]
+        let words = self.components(separatedBy: " ")
+        return words.enumerated().map { index, word in
+            guard !word.isEmpty else { return word }
+            if index > 0 && lowercaseWords.contains(word.lowercased()) {
+                return word.lowercased()
+            }
+            return word.prefix(1).uppercased() + word.dropFirst().lowercased()
+        }.joined(separator: " ")
+    }
+}
 
 struct PlantJSON: Codable {
     let plantNameLatin: String

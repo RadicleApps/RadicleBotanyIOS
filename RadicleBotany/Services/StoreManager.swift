@@ -10,9 +10,8 @@ final class StoreManager: ObservableObject {
     @MainActor static var shared = StoreManager(preview: true)
 
     static let annualID = "com.radicle.radiclebotany.botanist.annual"
-    static let pathID   = "com.radicle.radiclebotany.path.annual"
 
-    static let allProductIDs: Set<String> = [annualID, pathID]
+    static let allProductIDs: Set<String> = [annualID]
 
     @Published var products: [Product] = []
     @Published var purchasedProductIDs: Set<String> = []
@@ -31,9 +30,9 @@ final class StoreManager: ObservableObject {
 
             #if targetEnvironment(simulator)
             // Auto-unlock all features in Simulator for testing
-            self.userTier = .path
-            self.purchasedProductIDs = [StoreManager.pathID]
-            print("[StoreManager] Simulator detected — auto-unlocked Path for testing")
+            self.userTier = .annual
+            self.purchasedProductIDs = [StoreManager.annualID]
+            print("[StoreManager] Simulator detected — auto-unlocked Annual for testing")
             #endif
         }
     }
@@ -41,8 +40,8 @@ final class StoreManager: ObservableObject {
     /// Preview-safe initializer that skips all StoreKit network calls.
     init(preview: Bool) {
         // No transaction listener, no product fetch, no entitlement check
-        self.userTier = .path
-        self.purchasedProductIDs = [StoreManager.pathID]
+        self.userTier = .annual
+        self.purchasedProductIDs = [StoreManager.annualID]
     }
 
     /// Call once from RadicleBotanyApp to sync the shared reference with the real instance.
@@ -134,10 +133,9 @@ final class StoreManager: ObservableObject {
 
         purchasedProductIDs = purchased
 
-        // Determine tier (Path > Annual > Free)
-        if purchased.contains(StoreManager.pathID) {
-            userTier = .path
-        } else if purchased.contains(StoreManager.annualID) {
+        // Determine tier — any valid subscription maps to .annual
+        if purchased.contains(StoreManager.annualID) ||
+           purchased.contains("com.radicle.radiclebotany.path.annual") {
             userTier = .annual
         } else {
             userTier = .free
@@ -179,10 +177,6 @@ final class StoreManager: ObservableObject {
 
     var annualProduct: Product? {
         products.first { $0.id == StoreManager.annualID }
-    }
-
-    var pathProduct: Product? {
-        products.first { $0.id == StoreManager.pathID }
     }
 
 }

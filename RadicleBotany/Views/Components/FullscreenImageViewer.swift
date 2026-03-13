@@ -130,20 +130,8 @@ struct FullscreenImageViewer: View {
 
         case .url(let urlString):
             if let url = URL(string: urlString) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    case .empty:
-                        ProgressView()
-                            .tint(.white)
-                    case .failure:
-                        imagePlaceholder
-                    @unknown default:
-                        imagePlaceholder
-                    }
+                ThrottledAsyncImage(url: url, contentMode: .fit) {
+                    imagePlaceholder
                 }
             } else {
                 imagePlaceholder

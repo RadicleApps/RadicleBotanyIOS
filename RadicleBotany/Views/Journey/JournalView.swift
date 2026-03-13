@@ -14,10 +14,7 @@ struct JournalView: View {
     @Query(sort: \JournalNote.date, order: .reverse)
     private var journalNotes: [JournalNote]
 
-    @State private var activeCollectionPrompt: CollectionType? = nil
     @State private var selectedNote: JournalNote? = nil
-
-    var onLogObservation: (() -> Void)? = nil
 
     private var userSettings: UserSettings? {
         userSettingsResults.first
@@ -89,11 +86,10 @@ struct JournalView: View {
             mapPreviewCard
             earlierObservationsSection
             notesSection
-            collectionsSection
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
-        .padding(.bottom, 100)
+        .padding(.bottom, 140)
     }
 
     // MARK: - Stats Header
@@ -106,21 +102,17 @@ struct JournalView: View {
                         Image(systemName: "flame.fill")
                             .foregroundStyle(AppColors.primaryAmber)
                         Text("\(streakCount) day streak")
-                            .font(AppTypography.sectionHeader)
+                            .font(AppTypography.buttonText)
                             .foregroundStyle(AppColors.textPrimary)
                     }
                 } else {
-                    HStack(spacing: 6) {
-                        Image(systemName: "sparkles")
-                            .foregroundStyle(AppColors.primaryAmber)
-                        Text("Start your journal")
-                            .font(AppTypography.sectionHeader)
-                            .foregroundStyle(AppColors.textPrimary)
-                    }
+                    Text("Start your journal")
+                        .font(AppTypography.buttonText)
+                        .foregroundStyle(AppColors.textPrimary)
                 }
 
                 Text("\(observations.count) observation\(observations.count == 1 ? "" : "s") total")
-                    .font(AppTypography.tagText)
+                    .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textMuted)
             }
 
@@ -152,7 +144,7 @@ struct JournalView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("YOUR OBSERVATIONS")
                         .font(AppTypography.tagText)
-                        .foregroundStyle(AppColors.textMuted)
+                        .foregroundStyle(AppColors.primaryAmber)
                         .padding(.bottom, 10)
 
                     ZStack(alignment: .bottom) {
@@ -235,7 +227,7 @@ struct JournalView: View {
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text("Observation Map")
-                            .font(AppTypography.sectionHeader)
+                            .font(AppTypography.buttonText)
                             .foregroundStyle(AppColors.textPrimary)
 
                         Text("Enable location to map your finds")
@@ -292,7 +284,7 @@ struct JournalView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text("LATEST OBSERVATION")
                     .font(AppTypography.tagText)
-                    .foregroundStyle(AppColors.textMuted)
+                    .foregroundStyle(AppColors.primaryAmber)
                     .padding(.bottom, 10)
 
                 NavigationLink(value: observation) {
@@ -389,11 +381,11 @@ struct JournalView: View {
 
                 VStack(spacing: 6) {
                     Text("No observations yet")
-                        .font(AppTypography.sectionHeader)
+                        .font(AppTypography.headerTitle)
                         .foregroundStyle(AppColors.textPrimary)
 
                     Text("Head to Botanize to capture your first plant observation.")
-                        .font(AppTypography.tagText)
+                        .font(AppTypography.bodySmall)
                         .foregroundStyle(AppColors.textMuted)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 16)
@@ -414,7 +406,7 @@ struct JournalView: View {
                 HStack {
                     Text("RECENT")
                         .font(AppTypography.tagText)
-                        .foregroundStyle(AppColors.textMuted)
+                        .foregroundStyle(AppColors.primaryAmber)
 
                     Spacer()
 
@@ -478,7 +470,7 @@ struct JournalView: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(observation.plantScientificName ?? "Unidentified")
-                    .font(AppTypography.tagText)
+                    .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
 
@@ -512,7 +504,7 @@ struct JournalView: View {
             HStack {
                 Text("NOTES")
                     .font(AppTypography.tagText)
-                    .foregroundStyle(AppColors.textMuted)
+                    .foregroundStyle(AppColors.primaryAmber)
 
                 Spacer()
 
@@ -533,16 +525,9 @@ struct JournalView: View {
                     createAndOpenNote()
                 } label: {
                     HStack(spacing: 12) {
-                        Image(systemName: "pencil.and.outline")
-                            .font(AppTypography.inter(size: 14))
-                            .foregroundStyle(AppColors.primaryAmber)
-                            .frame(width: 36, height: 36)
-                            .background(AppColors.primaryAmber.opacity(0.12))
-                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-
                         VStack(alignment: .leading, spacing: 3) {
                             Text("Start a note")
-                                .font(AppTypography.sectionHeader)
+                                .font(AppTypography.buttonText)
                                 .foregroundStyle(AppColors.textPrimary)
 
                             Text("Field notes, reflections, observations...")
@@ -657,256 +642,6 @@ struct JournalView: View {
         selectedNote = newNote
     }
 
-    // MARK: - Collections Section
-
-    private var collectionsSection: some View {
-        VStack(spacing: 8) {
-            // Section header with help
-            HStack {
-                Text("COLLECTIONS")
-                    .font(.system(size: 10, weight: .heavy, design: .monospaced))
-                    .foregroundStyle(AppColors.textMuted)
-                    .kerning(2)
-
-                Spacer()
-
-                InfoButton(guide: .collections, style: .inline)
-            }
-            .padding(.bottom, 4)
-
-            ForEach(CollectionType.allCases) { type in
-                collectionRow(type: type)
-            }
-
-            Button {
-                activeCollectionPrompt = .custom
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(AppTypography.inter(size: 16))
-                    Text("New Collection")
-                        .font(AppTypography.sectionHeader)
-                }
-            }
-            .buttonStyle(SecondaryButtonStyle(color: .orangePrimary))
-            .padding(.top, 4)
-        }
-        .sheet(item: $activeCollectionPrompt) { type in
-            collectionEmptySheet(type)
-        }
-    }
-
-    private func collectionRow(type: CollectionType) -> some View {
-        Button {
-            activeCollectionPrompt = type
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: type.icon)
-                    .font(AppTypography.inter(size: 14))
-                    .foregroundStyle(type.color)
-                    .frame(width: 36, height: 36)
-                    .background(type.color.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(type.name)
-                        .font(AppTypography.sectionHeader)
-                        .foregroundStyle(AppColors.textPrimary)
-
-                    Text(type.subtitle)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textMuted)
-                        .lineLimit(1)
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(AppTypography.inter(size: 10, weight: .semibold))
-                    .foregroundStyle(AppColors.textMuted)
-            }
-            .padding(14)
-            .background(AppColors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
-            .overlay(
-                RoundedRectangle(cornerRadius: AppRadius.card)
-                    .stroke(AppColors.border, lineWidth: 0.5)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-
-    // MARK: - Collection Empty Sheet
-
-    private func collectionEmptySheet(_ type: CollectionType) -> some View {
-        VStack(spacing: 0) {
-            // Drag indicator
-            Capsule()
-                .fill(AppColors.textMuted.opacity(0.3))
-                .frame(width: 36, height: 4)
-                .padding(.top, 12)
-                .padding(.bottom, 20)
-
-            // Hero illustration
-            ZStack {
-                Circle()
-                    .fill(type.color.opacity(0.08))
-                    .frame(width: 120, height: 120)
-
-                Circle()
-                    .fill(type.color.opacity(0.05))
-                    .frame(width: 160, height: 160)
-
-                Image(systemName: type.icon)
-                    .font(AppTypography.inter(size: 40))
-                    .foregroundStyle(type.color.opacity(0.6))
-            }
-            .padding(.bottom, 28)
-
-            // Title
-            Text(type.emptyTitle)
-                .font(AppTypography.headerTitle)
-                .foregroundStyle(AppColors.textPrimary)
-                .multilineTextAlignment(.center)
-                .padding(.bottom, 10)
-
-            // Description
-            Text(type.emptyMessage)
-                .font(AppTypography.bodyText)
-                .foregroundStyle(AppColors.textSecondary)
-                .multilineTextAlignment(.center)
-                .lineSpacing(4)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 32)
-                .padding(.bottom, 28)
-
-            // How-to steps
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(Array(type.emptySteps.enumerated()), id: \.offset) { index, step in
-                    HStack(alignment: .top, spacing: 12) {
-                        Text("\(index + 1)")
-                            .font(AppTypography.tagText)
-                            .fontWeight(.bold)
-                            .foregroundStyle(type.color)
-                            .frame(width: 24, height: 24)
-                            .background(type.color.opacity(0.12))
-                            .clipShape(Circle())
-
-                        Text(step)
-                            .font(AppTypography.tagText)
-                            .foregroundStyle(AppColors.textSecondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-            }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 32)
-
-            // CTA
-            Button {
-                activeCollectionPrompt = nil
-            } label: {
-                Text(type.emptyCTA)
-                    .font(AppTypography.sectionHeader)
-            }
-            .buttonStyle(PrimaryButtonStyle(color: type.color))
-            .padding(.horizontal, 24)
-
-            Spacer()
-        }
-        .frame(maxWidth: .infinity)
-        .background(AppColors.appBackground)
-        .presentationDetents([.medium])
-        .presentationDragIndicator(.hidden)
-    }
-}
-
-// MARK: - Collection Type
-
-enum CollectionType: String, Identifiable, CaseIterable {
-    case bookmarks
-    case byFamily
-    case custom
-
-    var id: String { rawValue }
-
-    var name: String {
-        switch self {
-        case .bookmarks: return "Bookmarks"
-        case .byFamily:  return "By Family"
-        case .custom:    return "Custom"
-        }
-    }
-
-    var subtitle: String {
-        switch self {
-        case .bookmarks: return "Species you want to remember"
-        case .byFamily:  return "Organized by taxonomy"
-        case .custom:    return "Your own groupings"
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .bookmarks: return "bookmark.fill"
-        case .byFamily:  return "leaf.fill"
-        case .custom:    return "folder.fill"
-        }
-    }
-
-    var color: Color {
-        return .orangePrimary
-    }
-
-    var emptyTitle: String {
-        switch self {
-        case .bookmarks: return "No Bookmarks Yet"
-        case .byFamily:  return "No Family Groups Yet"
-        case .custom:    return "No Custom Collections Yet"
-        }
-    }
-
-    var emptyMessage: String {
-        switch self {
-        case .bookmarks:
-            return "Save the species that interest you most. Bookmarks make it easy to revisit and study plants you encounter in the field."
-        case .byFamily:
-            return "As you observe plants, they'll automatically group here by botanical family — a beautiful way to see patterns in nature."
-        case .custom:
-            return "Create your own collections to organize plants however you like — by habitat, season, color, or any theme you choose."
-        }
-    }
-
-    var emptySteps: [String] {
-        switch self {
-        case .bookmarks:
-            return [
-                "Browse species in the Learn tab",
-                "Tap the bookmark icon on any plant",
-                "Find all your bookmarks here"
-            ]
-        case .byFamily:
-            return [
-                "Log observations in Botanize",
-                "Identify the species you find",
-                "Family groups build automatically"
-            ]
-        case .custom:
-            return [
-                "Tap \"New Collection\" below",
-                "Give it a name and theme",
-                "Add plants from anywhere in the app"
-            ]
-        }
-    }
-
-    var emptyCTA: String {
-        switch self {
-        case .bookmarks: return "Explore Species"
-        case .byFamily:  return "Start Observing"
-        case .custom:    return "Got It"
-        }
-    }
 }
 
 #Preview {

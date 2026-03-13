@@ -3,7 +3,6 @@ import SwiftData
 
 struct SearchView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var storeManager: StoreManager
 
     @Query(sort: \Plant.scientificName) private var allPlants: [Plant]
     @Query(sort: \Family.familyLatin) private var allFamilies: [Family]
@@ -105,7 +104,7 @@ struct SearchView: View {
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Search")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -235,6 +234,11 @@ struct SearchView: View {
             if (scope == .all || scope == .terms), !filteredTerms.isEmpty {
                 termsSection
             }
+
+            // Bottom padding for tab bar
+            Color.clear.frame(height: 80)
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
@@ -243,10 +247,14 @@ struct SearchView: View {
     // MARK: - Plants Section
 
     private var plantsSection: some View {
-        Section {
-            ForEach(filteredPlants, id: \.scientificName) { plant in
+        let plants = filteredPlants
+        return Section {
+            ForEach(plants, id: \.scientificName) { plant in
+                let index = plants.firstIndex(where: { $0.id == plant.id }) ?? 0
                 NavigationLink {
-                    PlantDetailView(plant: plant)
+                    CollectionPagerView(items: plants, startIndex: index) { p in
+                        PlantDetailView(plant: p)
+                    }
                 } label: {
                     plantRow(plant)
                 }
@@ -273,7 +281,7 @@ struct SearchView: View {
                     .italic()
 
                 HStack(spacing: 6) {
-                    Text(plant.commonName)
+                    Text(plant.titleCasedCommonName)
                         .font(AppTypography.tagText)
                         .foregroundStyle(AppColors.textSecondary)
 
@@ -291,11 +299,6 @@ struct SearchView: View {
 
             Spacer()
 
-            if !plant.isFree && !storeManager.isFeatureUnlocked(.fullSpeciesAccess) {
-                Image(systemName: "lock.fill")
-                    .font(AppTypography.inter(size: 12))
-                    .foregroundStyle(AppColors.textMuted)
-            }
         }
         .padding(.vertical, 4)
     }
@@ -303,10 +306,14 @@ struct SearchView: View {
     // MARK: - Families Section
 
     private var familiesSection: some View {
-        Section {
-            ForEach(filteredFamilies, id: \.familyLatin) { family in
+        let families = filteredFamilies
+        return Section {
+            ForEach(families, id: \.familyLatin) { family in
+                let index = families.firstIndex(where: { $0.id == family.id }) ?? 0
                 NavigationLink {
-                    FamilyDetailView(family: family)
+                    CollectionPagerView(items: families, startIndex: index) { f in
+                        FamilyDetailView(family: f)
+                    }
                 } label: {
                     familyRow(family)
                 }
@@ -349,11 +356,6 @@ struct SearchView: View {
 
             Spacer()
 
-            if !family.isFree && !storeManager.isFeatureUnlocked(.fullFamilyAccess) {
-                Image(systemName: "lock.fill")
-                    .font(AppTypography.inter(size: 12))
-                    .foregroundStyle(AppColors.textMuted)
-            }
         }
         .padding(.vertical, 4)
     }
@@ -361,10 +363,14 @@ struct SearchView: View {
     // MARK: - Terms Section
 
     private var termsSection: some View {
-        Section {
-            ForEach(filteredTerms, id: \.term) { term in
+        let terms = filteredTerms
+        return Section {
+            ForEach(terms, id: \.term) { term in
+                let index = terms.firstIndex(where: { $0.id == term.id }) ?? 0
                 NavigationLink {
-                    TermDetailView(term: term)
+                    CollectionPagerView(items: terms, startIndex: index) { t in
+                        TermDetailView(term: t)
+                    }
                 } label: {
                     termRow(term)
                 }
@@ -408,11 +414,6 @@ struct SearchView: View {
 
             Spacer()
 
-            if !term.isFree && !storeManager.isFeatureUnlocked(.fullTermAccess) {
-                Image(systemName: "lock.fill")
-                    .font(AppTypography.inter(size: 12))
-                    .foregroundStyle(AppColors.textMuted)
-            }
         }
         .padding(.vertical, 4)
     }

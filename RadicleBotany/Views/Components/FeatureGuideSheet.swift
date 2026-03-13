@@ -126,28 +126,34 @@ extension FeatureGuide {
         subtitle: "Botany at every level",
         sections: [
             GuideSection(
-                icon: "graduationcap.fill",
+                icon: "map.fill",
+                iconColor: AppColors.success,
+                heading: "Botanizing",
+                body: "Practice field scenarios. Build pattern recognition and intuition."
+            ),
+            GuideSection(
+                icon: "rectangle.on.rectangle.angled",
                 iconColor: AppColors.primaryAmber,
-                heading: "What is this?",
-                body: "Your botanical education center. Browse species, families, and terminology. Study with flash cards. Track bloom seasons. Explore conservation status."
+                heading: "Flash Cards & Quiz",
+                body: "Swipe-based study cards for terms, species, and families. Or test yourself with multiple-choice questions spanning every trait category and taxonomic level."
+            ),
+            GuideSection(
+                icon: "square.grid.2x2",
+                iconColor: AppColors.brandPurple,
+                heading: "Browse by Category",
+                body: "Explore botanical traits organized by organ: Flowers, Leaves, Fruits, Bark, Stems, and Roots. Each entry includes definitions, illustrations, and linked species."
             ),
             GuideSection(
                 icon: "leaf.fill",
                 iconColor: AppColors.success,
-                heading: "Species & Families",
-                body: "179 curated species across 183 families. Each entry includes morphological traits, habitat data, and cross-references to related taxa."
+                heading: "Library",
+                body: "2,330+ species across 180+ families, and 460+ botanical terms — all fully cross-referenced. The reference backbone for identification and study."
             ),
             GuideSection(
-                icon: "text.book.closed.fill",
-                iconColor: AppColors.brandPurple,
-                heading: "Terminology",
-                body: "464 botanical terms with definitions, illustrations, and linked species. Essential vocabulary for field identification."
-            ),
-            GuideSection(
-                icon: "rectangle.stack.fill",
+                icon: "location.fill",
                 iconColor: AppColors.primaryAmber,
-                heading: "Flash cards",
-                body: "Swipe-based study cards for species, families, and terms. Swipe right if you know it, left to review later. Progress is tracked."
+                heading: "Discover",
+                body: "Bloom Calendar for seasonal timing, At-Risk Plants from the United Plant Savers watch list, Plants Near Me geo-predictions, and curated conservation resources."
             )
         ]
     )
@@ -158,22 +164,22 @@ extension FeatureGuide {
         subtitle: "Swipe to learn species",
         sections: [
             GuideSection(
-                icon: "hand.draw",
+                icon: "rectangle.on.rectangle.angled",
                 iconColor: AppColors.primaryAmber,
-                heading: "How to use",
-                body: "Tap a card to flip it and see the answer. Swipe right if you know it. Swipe left to review again later. Work through the deck at your own pace."
+                heading: "Three decks",
+                body: "Switch between Botany Terms, Plant Species, and Plant Families using the toggle at the top. Each deck is shuffled fresh every session."
             ),
             GuideSection(
-                icon: "arrow.counterclockwise",
-                iconColor: AppColors.primaryAmber,
-                heading: "Progress",
-                body: "The counter at the top shows how many cards you've reviewed. Cards you swipe left on will come back for another round."
+                icon: "hand.draw",
+                iconColor: AppColors.success,
+                heading: "The study",
+                body: "Tap a card to flip and reveal the answer. Swipe right if you know, or swipe left to review again. The hint bar at the bottom shows direction."
             ),
             GuideSection(
                 icon: "photo.fill",
                 iconColor: AppColors.brandPurple,
                 heading: "Visual learning",
-                body: "Each card includes a species image when available. Visual association strengthens recall during field identification."
+                body: "Species and family cards include botanical images on the detail side. Visual association strengthens recall when you encounter the plant."
             )
         ]
     )
@@ -201,39 +207,51 @@ extension FeatureGuide {
     static let plantsNearMe = FeatureGuide(
         id: "plants_near_me",
         title: "Plants Near Me",
-        subtitle: "Local biodiversity map",
+        subtitle: "Predicted local species",
         sections: [
             GuideSection(
                 icon: "location.fill",
                 iconColor: AppColors.primaryAmber,
                 heading: "What is this?",
-                body: "Species documented near your current location. Data sourced from occurrence records and community observations."
+                body: "A ranked list of plant species predicted to occur near your current location, generated from geo-prediction models using environmental and geographic data."
+            ),
+            GuideSection(
+                icon: "checkmark.circle.fill",
+                iconColor: AppColors.success,
+                heading: "Database matches",
+                body: "Tap any matched species to open the full plant profile."
             ),
             GuideSection(
                 icon: "map.fill",
-                iconColor: AppColors.primaryAmber,
-                heading: "Location accuracy",
-                body: "Results depend on GPS accuracy and available occurrence data for your region. Urban areas typically have denser records."
+                iconColor: AppColors.brandPurple,
+                heading: "Map view",
+                body: "Tap the map icon in the top-right to see a geographic overview of your search area and summary statistics for the predicted species."
+            ),
+            GuideSection(
+                icon: "exclamationmark.circle",
+                iconColor: AppColors.textMuted,
+                heading: "No predictions?",
+                body: "Prediction data may not be available for all regions. Try again later, or use Observe and Capture modes to identify plants directly in the field."
             )
         ]
     )
 
     static let conservation = FeatureGuide(
         id: "conservation",
-        title: "Conservation Status",
-        subtitle: "Track what matters",
+        title: "At-Risk Plants",
+        subtitle: "United Plant Savers watch list",
         sections: [
             GuideSection(
                 icon: "exclamationmark.triangle.fill",
                 iconColor: AppColors.error,
                 heading: "What is this?",
-                body: "Species flagged with IUCN conservation status. Critically Endangered, Endangered, Vulnerable, and Near Threatened taxa are highlighted."
+                body: "North American medicinal plants on the United Plant Savers (UPS) at-risk list — species facing harvest pressure, habitat loss, or population decline."
             ),
             GuideSection(
                 icon: "shield.fill",
                 iconColor: AppColors.success,
-                heading: "Why it matters",
-                body: "Field botanists are often the first to notice population changes. Knowing which species are at risk informs responsible observation and reporting."
+                heading: "Why this matters",
+                body: "Field botanists are often the first to detect population changes. Knowing which species are at risk shapes responsible harvesting, observation, and reporting."
             )
         ]
     )
@@ -304,12 +322,6 @@ extension FeatureGuide {
                 iconColor: AppColors.primaryAmber,
                 heading: "Search & filter",
                 body: "Use the search bar at the top to find species by common or scientific name. Results update as you type."
-            ),
-            GuideSection(
-                icon: "lock.fill",
-                iconColor: AppColors.brandPurple,
-                heading: "Free vs. paid",
-                body: "The first 30 species are free to explore. Subscribe to unlock the full library of species with all trait data and images."
             )
         ]
     )
@@ -337,7 +349,7 @@ extension FeatureGuide {
                 icon: "arrow.triangle.branch",
                 iconColor: AppColors.success,
                 heading: "Cross-references",
-                body: "Each family links to its member species. Use these connections to study how traits carry across related plants."
+                body: "Each family links to member species. Use these connections to study how traits carry across related plants."
             )
         ]
     )
@@ -408,7 +420,7 @@ extension FeatureGuide {
             GuideSection(
                 icon: "camera.fill",
                 iconColor: AppColors.primaryAmber,
-                heading: "How it works",
+                heading: "How this works",
                 body: "Take a photo of any plant organ — flower, leaf, fruit, bark, or whole plant. The identification engine analyzes the image and returns ranked species matches."
             ),
             GuideSection(
@@ -436,7 +448,7 @@ extension FeatureGuide {
             GuideSection(
                 icon: "arrow.triangle.merge",
                 iconColor: AppColors.primaryAmber,
-                heading: "How it works",
+                heading: "How this works",
                 body: "Start with a photo for initial identification, then verify or refine by selecting observed traits. Combines visual analysis with morphological data."
             ),
             GuideSection(
@@ -499,7 +511,7 @@ extension FeatureGuide {
                 icon: "flame.fill",
                 iconColor: AppColors.success,
                 heading: "Streaks",
-                body: "Your streak counts consecutive days of botanical activity. Use the app daily to keep it going. Streaks are displayed on your profile."
+                body: "Your streak counts consecutive days of botanical activity. Use the app daily to keep going. Streaks are displayed on your profile."
             )
         ]
     )

@@ -13,20 +13,25 @@ struct RadicleBotanyApp: App {
             diskCapacity: 500 * 1024 * 1024      // 500 MB on-disk
         )
 
-        // Register Inter 18pt fonts from asset catalog
+        // Register Inter 18pt fonts (UI / body) and Cormorant Garamond (display / titles)
         FontRegistration.registerInter()
+        FontRegistration.registerCormorant()
 
         let palette = ThemeManager.shared.palette
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = palette.uiAppBackground
+        // Inline navigation title — Cormorant Garamond Bold (used by destination screens)
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor(AppColors.textPrimary),
-            .font: UIFont(name: "Inter18pt-SemiBold", size: 17) ?? UIFont.systemFont(ofSize: 17, weight: .semibold)
+            .font: UIFont(name: "CormorantGaramond-Bold", size: 20)
+                ?? UIFont.systemFont(ofSize: 17, weight: .bold)
         ]
+        // Large title — Cormorant Garamond Bold (used when largeTitle display mode is active)
         appearance.largeTitleTextAttributes = [
             .foregroundColor: UIColor(AppColors.textPrimary),
-            .font: UIFont(name: "Inter18pt-Bold", size: 34) ?? UIFont.systemFont(ofSize: 34, weight: .bold)
+            .font: UIFont(name: "CormorantGaramond-Bold", size: 38)
+                ?? UIFont.systemFont(ofSize: 34, weight: .bold)
         ]
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().compactAppearance = appearance
@@ -155,37 +160,62 @@ struct RootView: View {
             // This is the same context that @Query in all child views observes.
             DataLoader.shared.loadAllDataIfNeeded(modelContext: modelContext)
 
-            // Verify data was loaded
-            let plantCount = (try? modelContext.fetchCount(FetchDescriptor<Plant>())) ?? 0
-            let termCount = (try? modelContext.fetchCount(FetchDescriptor<BotanyTerm>())) ?? 0
-            let familyCount = (try? modelContext.fetchCount(FetchDescriptor<Family>())) ?? 0
-            print("[RootView] Data ready — Plants: \(plantCount), Families: \(familyCount), Terms: \(termCount)")
-
-            // Now show the real UI — @Query in child views will see the data
+            // Show the UI IMMEDIATELY — don't block on anything else.
             isDataReady = true
 
             // ALL background work below uses a SEPARATE modelContext so saves
             // don't trigger @Query re-evaluations and UI hitching on the main thread.
             let container = modelContext.container
 
-            // Background enrichment: IUCN status, common names, GBIF IDs.
+            // Load pre-bundled plant images (240px) on a BACKGROUND context (not main thread).
+            // This avoids blocking the UI with synchronous file I/O for 2,327 images.
+            // Images upgrade from thumbnails (75px) to small (240px) bundled images.
             Task.detached(priority: .utility) {
                 let bgContext = ModelContext(container)
                 bgContext.autosaveEnabled = false
-                await DataLoader.shared.loadSpeciesEnrichment(modelContext: bgContext)
+                DataLoader.shared.loadBundledPlantImages(modelContext: bgContext)
             }
 
-            // Image URLs are pre-baked in Plants.json from iNaturalist (97.2% coverage).
-            // Only ~59 species need API fetching — fire and forget on background context.
+            // AFTER UI is visible: warm up NSCache with images already on disk (URLCache).
+            // Only warm the first 50 images — enough for the initial grid screen.
+            let warmUpDescriptor = FetchDescriptor<Plant>(
+                sortBy: [SortDescriptor(\Plant.scientificName)]
+            )
+            let warmUpPlants = (try? modelContext.fetch(warmUpDescriptor)) ?? []
+            let warmUpURLs = warmUpPlants
+                .prefix(50)
+                .compactMap { $0.bestImageURL }
+                .compactMap { URL(string: $0) }
+
             Task.detached(priority: .utility) {
-                let bgContext = ModelContext(container)
-                bgContext.autosaveEnabled = false
-                await DataLoader.shared.loadPlantImages(modelContext: bgContext)
+                await ThrottledImageLoader.shared.warmUpCache(urls: warmUpURLs)
             }
 
-            // NOTE: cacheAllPlantImages() removed from launch sequence.
-            // Images are cached lazily: URLCache persists AsyncImage downloads,
-            // and PlantDetailView caches individual plants to SwiftData for offline.
+            // DISABLED: loadSpeciesEnrichment was making individual PlantNet API calls
+            // for every unenriched species (~2,327 calls in batches of 5). This hammers
+            // the network at launch and slows everything down. IUCN status, GBIF IDs,
+            // and alt common names should be pre-baked into Plants.json at build time
+            // (like we did for image URLs) rather than fetched at runtime.
+            // Task.detached(priority: .background) {
+            //     let bgContext = ModelContext(container)
+            //     bgContext.autosaveEnabled = false
+            //     await DataLoader.shared.loadSpeciesEnrichment(modelContext: bgContext)
+            // }
+
+            // DISABLED: loadPlantImages was fetching image URLs from iNaturalist/GBIF/Wikipedia
+            // for ~59 species missing pre-baked URLs. Now redundant because all 2,268 species
+            // have bundled 240px images in PlantImages/ loaded by loadBundledPlantImages above.
+            // Task.detached(priority: .background) {
+            //     let bgContext = ModelContext(container)
+            //     bgContext.autosaveEnabled = false
+            //     await DataLoader.shared.loadPlantImages(modelContext: bgContext)
+            // }
+
+            // DISABLED: cacheAllPlantImages was downloading ALL 2,327 images to SwiftData
+            // in the background. Even with batch limits, the SwiftData writes cause
+            // cross-context change notifications that trigger @Query re-evaluations,
+            // freezing the UI during scrolling. Images are already cached in URLCache
+            // (500MB disk) via ThrottledImageLoader — no need for SwiftData duplication.
         }
     }
 }

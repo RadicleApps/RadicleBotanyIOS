@@ -10,6 +10,7 @@ import Observation
 final class StudySessionManager {
     // MARK: - Session Stats
     private(set) var cardsReviewed: Int = 0
+    @ObservationIgnored private var cachedStreakBonus: Int? = nil
     private(set) var cardsMastered: Int = 0
     private(set) var cardsStillLearning: Int = 0
     private(set) var xpEarned: Int = 0
@@ -28,9 +29,12 @@ final class StudySessionManager {
         // Base XP
         let baseXP = mastered ? AchievementService.xpCardMastered : AchievementService.xpCardReviewed
 
-        // Streak bonus
-        let settings = fetchSettings(modelContext: modelContext)
-        let streakBonus = settings.safeStudyStreak >= 3 ? AchievementService.xpStreakBonus : 0
+        // Streak bonus — fetch settings once per session, not per swipe
+        if cachedStreakBonus == nil {
+            let settings = fetchSettings(modelContext: modelContext)
+            cachedStreakBonus = settings.safeStudyStreak >= 3 ? AchievementService.xpStreakBonus : 0
+        }
+        let streakBonus = cachedStreakBonus ?? 0
 
         let totalCardXP = baseXP + streakBonus
 

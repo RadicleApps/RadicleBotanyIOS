@@ -2,22 +2,32 @@ import SwiftUI
 import SwiftData
 
 struct FamiliesListView: View {
-    @EnvironmentObject var storeManager: StoreManager
     @Query(sort: \Family.familyLatin) private var families: [Family]
     @Query(sort: \Plant.scientificName) private var allPlants: [Plant]
 
     @State private var searchText = ""
     @State private var selectedOrder: String? = nil
 
-    // MARK: - Computed Properties
+    // MARK: - Cached Data (computed once, updated on change)
 
-    private var allOrders: [String] {
-        let orders = Set(families.compactMap { $0.order }.filter { !$0.isEmpty })
-        return orders.sorted()
+    @State private var cachedOrders: [String] = []
+    @State private var cachedFilteredFamilies: [Family] = []
+    @State private var cachedGroupedFamilies: [(letter: String, families: [Family])] = []
+    @State private var cachedSpeciesCounts: [String: Int] = [:]
+
+    private func recomputeAll() {
+        cachedOrders = Set(families.compactMap { $0.order }.filter { !$0.isEmpty }).sorted()
+        // Pre-compute species count per family — avoids O(families × plants) per render
+        var counts: [String: Int] = [:]
+        for plant in allPlants {
+            counts[plant.familyLatin, default: 0] += 1
+        }
+        cachedSpeciesCounts = counts
+        recomputeFiltered()
     }
 
-    private var filteredFamilies: [Family] {
-        var result = families
+    private func recomputeFiltered() {
+        var result = Array(families)
 
         if let order = selectedOrder {
             result = result.filter { $0.order == order }
@@ -32,22 +42,15 @@ struct FamiliesListView: View {
             }
         }
 
-        return result
-    }
+        cachedFilteredFamilies = result
 
-    private var groupedFamilies: [(letter: String, families: [Family])] {
-        let grouped = Dictionary(grouping: filteredFamilies) { family -> String in
+        let grouped = Dictionary(grouping: result) { family -> String in
             let firstChar = family.familyLatin.prefix(1).uppercased()
             return firstChar.isEmpty ? "#" : firstChar
         }
-
-        return grouped
+        cachedGroupedFamilies = grouped
             .map { (letter: $0.key, families: $0.value) }
             .sorted { $0.letter < $1.letter }
-    }
-
-    private var isUnlocked: Bool {
-        storeManager.isFeatureUnlocked(.fullFamilyAccess)
     }
 
     private var hasActiveFilters: Bool {
@@ -59,18 +62,18 @@ struct FamiliesListView: View {
             searchBar
 
             FilterChipBar(
-                categories: allOrders,
+                categories: cachedOrders,
                 selectedCategory: $selectedOrder,
                 accentColor: .orangePrimary
             )
 
             resultCountBar
 
-            if filteredFamilies.isEmpty {
+            if cachedFilteredFamilies.isEmpty {
                 emptyState
             } else {
                 List {
-                    ForEach(groupedFamilies, id: \.letter) { group in
+                    ForEach(cachedGroupedFamilies, id: \.letter) { group in
                         Section {
                             ForEach(group.families) { family in
                                 familyRow(family)
@@ -81,15 +84,25 @@ struct FamiliesListView: View {
                                 .foregroundStyle(AppColors.primaryAmber)
                         }
                     }
+
+                    // Bottom padding for tab bar
+                    Color.clear.frame(height: 80)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Families")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .featureGuide(.families)
+        .onAppear { if cachedOrders.isEmpty && !families.isEmpty { recomputeAll() } }
+        .onChange(of: families.count) { _, _ in recomputeAll() }
+        .onChange(of: allPlants.count) { _, _ in recomputeAll() }
+        .onChange(of: searchText) { _, _ in recomputeFiltered() }
+        .onChange(of: selectedOrder) { _, _ in recomputeFiltered() }
     }
 
     // MARK: - Search Bar
@@ -132,7 +145,7 @@ struct FamiliesListView: View {
 
     private var resultCountBar: some View {
         HStack(spacing: 4) {
-            let count = filteredFamilies.count
+            let count = cachedFilteredFamilies.count
             let total = families.count
 
             Text("\(count) of \(total) families")
@@ -211,7 +224,10 @@ struct FamiliesListView: View {
     // MARK: - Family Row
 
     private func familyRow(_ family: Family) -> some View {
-        NavigationLink(destination: FamilyDetailView(family: family)) {
+        let index = cachedFilteredFamilies.firstIndex(where: { $0.id == family.id }) ?? 0
+        return NavigationLink(destination: CollectionPagerView(items: cachedFilteredFamilies, startIndex: index) { f in
+            FamilyDetailView(family: f)
+        }) {
             familyRowContent(family)
         }
         .listRowBackground(AppColors.cardBackground)
@@ -253,7 +269,7 @@ struct FamiliesListView: View {
 
             Spacer()
 
-            let speciesCount = allPlants.filter { $0.familyLatin == family.familyLatin }.count
+            let speciesCount = cachedSpeciesCounts[family.familyLatin] ?? 0
             if speciesCount > 0 {
                 VStack(spacing: 1) {
                     Text("\(speciesCount)")

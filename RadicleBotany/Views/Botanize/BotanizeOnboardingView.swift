@@ -87,11 +87,11 @@ struct BotanizeOnboardingView: View {
                     .opacity(0.85)
 
                 VStack(spacing: 10) {
-                    Text("Identify Any Plant")
-                        .font(AppTypography.inter(size: 26, weight: .bold))
+                    Text("Observe & Identify Plants")
+                        .font(.cormorant(size: 28, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
 
-                    Text("Three tools to help you identify plants in the field.")
+                    Text("Tools to help you identify plants in the field.")
                         .font(AppTypography.bodyText)
                         .foregroundStyle(AppColors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -142,10 +142,10 @@ struct BotanizeOnboardingView: View {
 
                 VStack(spacing: 10) {
                     Text("Point, Shoot, Identify")
-                        .font(AppTypography.inter(size: 26, weight: .bold))
+                        .font(.cormorant(size: 28, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
 
-                    Text("Photo identification in seconds.")
+                    Text("Photo identification.")
                         .font(AppTypography.bodyText)
                         .foregroundStyle(AppColors.textSecondary)
                 }
@@ -178,10 +178,10 @@ struct BotanizeOnboardingView: View {
 
                 VStack(spacing: 10) {
                     Text("Trait-Based Keying")
-                        .font(AppTypography.inter(size: 26, weight: .bold))
+                        .font(.cormorant(size: 28, weight: .bold))
                         .foregroundStyle(AppColors.textPrimary)
 
-                    Text("Identify plants by what you can see — no camera needed.")
+                    Text("Identify plants by what you can observe.")
                         .font(AppTypography.bodyText)
                         .foregroundStyle(AppColors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -228,13 +228,6 @@ struct BotanizeOnboardingView: View {
 
             Spacer()
         }
-        .padding(14)
-        .background(AppColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
-        .overlay(
-            RoundedRectangle(cornerRadius: AppRadius.card)
-                .stroke(AppColors.border, lineWidth: 0.5)
-        )
     }
 
     private func stepRow(number: Int, text: String, detail: String) -> some View {

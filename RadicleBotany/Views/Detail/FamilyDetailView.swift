@@ -75,11 +75,11 @@ struct FamilyDetailView: View {
                     relatedFamiliesSection
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 32)
+                .padding(.bottom, 100)
             }
 
             // Floating Study Button
-            NavigationLink(destination: FamilyFlashcardView().navigationTitle("Family Flashcards").navigationBarTitleDisplayMode(.inline)) {
+            NavigationLink(destination: FamilyFlashcardView().navigationTitle("").navigationBarTitleDisplayMode(.inline)) {
                 VStack(spacing: 3) {
                     Image(systemName: "rectangle.on.rectangle.angled")
                         .font(AppTypography.inter(size: 18, weight: .semibold))
@@ -101,7 +101,7 @@ struct FamilyDetailView: View {
             .padding(.bottom, 20)
         }
         .background(AppColors.appBackground)
-        .navigationTitle(family.familyLatin)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -123,15 +123,21 @@ struct FamilyDetailView: View {
     // MARK: - Taxonomy Pills
 
     private var taxonomyPills: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
             if !family.order.isEmpty {
-                CategoryPill(text: family.order, color: .orangePrimary)
+                Text(family.order)
+                    .font(AppTypography.bodySmall)
+                    .foregroundStyle(Color.orangePrimary)
             }
             if !family.taxonomicClass.isEmpty {
-                CategoryPill(text: family.taxonomicClass, color: .greenSecondary)
+                Text(family.taxonomicClass)
+                    .font(AppTypography.bodySmall)
+                    .foregroundStyle(Color.greenSecondary)
             }
             if !family.kingdom.isEmpty {
-                CategoryPill(text: family.kingdom, color: .purpleSecondary)
+                Text(family.kingdom)
+                    .font(AppTypography.bodySmall)
+                    .foregroundStyle(Color.purpleSecondary)
             }
         }
     }
@@ -343,7 +349,10 @@ struct FamilyDetailView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(filteredSpecies, id: \.scientificName) { plant in
-                                NavigationLink(destination: PlantDetailView(plant: plant)) {
+                                let index = filteredSpecies.firstIndex(where: { $0.id == plant.id }) ?? 0
+                                NavigationLink(destination: CollectionPagerView(items: filteredSpecies, startIndex: index) { p in
+                                    PlantDetailView(plant: p)
+                                }) {
                                     speciesCard(plant)
                                 }
                             }
@@ -356,79 +365,38 @@ struct FamilyDetailView: View {
 
     private func speciesCard(_ plant: Plant) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            ZStack(alignment: .bottomLeading) {
-                if let cachedImage = plant.cachedImage {
-                    Image(uiImage: cachedImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 155, height: 110)
-                        .clipped()
-                } else if let imageURL = plant.bestImageURL, let url = URL(string: imageURL) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 155, height: 110)
-                                .clipped()
-                        default:
-                            speciesCardGradient
-                        }
-                    }
-                } else {
-                    speciesCardGradient
-                }
-
-                if !plant.genus.isEmpty {
-                    Text(plant.genus)
-                        .font(AppTypography.tagText)
-                        .foregroundStyle(AppColors.success)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(AppColors.success.opacity(0.15))
-                        .clipShape(Capsule())
-                        .padding(8)
-                }
-            }
-            .frame(height: 110)
-            .clipped()
+            // Thin accent line
+            RoundedRectangle(cornerRadius: 1)
+                .fill(AppColors.success.opacity(0.2))
+                .frame(height: 1.5)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(plant.scientificName)
-                    .font(AppTypography.fieldLabel)
+                    .font(AppTypography.tagText)
+                    .fontWeight(.semibold)
                     .foregroundStyle(AppColors.textPrimary)
+                    .italic()
                     .lineLimit(1)
-                Text(plant.commonName)
+
+                Text(plant.titleCasedCommonName)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)
+
+                Text(plant.genus)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textMuted)
+                    .lineLimit(1)
+                    .padding(.top, 1)
             }
             .padding(.horizontal, 10)
-            .padding(.top, 8)
+            .padding(.top, 10)
             .padding(.bottom, 10)
         }
         .frame(width: 155)
         .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
         .overlay(RoundedRectangle(cornerRadius: AppRadius.card).stroke(AppColors.border, lineWidth: 0.5))
-    }
-
-    /// Small gradient placeholder for mini species cards
-    private var speciesCardGradient: some View {
-        LinearGradient(
-            colors: [AppColors.success.opacity(0.08), AppColors.success.opacity(0.03)],
-            startPoint: .topLeading, endPoint: .bottomTrailing
-        )
-        .frame(height: 110)
-        .overlay(alignment: .topTrailing) {
-            Image("AppIconDark")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-                .opacity(0.2)
-                .padding(10)
-        }
     }
 
     // MARK: - Related Families (with search)
@@ -460,7 +428,10 @@ struct FamilyDetailView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(filteredRelatedFamilies, id: \.familyLatin) { relatedFamily in
-                                NavigationLink(destination: FamilyDetailView(family: relatedFamily)) {
+                                let index = filteredRelatedFamilies.firstIndex(where: { $0.id == relatedFamily.id }) ?? 0
+                                NavigationLink(destination: CollectionPagerView(items: filteredRelatedFamilies, startIndex: index) { f in
+                                    FamilyDetailView(family: f)
+                                }) {
                                     familyCard(relatedFamily)
                                 }
                             }
@@ -472,48 +443,30 @@ struct FamilyDetailView: View {
     }
 
     private func familyCard(_ relatedFamily: Family) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ZStack(alignment: .bottomLeading) {
-                LinearGradient(
-                    colors: [AppColors.primaryAmber.opacity(0.08), AppColors.primaryAmber.opacity(0.03)],
-                    startPoint: .topLeading, endPoint: .bottomTrailing
-                )
-                .frame(height: 60)
-                .overlay(alignment: .topTrailing) {
-                    Image(systemName: "leaf.circle.fill")
-                        .font(AppTypography.inter(size: 20))
-                        .foregroundStyle(AppColors.primaryAmber.opacity(0.12))
-                        .padding(10)
-                }
-
-                let speciesCount = allPlants.filter { $0.familyLatin == relatedFamily.familyLatin }.count
-                if speciesCount > 0 {
-                    Text("\(speciesCount) species")
-                        .font(AppTypography.tagText)
-                        .foregroundStyle(AppColors.primaryAmber)
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 3)
-                        .background(AppColors.primaryAmber.opacity(0.15))
-                        .clipShape(Capsule())
-                        .padding(8)
-                }
+        let speciesCount = allPlants.filter { $0.familyLatin == relatedFamily.familyLatin }.count
+        return VStack(alignment: .leading, spacing: 3) {
+            Text(relatedFamily.familyLatin)
+                .font(AppTypography.tagText)
+                .fontWeight(.semibold)
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(1)
+            Text(relatedFamily.familyEnglish)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColors.textSecondary)
+                .lineLimit(1)
+            if speciesCount > 0 {
+                Text("\(speciesCount) species")
+                    .font(AppTypography.inter(size: 9, weight: .medium))
+                    .foregroundStyle(AppColors.primaryAmber)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(AppColors.primaryAmber.opacity(0.12))
+                    .clipShape(Capsule())
+                    .padding(.top, 2)
             }
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(relatedFamily.familyLatin)
-                    .font(AppTypography.tagText)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.textPrimary)
-                    .lineLimit(1)
-                Text(relatedFamily.familyEnglish)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .lineLimit(1)
-            }
-            .padding(.horizontal, 10)
-            .padding(.top, 8)
-            .padding(.bottom, 10)
         }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 10)
         .frame(width: 155)
         .background(AppColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))

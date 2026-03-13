@@ -15,22 +15,12 @@ struct TermDetailView: View {
     @State private var relatedSearchText = ""
     @State private var selectedTraitCategory: String? = nil
     @State private var isDescriptionExpanded = false
+    @State private var showColorIllustration = true
 
-    // MARK: - Base Data (trait-matched)
+    // MARK: - Base Data (trait-matched, loaded async after first render to prevent freeze)
 
-    private var speciesWithTrait: [Plant] {
-        let searchValue = term.term.lowercased()
-        return allPlants.filter { plant in
-            matchesAnyPlantTrait(plant: plant, value: searchValue)
-        }
-    }
-
-    private var familiesWithTrait: [Family] {
-        let searchValue = term.term.lowercased()
-        return allFamilies.filter { family in
-            matchesAnyFamilyTrait(family: family, value: searchValue)
-        }
-    }
+    @State private var speciesWithTrait: [Plant] = []
+    @State private var familiesWithTrait: [Family] = []
 
     private var relatedTerms: [BotanyTerm] {
         allTerms.filter { $0.category == term.category && $0.term != term.term }
@@ -126,12 +116,17 @@ struct TermDetailView: View {
                     relatedTermsSection
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 32)
+                .padding(.bottom, 120)
             }
         }
         .background(AppColors.appBackground)
-        .navigationTitle(term.term)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .task(id: term.id) {
+            let searchValue = term.term.lowercased()
+            speciesWithTrait = allPlants.filter { matchesAnyPlantTrait(plant: $0, value: searchValue) }
+            familiesWithTrait = allFamilies.filter { matchesAnyFamilyTrait(family: $0, value: searchValue) }
+        }
     }
 
     // MARK: - Header
@@ -144,7 +139,7 @@ struct TermDetailView: View {
                 .frame(width: 40, height: 2)
 
             Text(term.term)
-                .font(AppTypography.inter(size: 28, weight: .bold))
+                .font(.cormorant(size: 28, weight: .bold))
                 .foregroundStyle(AppColors.textPrimary)
 
             HStack(spacing: 8) {
@@ -159,57 +154,97 @@ struct TermDetailView: View {
 
     // MARK: - Illustration
 
+    private var hasBothIllustrations: Bool {
+        term.imageURL != nil && term.colorImageURL != nil
+    }
+
+    private var hasAnyIllustration: Bool {
+        term.imageURL != nil || term.colorImageURL != nil
+    }
+
     private var illustrationSection: some View {
         Group {
-            if let imageURL = term.imageURL, let url = URL(string: imageURL) {
-                illustrationAsyncImage(url: url)
+            if hasBothIllustrations {
+                dualIllustrationView
+            } else if let colorURL = term.colorImageURL, let url = URL(string: colorURL) {
+                singleIllustrationView(url: url, label: "Color")
+            } else if let imageURL = term.imageURL, let url = URL(string: imageURL) {
+                singleIllustrationView(url: url, label: "Diagram")
             } else {
-                // Minimal placeholder — category icon floating on dark bg
-                VStack(spacing: 8) {
-                    Image(systemName: categoryIcon)
-                        .font(AppTypography.inter(size: 48, weight: .thin))
-                        .foregroundStyle(AppColors.brandPurple.opacity(0.2))
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 160)
+                EmptyView()
             }
         }
     }
 
-    @ViewBuilder
-    private func illustrationAsyncImage(url: URL) -> some View {
-        AsyncImage(url: url) { phase in
-            switch phase {
-            case .empty:
-                Color.clear
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 200)
-                    .overlay(
-                        ProgressView()
-                            .tint(AppColors.brandPurple.opacity(0.5))
-                    )
-            case .success(let image):
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: .infinity)
-                    .frame(maxHeight: 280)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 16)
-            case .failure:
-                VStack(spacing: 8) {
-                    Image(systemName: categoryIcon)
-                        .font(AppTypography.inter(size: 48, weight: .thin))
-                        .foregroundStyle(AppColors.brandPurple.opacity(0.2))
+    /// Dual-mode illustration: toggle between B&W diagram and color illustration
+    private var dualIllustrationView: some View {
+        VStack(spacing: 0) {
+            // Toggle bar — Color default (left), Diagram secondary (right)
+            HStack(spacing: 0) {
+                illustrationToggleTab(label: "Color", icon: "paintpalette.fill", isSelected: showColorIllustration) {
+                    withAnimation(.easeInOut(duration: 0.2)) { showColorIllustration = true }
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 160)
-            @unknown default:
-                Color.clear
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 160)
+                illustrationToggleTab(label: "Diagram", icon: "pencil.and.outline", isSelected: !showColorIllustration) {
+                    withAnimation(.easeInOut(duration: 0.2)) { showColorIllustration = false }
+                }
             }
+            .background(AppColors.cardElevated.opacity(0.4))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .padding(.horizontal, 40)
+            .padding(.top, 12)
+
+            // Image — Color is default, Diagram is secondary
+            Group {
+                if showColorIllustration, let colorURL = term.colorImageURL, let url = URL(string: colorURL) {
+                    illustrationImage(url: url)
+                } else if !showColorIllustration, let bwURL = term.imageURL, let url = URL(string: bwURL) {
+                    illustrationImage(url: url)
+                }
+            }
+            .transition(.opacity)
         }
+    }
+
+    private func illustrationToggleTab(label: String, icon: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 5) {
+                Image(systemName: icon)
+                    .font(AppTypography.inter(size: 11))
+                Text(label)
+                    .font(AppTypography.tagText)
+            }
+            .foregroundStyle(isSelected ? AppColors.brandPurple : AppColors.textMuted)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .background(isSelected ? AppColors.brandPurple.opacity(0.12) : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Single illustration (no toggle needed)
+    private func singleIllustrationView(url: URL, label: String) -> some View {
+        illustrationImage(url: url)
+    }
+
+    private func illustrationImage(url: URL) -> some View {
+        ThrottledAsyncImage(url: url, contentMode: .fit) {
+            illustrationPlaceholder
+        }
+        .frame(maxWidth: .infinity)
+        .frame(maxHeight: 280)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 16)
+    }
+
+    private var illustrationPlaceholder: some View {
+        VStack(spacing: 8) {
+            Image(systemName: categoryIcon)
+                .font(AppTypography.inter(size: 48, weight: .thin))
+                .foregroundStyle(AppColors.brandPurple.opacity(0.2))
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 160)
     }
 
     // MARK: - Description
@@ -309,7 +344,10 @@ struct TermDetailView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 14) {
                             ForEach(filteredFamilies, id: \.familyLatin) { family in
-                                NavigationLink(destination: FamilyDetailView(family: family)) {
+                                let index = filteredFamilies.firstIndex(where: { $0.id == family.id }) ?? 0
+                                NavigationLink(destination: CollectionPagerView(items: filteredFamilies, startIndex: index) { f in
+                                    FamilyDetailView(family: f)
+                                }) {
                                     familyCard(family)
                                 }
                             }
@@ -401,7 +439,10 @@ struct TermDetailView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 14) {
                             ForEach(filteredSpecies, id: \.scientificName) { plant in
-                                NavigationLink(destination: PlantDetailView(plant: plant)) {
+                                let index = filteredSpecies.firstIndex(where: { $0.id == plant.id }) ?? 0
+                                NavigationLink(destination: CollectionPagerView(items: filteredSpecies, startIndex: index) { p in
+                                    PlantDetailView(plant: p)
+                                }) {
                                     speciesCard(plant)
                                 }
                             }
@@ -414,71 +455,42 @@ struct TermDetailView: View {
 
     private func speciesCard(_ plant: Plant) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Image area — borderless
-            ZStack(alignment: .bottomLeading) {
-                if let cachedImage = plant.cachedImage {
-                    Image(uiImage: cachedImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 140, height: 100)
-                        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-                } else if let imageURL = plant.bestImageURL, let url = URL(string: imageURL) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 140, height: 100)
-                                .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-                        default:
-                            speciesPlaceholder
-                        }
-                    }
-                } else {
-                    speciesPlaceholder
-                }
+            // Thin accent line
+            RoundedRectangle(cornerRadius: 1)
+                .fill(AppColors.success.opacity(0.2))
+                .frame(height: 1.5)
 
-                // Matching trait pill
-                if let matchingTrait = plantMatchingTrait(plant) {
-                    Text(matchingTrait)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
-                        .padding(6)
-                }
+            // Matching trait pill
+            if let matchingTrait = plantMatchingTrait(plant) {
+                Text(matchingTrait)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.success)
+                    .padding(.top, 8)
             }
 
-            // Info — directly on dark background
-            VStack(alignment: .leading, spacing: 2) {
+            // Species info
+            VStack(alignment: .leading, spacing: 3) {
                 Text(plant.scientificName)
-                    .font(AppTypography.fieldLabel)
+                    .font(AppTypography.tagText)
+                    .fontWeight(.semibold)
                     .foregroundStyle(AppColors.textPrimary)
+                    .italic()
                     .lineLimit(1)
 
-                Text(plant.commonName)
+                Text(plant.titleCasedCommonName)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)
+
+                Text(plant.familyLatin)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textMuted)
+                    .lineLimit(1)
+                    .padding(.top, 1)
             }
-            .padding(.top, 6)
+            .padding(.top, 8)
         }
         .frame(width: 140)
-    }
-
-    /// Minimal placeholder for species cards
-    private var speciesPlaceholder: some View {
-        AppColors.cardElevated.opacity(0.3)
-            .frame(width: 140, height: 100)
-            .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-            .overlay {
-                Image(systemName: "leaf.fill")
-                    .font(AppTypography.inter(size: 20))
-                    .foregroundStyle(AppColors.success.opacity(0.12))
-            }
     }
 
     /// Returns the specific trait category that matches for display in the species card.
@@ -521,7 +533,10 @@ struct TermDetailView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 14) {
                             ForEach(filteredRelatedTerms, id: \.term) { relatedTerm in
-                                NavigationLink(destination: TermDetailView(term: relatedTerm)) {
+                                let index = filteredRelatedTerms.firstIndex(where: { $0.id == relatedTerm.id }) ?? 0
+                                NavigationLink(destination: CollectionPagerView(items: filteredRelatedTerms, startIndex: index) { t in
+                                    TermDetailView(term: t)
+                                }) {
                                     termCard(relatedTerm)
                                 }
                             }
@@ -534,19 +549,17 @@ struct TermDetailView: View {
 
     private func termCard(_ botanyTerm: BotanyTerm) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Image area — illustration floats on dark bg
-            if let imageURL = botanyTerm.imageURL, let url = URL(string: imageURL) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 140, height: 70)
-                    default:
-                        termPlaceholder
-                    }
+            // Image area — prefer color, fall back to diagram
+            let termBestURL: URL? = {
+                if let c = botanyTerm.colorImageURL, !c.isEmpty, let u = URL(string: c) { return u }
+                if let d = botanyTerm.imageURL, !d.isEmpty, let u = URL(string: d) { return u }
+                return nil
+            }()
+            if let url = termBestURL {
+                ThrottledAsyncImage(url: url, contentMode: .fit) {
+                    termPlaceholder
                 }
+                .frame(width: 140, height: 70)
             } else {
                 termPlaceholder
             }
@@ -690,6 +703,7 @@ extension BotanyTerm: Hashable {
                 descriptionShort: "A leaf arrangement in which a single leaf arises at each node, alternating sides along the stem.",
                 descriptionLong: "This creates a staggered pattern, where no two leaves are directly opposite each other. The pattern may be spiral, helical, or simply zigzag, depending on the species.",
                 imageURL: nil,
+                colorImageURL: nil,
                 showPlantID: true,
                 isFree: true
             )

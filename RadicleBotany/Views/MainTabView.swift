@@ -21,14 +21,9 @@ struct MainTabView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // Current tab content with directional slide
+            // Current tab content — simple opacity for performance
+            // (spring + asymmetric move caused layout thrashing with large grids)
             tabContent
-                .id(selectedTab)
-                .transition(.asymmetric(
-                    insertion: .move(edge: tabMovedRight ? .trailing : .leading).combined(with: .opacity),
-                    removal: .move(edge: tabMovedRight ? .leading : .trailing).combined(with: .opacity)
-                ))
-                .animation(AppAnimations.interactiveSpring, value: selectedTab)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             customTabBar
@@ -65,7 +60,7 @@ struct MainTabView: View {
         switch selectedTab {
         case .journal:
             NavigationStack {
-                JournalView(onLogObservation: { selectedTab = .botanize })
+                JournalView()
                     .appToolbar(guide: .journal)
                     .navigationDestination(for: Plant.self) { PlantDetailView(plant: $0) }
                     .navigationDestination(for: Family.self) { FamilyDetailView(family: $0) }
@@ -75,7 +70,6 @@ struct MainTabView: View {
         case .botanize:
             NavigationStack {
                 BotanizeView()
-                    .appToolbar(guide: .botanize)
                     .navigationDestination(for: Plant.self) { PlantDetailView(plant: $0) }
                     .navigationDestination(for: Family.self) { FamilyDetailView(family: $0) }
                     .navigationDestination(for: BotanyTerm.self) { TermDetailView(term: $0) }

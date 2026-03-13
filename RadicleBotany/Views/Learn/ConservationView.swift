@@ -102,11 +102,9 @@ struct ConservationView: View {
 
     @State private var selectedCategory: UPSCategory? = nil
     @State private var showUPSInfo = false
-    @State private var fetchedImageURLs: [String: String] = [:]  // scientificName → imageURL
 
     private let columns = [
-        GridItem(.flexible(), spacing: 1.5),
-        GridItem(.flexible(), spacing: 1.5)
+        GridItem(.flexible())
     ]
 
     // MARK: - Computed Properties
@@ -118,62 +116,41 @@ struct ConservationView: View {
         return UPSSpecies.all
     }
 
-    private func matchedPlant(for species: UPSSpecies) -> Plant? {
-        let searchName = species.scientificName.lowercased()
-        // Exact match first
-        if let exact = allPlants.first(where: { $0.scientificName.lowercased() == searchName }) {
-            return exact
+    /// Build O(1) lookup from UPS species name → matched Plant.
+    /// Replaces O(n) linear scan per species with single O(n) dictionary build.
+    private static func buildPlantLookup(from plants: [Plant]) -> [String: Plant] {
+        let byName = Dictionary(
+            plants.map { ($0.scientificName.lowercased(), $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
+        var byGenus: [String: Plant] = [:]
+        for plant in plants {
+            let g = plant.genus.lowercased()
+            if byGenus[g] == nil { byGenus[g] = plant }
         }
-        // For "spp." entries, match by genus
-        if searchName.hasSuffix("spp.") {
-            let genus = searchName.replacingOccurrences(of: " spp.", with: "")
-            return allPlants.first(where: { $0.genus.lowercased() == genus })
-        }
-        return nil
-    }
 
-    private var inDatabaseCount: Int {
-        UPSSpecies.all.filter { matchedPlant(for: $0) != nil }.count
-    }
-
-    /// Best image URL for a species: database plant first, then fetched cache
-    private func imageURL(for species: UPSSpecies) -> URL? {
-        // Priority 1: matched database plant with populated image
-        if let plant = matchedPlant(for: species), let urlStr = plant.bestImageURL, let url = URL(string: urlStr) {
-            return url
-        }
-        // Priority 2: directly fetched from iNaturalist/Wikipedia
-        if let urlStr = fetchedImageURLs[species.scientificName], let url = URL(string: urlStr) {
-            return url
-        }
-        return nil
-    }
-
-    /// Fetch images for all UPS species via PlantImageService
-    private func fetchAllSpeciesImages() async {
-        let service = PlantImageService.shared
-        await withTaskGroup(of: (String, String?).self) { group in
-            for species in UPSSpecies.all {
-                group.addTask {
-                    // For "spp." entries, search by genus name (more likely to get results)
-                    let searchName = species.scientificName.hasSuffix("spp.")
-                        ? species.scientificName.replacingOccurrences(of: " spp.", with: "")
-                        : species.scientificName
-                    let url = await service.fetchImageURL(for: searchName)
-                    return (species.scientificName, url)
-                }
-            }
-            for await (name, url) in group {
-                if let url {
-                    fetchedImageURLs[name] = url
+        var lookup: [String: Plant] = [:]
+        for species in UPSSpecies.all {
+            let name = species.scientificName.lowercased()
+            if let exact = byName[name] {
+                lookup[species.scientificName] = exact
+            } else if name.hasSuffix("spp.") {
+                let genus = name.replacingOccurrences(of: " spp.", with: "")
+                if let match = byGenus[genus] {
+                    lookup[species.scientificName] = match
                 }
             }
         }
+        return lookup
     }
+
 
     // MARK: - Body
 
     var body: some View {
+        // Build O(1) plant lookup once per render (replaces ~140K string comparisons with ~2K)
+        let lookup = Self.buildPlantLookup(from: allPlants)
+
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 summaryCard
@@ -182,22 +159,17 @@ struct ConservationView: View {
                     .padding(.horizontal, 16)
                 categoryFilterBar
                     .padding(.horizontal, 16)
-                speciesGrid
+                speciesGrid(lookup: lookup)
             }
             .padding(.top, 8)
-            .padding(.bottom, 32)
+            .padding(.bottom, 80)
         }
         .background(AppColors.appBackground)
-        .navigationTitle("At-Risk Plants")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 InfoButton(guide: .conservation, style: .toolbar)
-            }
-        }
-        .task {
-            if fetchedImageURLs.isEmpty {
-                await fetchAllSpeciesImages()
             }
         }
     }
@@ -268,17 +240,6 @@ struct ConservationView: View {
                             .frame(width: 24, alignment: .trailing)
                     }
                 }
-            }
-
-            // In-database stat
-            HStack(spacing: 4) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(AppTypography.inter(size: 10))
-                    .foregroundStyle(AppColors.success)
-                Text("\(inDatabaseCount) of \(UPSSpecies.all.count) species in your database")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textMuted)
-                Spacer()
             }
         }
         .padding(AppSpacing.sectionPadding)
@@ -401,135 +362,77 @@ struct ConservationView: View {
 
     // MARK: - Species Grid
 
-    private var speciesGrid: some View {
-        LazyVGrid(columns: columns, spacing: 1.5) {
+    private func speciesGrid(lookup: [String: Plant]) -> some View {
+        LazyVGrid(columns: columns, spacing: 8) {
             ForEach(filteredSpecies) { species in
-                speciesCell(species)
+                speciesCell(species, plant: lookup[species.scientificName])
             }
         }
+        .padding(.horizontal, 16)
     }
 
     // MARK: - Species Cell
 
-    private func speciesCell(_ species: UPSSpecies) -> some View {
-        let plant = matchedPlant(for: species)
+    /// All database-matched plants from the filtered species list, for pager navigation.
+    private var matchedConservationPlants: [Plant] {
+        filteredSpecies.compactMap { species in
+            allPlants.first { $0.scientificName.lowercased() == species.scientificName.lowercased() }
+        }
+    }
 
-        return Group {
+    private func speciesCell(_ species: UPSSpecies, plant: Plant?) -> some View {
+        Group {
             if let plant {
-                NavigationLink(destination: PlantDetailView(plant: plant)) {
-                    speciesCellContent(species: species, plant: plant)
+                let matched = matchedConservationPlants
+                let index = matched.firstIndex(where: { $0.id == plant.id }) ?? 0
+                NavigationLink(destination: CollectionPagerView(items: matched, startIndex: index) { p in
+                    PlantDetailView(plant: p)
+                }) {
+                    speciesCellContent(species: species)
                 }
             } else {
-                NavigationLink(destination: UPSSpeciesDetailView(species: species, imageURL: imageURL(for: species))) {
-                    speciesCellContent(species: species, plant: nil)
+                NavigationLink(destination: UPSSpeciesDetailView(species: species, imageURL: nil)) {
+                    speciesCellContent(species: species)
                 }
             }
         }
         .buttonStyle(ConservationCellButtonStyle())
     }
 
-    private func speciesCellContent(species: UPSSpecies, plant: Plant?) -> some View {
-        let isInDatabase = plant != nil
-
-        return GeometryReader { geo in
-            ZStack {
-                // Square image — cached first, then URL, then placeholder
-                ZStack(alignment: .bottom) {
-                    if let plant = plant, let cachedImage = plant.cachedImage {
-                        // Priority 1: Persistent cached image from matched database plant
-                        Image(uiImage: cachedImage)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: geo.size.width, height: geo.size.width)
-                            .clipped()
-                    } else if let url = imageURL(for: species) {
-                        // Priority 2: URL-based image (database plant URL or fetched URL)
-                        AsyncImage(url: url) { phase in
-                            switch phase {
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: geo.size.width, height: geo.size.width)
-                                    .clipped()
-                            default:
-                                gridCellPlaceholder(size: geo.size.width, species: species)
-                            }
-                        }
-                    } else {
-                        gridCellPlaceholder(size: geo.size.width, species: species)
-                    }
-
-                    // Bottom label overlay
-                    VStack(spacing: 2) {
-                        Text(species.commonName)
-                            .font(AppTypography.tagText)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .lineLimit(1)
-
-                        Text(species.scientificName)
-                            .font(.system(size: 10, weight: .regular, design: .serif))
-                            .italic()
-                            .foregroundStyle(.white.opacity(0.7))
-                            .lineLimit(1)
-
-                        Text(species.category.rawValue.uppercased())
-                            .font(AppTypography.inter(size: 8, weight: .bold))
-                            .foregroundStyle(species.category.color)
-                            .padding(.top, 1)
-                    }
-                    .frame(width: geo.size.width, alignment: .center)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 7)
-                    .background(
-                        LinearGradient(
-                            colors: [.clear, Color.black.opacity(0.85)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                }
-
-                // Top-right badge: database match indicator
-                if isInDatabase {
-                    // Green checkmark = tappable, opens detail
-                    VStack {
-                        HStack {
-                            Spacer()
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(AppTypography.inter(size: 16))
-                                .foregroundStyle(AppColors.success)
-                                .shadow(color: .black.opacity(0.5), radius: 3, y: 1)
-                                .padding(6)
-                        }
-                        Spacer()
-                    }
-                }
+    private func speciesCellContent(species: UPSSpecies) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            // Category badge
+            HStack(spacing: 4) {
+                Image(systemName: species.category.icon)
+                    .font(AppTypography.inter(size: 9))
+                Text(species.category.rawValue.uppercased())
+                    .font(AppTypography.inter(size: 8, weight: .bold))
             }
-            .frame(width: geo.size.width, height: geo.size.width)
+            .foregroundStyle(species.category.color)
+
+            // Common name
+            Text(species.commonName.titleCased)
+                .font(AppTypography.bodyText)
+                .fontWeight(.semibold)
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(2)
+
+            // Scientific name
+            Text(species.scientificName)
+                .font(.system(size: 12, weight: .regular, design: .serif))
+                .italic()
+                .foregroundStyle(AppColors.textSecondary)
+                .lineLimit(1)
         }
-        .aspectRatio(1.0, contentMode: .fit)
-        .clipped()
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppColors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.button)
+                .stroke(species.category.color.opacity(0.3), lineWidth: 0.5)
+        )
         .contentShape(Rectangle())
-    }
-
-    private func gridCellPlaceholder(size: CGFloat, species: UPSSpecies) -> some View {
-        AppColors.cardElevated
-            .frame(width: size, height: size)
-            .overlay {
-                VStack(spacing: 6) {
-                    Image(systemName: species.category.icon)
-                        .font(AppTypography.inter(size: 28))
-                        .foregroundStyle(species.category.color.opacity(0.3))
-
-                    Text(species.commonName)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textMuted)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 8)
-                }
-            }
     }
 }
 

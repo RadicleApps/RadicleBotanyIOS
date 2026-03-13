@@ -48,6 +48,9 @@ struct SettingsView: View {
                         // IDENTITY
                         identitySection
 
+                        // APPEARANCE & NOTIFICATIONS
+                        appearanceNotificationsSection
+
                         // INTEGRATIONS
                         integrationsSection
 
@@ -66,7 +69,7 @@ struct SettingsView: View {
                     .padding(.top, AppSpacing.screenPadding)
                 }
             }
-            .navigationTitle("Console")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .featureGuide(.dashboard)
             .onAppear {
@@ -157,7 +160,7 @@ struct SettingsView: View {
 
                         Spacer()
 
-                        if storeManager.userTier == .annual || storeManager.userTier == .path {
+                        if storeManager.userTier == .annual {
                             Button {
                                 openSubscriptionManagement()
                             } label: {
@@ -426,22 +429,6 @@ struct SettingsView: View {
             }
             .clipShape(RoundedRectangle(cornerRadius: AppRadius.card))
             .padding(.horizontal, AppSpacing.screenPadding)
-
-            // Rate limit info for owner backend
-            if IntelligenceBackendService.shared.isOwnerBackendActive {
-                HStack(spacing: 10) {
-                    Image(systemName: "bolt.fill")
-                        .font(AppTypography.inter(size: 11))
-                        .foregroundColor(AppColors.primaryAmber)
-
-                    let remaining = RateLimitManager.shared.remainingQueries(tier: storeManager.userTier)
-                    let limit = RateLimitManager.shared.dailyLimit(for: storeManager.userTier)
-                    Text("Enhanced backend active — \(remaining)/\(limit) queries today")
-                        .font(AppTypography.tagText)
-                        .foregroundColor(AppColors.textMuted)
-                }
-                .padding(.horizontal, AppSpacing.screenPadding)
-            }
 
             // Explainer text
             Text("Configure your API keys to enable enhanced chatbot responses. Keys are stored securely in your device's Keychain.")
@@ -939,14 +926,10 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - System Section
+    // MARK: - Appearance & Notifications Section
 
-    private var systemSection: some View {
+    private var appearanceNotificationsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("SYSTEM")
-                .intelligenceHeader()
-                .padding(.horizontal, AppSpacing.screenPadding)
-
             // Appearance
             SectionCard(title: "Appearance") {
                 VStack(spacing: 12) {
@@ -976,6 +959,16 @@ struct SettingsView: View {
                 }
             }
             .padding(.horizontal, AppSpacing.screenPadding)
+        }
+    }
+
+    // MARK: - System Section
+
+    private var systemSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("SYSTEM")
+                .intelligenceHeader()
+                .padding(.horizontal, AppSpacing.screenPadding)
 
             // Data Management
             SectionCard(title: "Data") {
@@ -995,23 +988,6 @@ struct SettingsView: View {
             }
             .padding(.horizontal, AppSpacing.screenPadding)
 
-            #if DEBUG
-            // Admin
-            SectionCard(title: "Admin") {
-                NavigationLink(destination: AdminPlantImagesView()) {
-                    HStack {
-                        Text("Plant Images Manager")
-                            .font(AppTypography.fieldValue)
-                            .foregroundColor(AppColors.textPrimary)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(AppTypography.inter(size: 12))
-                            .foregroundColor(AppColors.textMuted)
-                    }
-                }
-            }
-            .padding(.horizontal, AppSpacing.screenPadding)
-            #endif
         }
     }
 
@@ -1085,7 +1061,7 @@ struct SettingsView: View {
                 .foregroundColor(AppColors.textMuted)
         }
         .padding(.top, 20)
-        .padding(.bottom, 40)
+        .padding(.bottom, 100)
     }
 
     // MARK: - Lighting Mode Row
@@ -1154,7 +1130,6 @@ struct SettingsView: View {
         switch tier {
         case .free: return AppColors.textMuted
         case .annual: return AppColors.primaryAmber
-        case .path: return AppColors.primaryAmber
         }
     }
 

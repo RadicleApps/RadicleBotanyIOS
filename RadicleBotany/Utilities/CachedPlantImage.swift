@@ -1,44 +1,33 @@
 import SwiftUI
 
-/// A plant image view that prioritizes locally cached image data, then falls back to AsyncImage URL loading.
-/// Ensures every plant ALWAYS displays an image — either from persistent cache or network.
+/// A plant image view that prioritizes full-size cached images, then loads from network.
+/// Detects bundled small images (240px, 15-40KB) and upgrades to full-size on network load.
 ///
 /// Priority:
-///   1. `plant.cachedImageData` → instant, offline-safe
-///   2. `plant.bestImageURL` → AsyncImage network fetch
-///   3. Placeholder (leaf icon on surfaceElevated background)
+///   1. Full-size `plant.cachedImageData` (>50KB) → instant, sharp
+///   2. `plant.bestImageURL` → network fetch, upgrades to full-size in SwiftData
+///   3. Bundled small image fallback (if no URL available)
+///   4. Placeholder (app icon on surfaceElevated background)
 struct CachedPlantImage: View {
     let plant: Plant
     var contentMode: ContentMode = .fill
 
     var body: some View {
-        if let cachedImage = plant.cachedImage {
-            // Tier 1: Persistent cached image — instant, always available
-            Image(uiImage: cachedImage)
+        // Single @externalStorage read via cachedImageInfo
+        let info = plant.cachedImageInfo
+        if let info, info.isFullSize {
+            // Full-size cached image — instant, sharp
+            Image(uiImage: info.image)
                 .resizable()
                 .aspectRatio(contentMode: contentMode)
-        } else if let imageURL = plant.bestImageURL, let url = URL(string: imageURL) {
-            // Tier 2: Network fetch via AsyncImage
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: contentMode)
-                case .empty:
-                    plantImagePlaceholder
-                        .overlay {
-                            ProgressView()
-                                .tint(AppColors.textMuted)
-                        }
-                case .failure:
-                    plantImagePlaceholder
-                @unknown default:
-                    plantImagePlaceholder
-                }
+        } else if let imageURL = plant.largeImageURL, let url = URL(string: imageURL) {
+            // Load large (~1024px) from network for Retina sharpness
+            ThrottledAsyncImage(url: url, contentMode: contentMode, onLoad: { image in
+                upgradeToFullSize(image)
+            }) {
+                plantImagePlaceholder
             }
         } else {
-            // Tier 3: No image at all — show placeholder
             plantImagePlaceholder
         }
     }
@@ -53,34 +42,64 @@ struct CachedPlantImage: View {
                     .opacity(0.3)
             }
     }
+
+    /// Replaces thumbnail with large image in SwiftData.
+    private func upgradeToFullSize(_ image: UIImage) {
+        guard let compressed = image.jpegData(compressionQuality: 0.85) else { return }
+        plant.cachedImageData = compressed
+    }
 }
 
 /// Grid-specific version that fills a square frame with clipping.
-/// Drop-in replacement for the SpeciesGridView, BloomCalendarView, ConservationView patterns.
+/// Loads medium-resolution images (~500px) for sharp Retina display.
+/// Shows bundled 240px image as instant placeholder while loading.
+/// Throttled to max 8 concurrent via ThrottledImageLoader.
+///
+/// PERFORMANCE: Does NOT write to SwiftData on load. Writing cachedImageData
+/// during scroll triggers @Query re-renders of the entire parent grid (cascade
+/// effect with 8 concurrent loads = 8 full re-renders). Instead, images persist
+/// via ThrottledImageLoader's URLCache (disk) + NSCache (memory). SwiftData
+/// caching only happens from PlantDetailView for offline access.
 struct CachedPlantGridImage: View {
     let plant: Plant
     let size: CGFloat
 
     var body: some View {
-        if let cachedImage = plant.cachedImage {
-            Image(uiImage: cachedImage)
+        // Single read of @externalStorage via cachedImageInfo — avoids double file I/O
+        let info = plant.cachedImageInfo
+
+        if let info, info.isFullSize {
+            // Full-size cached image — instant, sharp
+            Image(uiImage: info.image)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: size, height: size)
                 .clipped()
-        } else if let imageURL = plant.bestImageURL, let url = URL(string: imageURL) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
+        } else if let urlString = plant.bestImageURL, let url = URL(string: urlString) {
+            // Load medium (~500px) from network
+            // No onLoad/SwiftData write — avoids cascade @Query re-renders during scroll
+            ThrottledAsyncImage(url: url, contentMode: .fill) {
+                // Show thumbnail as blurred placeholder if available, otherwise grey
+                if let info {
+                    Image(uiImage: info.image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: size, height: size)
                         .clipped()
-                default:
+                        .blur(radius: 4)
+                } else {
                     gridPlaceholder
                 }
             }
+            .frame(width: size, height: size)
+            .clipped()
+        } else if let info {
+            // No URL but has thumbnail — show what we have
+            Image(uiImage: info.image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: size, height: size)
+                .clipped()
         } else {
             gridPlaceholder
         }
@@ -100,35 +119,53 @@ struct CachedPlantGridImage: View {
 }
 
 /// Hero-style version for PlantDetailView — uses .fit content mode with gradient fallback.
+/// Loads large-resolution (~1024px) images for Retina-sharp hero display.
+/// Shows bundled small image (240px) as instant placeholder while upgrading.
+/// Upgrades cachedImageData on success.
 struct CachedPlantHeroImage: View {
     let plant: Plant
     var height: CGFloat = 200
 
     var body: some View {
-        if let cachedImage = plant.cachedImage {
-            Image(uiImage: cachedImage)
+        // Single @externalStorage read via cachedImageInfo
+        let info = plant.cachedImageInfo
+        if let info, info.isFullSize {
+            // Full-size cached image (>50KB) — instant, sharp
+            Image(uiImage: info.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(maxWidth: .infinity)
                 .frame(height: height)
-        } else if let imageURL = plant.bestImageURL, let url = URL(string: imageURL) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .empty:
-                    heroGradientPlaceholder
-                        .overlay(ProgressView().tint(AppColors.textMuted))
-                case .success(let image):
-                    image
+        } else if let imageURL = plant.largeImageURL, let url = URL(string: imageURL) {
+            // Load large (~1024px) from network for Retina sharpness
+            ThrottledAsyncImage(url: url, contentMode: .fit, onLoad: { image in
+                upgradeToFullSize(image)
+            }) {
+                // Show bundled small image as instant placeholder while loading
+                if let info {
+                    Image(uiImage: info.image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: .infinity)
                         .frame(height: height)
-                case .failure:
+                        .overlay(
+                            ProgressView()
+                                .tint(AppColors.textMuted)
+                        )
+                } else {
                     heroGradientPlaceholder
-                @unknown default:
-                    heroGradientPlaceholder
+                        .overlay(ProgressView().tint(AppColors.textMuted))
                 }
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+        } else if let info {
+            // No URL but has bundled image — show what we have
+            Image(uiImage: info.image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: .infinity)
+                .frame(height: height)
         } else {
             heroGradientPlaceholder
         }
@@ -152,5 +189,11 @@ struct CachedPlantHeroImage: View {
                 .opacity(0.15)
         }
         .frame(height: height)
+    }
+
+    /// Replaces bundled small/medium with large image in SwiftData.
+    private func upgradeToFullSize(_ image: UIImage) {
+        guard let compressed = image.jpegData(compressionQuality: 0.85) else { return }
+        plant.cachedImageData = compressed
     }
 }

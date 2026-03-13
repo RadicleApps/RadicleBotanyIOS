@@ -98,7 +98,7 @@ struct SpeciesMapView: View {
             return ObservationAnnotation(
                 id: "user-\(obs.date.timeIntervalSince1970)",
                 coordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
-                title: plant.commonName,
+                title: plant.titleCasedCommonName,
                 subtitle: obs.notes,
                 date: obs.date,
                 hasPhoto: obs.photoData != nil

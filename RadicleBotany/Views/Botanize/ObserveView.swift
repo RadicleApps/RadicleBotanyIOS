@@ -23,13 +23,21 @@ struct ObserveView: View {
 
     // MARK: - State
 
+    // Bindings for parent-managed toolbar Matches pill
+    @Binding var showResults: Bool
+    var onMatchStateChanged: ((Int, Bool) -> Void)? = nil
+
     @State private var selectedOrgan: PlantOrgan = .leaf
     @State private var selectedSubcategory: String? = nil
     @State private var selectedTraits: [String: Set<String>] = [:]
-    @State private var showResults = false
+    @State private var matchResults: [PlantMatchResult] = []
+    @State private var longPressedTerm: BotanyTerm? = nil
 
     @AppStorage("observeQuestionsToday") private var observeQuestionsToday: Int = 0
     @AppStorage("observeQuestionsDate") private var observeQuestionsDate: String = ""
+    @AppStorage("hasSeenObserveCoach") private var hasSeenObserveCoach = false
+    @State private var coachStep = 0
+    @State private var showCoach = false
 
     private let freeQuestionLimit = 3
 
@@ -46,6 +54,12 @@ struct ObserveView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // Coach tip banner (first-time only)
+            if showCoach {
+                observeCoachBanner
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+
             // Layer 1: Organ selector
             organSelector
                 .padding(.horizontal, 16)
@@ -85,24 +99,34 @@ struct ObserveView: View {
         .sheet(isPresented: $showResults) {
             resultsModal
         }
+        .sheet(item: $longPressedTerm) { term in
+            NavigationStack {
+                TermDetailView(term: term)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button {
+                                longPressedTerm = nil
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(AppTypography.inter(size: 20))
+                                    .foregroundStyle(AppColors.textMuted)
+                            }
+                        }
+                    }
+            }
+            .presentationDragIndicator(.visible)
+        }
         .onChange(of: selectedOrgan) { _, _ in
             selectedSubcategory = nil
         }
-        .toolbar {
-            if totalSelectionCount > 0 {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showResults = true
-                    } label: {
-                        let matchCount = computeMatchingPlants().count
-                        Text("\(matchCount) Matches")
-                            .font(AppTypography.sectionHeader)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 7)
-                            .background(AppColors.brandPurple)
-                            .foregroundStyle(.white)
-                            .clipShape(Capsule())
-                    }
+        .onChange(of: selectedTraits) { _, _ in
+            matchResults = computeMatchingPlants()
+            onMatchStateChanged?(matchResults.count, !selectedTraits.isEmpty)
+        }
+        .onAppear {
+            if !hasSeenObserveCoach {
+                withAnimation(.easeOut(duration: 0.4).delay(0.5)) {
+                    showCoach = true
                 }
             }
         }
@@ -128,7 +152,7 @@ struct ObserveView: View {
     }
 
     /// Groups of terms for the current organ, filtered by subcategory if one is selected.
-    /// Only includes terms that have an illustration image.
+    /// Shows all terms marked showPlantID=true; traitTermImage handles missing images with a placeholder.
     private var filteredSubcategoryGroups: [TraitTermGroup] {
         let questions: [TraitQuestion]
         if let sub = selectedSubcategory {
@@ -140,13 +164,8 @@ struct ObserveView: View {
         var groups: [TraitTermGroup] = []
         for question in questions {
             let allTerms = termsForCategory(question.category)
-            // Only show terms with images
-            let illustratedTerms = allTerms.filter { term in
-                guard let url = term.imageURL else { return false }
-                return !url.isEmpty
-            }
-            if !illustratedTerms.isEmpty {
-                let sorted = illustratedTerms.sorted { $0.term < $1.term }
+            if !allTerms.isEmpty {
+                let sorted = allTerms.sorted { $0.term < $1.term }
                 groups.append(TraitTermGroup(question: question, terms: sorted))
             }
         }
@@ -155,10 +174,15 @@ struct ObserveView: View {
 
     // MARK: - Organ Selector (Layer 1)
 
+    /// Organs that have at least one trait question (hides empty ones like Bark)
+    private var visibleOrgans: [PlantOrgan] {
+        PlantOrgan.allCases.filter { !$0.traitQuestions.isEmpty }
+    }
+
     private var organSelector: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
-                ForEach(PlantOrgan.allCases) { organ in
+                ForEach(visibleOrgans) { organ in
                     organPill(organ)
                 }
             }
@@ -283,8 +307,7 @@ struct ObserveView: View {
                         showResults = true
                     } label: {
                         HStack(spacing: 4) {
-                            let matchCount: Int = computeMatchingPlants().count
-                            Text("\(matchCount) matches")
+                            Text("\(matchResults.count) matches")
                                 .font(AppTypography.tagText)
                             Image(systemName: "chevron.right")
                                 .font(AppTypography.inter(size: 9, weight: .semibold))
@@ -363,6 +386,15 @@ struct ObserveView: View {
         let selectedValues: Set<String> = selectedTraits[group.question.category] ?? []
         let selectionCount: Int = selectedValues.count
 
+        let illustrated = group.terms.filter {
+            ($0.imageURL != nil && !($0.imageURL?.isEmpty ?? true)) ||
+            ($0.colorImageURL != nil && !($0.colorImageURL?.isEmpty ?? true))
+        }
+        let textOnly = group.terms.filter {
+            ($0.imageURL == nil || ($0.imageURL?.isEmpty ?? true)) &&
+            ($0.colorImageURL == nil || ($0.colorImageURL?.isEmpty ?? true))
+        }
+
         return VStack(alignment: .leading, spacing: 10) {
             // Section header
             HStack(spacing: 8) {
@@ -394,85 +426,134 @@ struct ObserveView: View {
                 }
             }
 
-            // Illustrated terms grid
-            LazyVGrid(columns: gridColumns, spacing: 8) {
-                ForEach(group.terms, id: \.term) { term in
-                    illustratedTraitCell(
-                        term: term,
-                        isSelected: selectedValues.contains(term.term),
-                        category: group.question.category
-                    )
+            // Illustrated grid — terms with images
+            if !illustrated.isEmpty {
+                LazyVGrid(columns: gridColumns, spacing: 8) {
+                    ForEach(illustrated, id: \.term) { term in
+                        illustratedTraitCell(
+                            term: term,
+                            isSelected: selectedValues.contains(term.term),
+                            category: group.question.category
+                        )
+                    }
+                }
+            }
+
+            // Text-only terms — no image, shown as selectable pills below the grid
+            if !textOnly.isEmpty {
+                if !illustrated.isEmpty {
+                    Divider()
+                        .overlay(AppColors.border)
+                        .padding(.top, 2)
+                }
+                FlowLayout(spacing: 6) {
+                    ForEach(textOnly, id: \.term) { term in
+                        textOnlyTraitPill(
+                            term: term,
+                            isSelected: selectedValues.contains(term.term),
+                            category: group.question.category
+                        )
+                    }
                 }
             }
         }
+    }
+
+    private func textOnlyTraitPill(term: BotanyTerm, isSelected: Bool, category: String) -> some View {
+        Text(term.term)
+            .font(AppTypography.tagText)
+            .foregroundStyle(isSelected ? AppColors.primaryAmber : AppColors.textSecondary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
+            .background(isSelected ? AppColors.primaryAmber.opacity(0.10) : AppColors.cardElevated)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.button)
+                    .stroke(
+                        isSelected ? AppColors.primaryAmber : AppColors.border,
+                        lineWidth: isSelected ? 1.5 : 0.5
+                    )
+            )
+            .contentShape(Rectangle())
+            .onTapGesture {
+                selectTrait(category: category, value: term.term)
+            }
+            .onLongPressGesture(minimumDuration: 0.5) {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                longPressedTerm = term
+            }
     }
 
     // MARK: - Illustrated Trait Cell
 
     private func illustratedTraitCell(term: BotanyTerm, isSelected: Bool, category: String) -> some View {
-        Button {
-            selectTrait(category: category, value: term.term)
-        } label: {
-            VStack(spacing: 4) {
-                // Image area — AppColors.appBackground so image blends seamlessly
-                ZStack(alignment: .topTrailing) {
-                    AppColors.appBackground
-                        .overlay {
-                            traitTermImage(term: term)
-                        }
-                        .frame(height: 90)
-                        .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
-
-                    // Selection checkmark badge
-                    if isSelected {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(AppTypography.inter(size: 18))
-                            .foregroundStyle(AppColors.primaryAmber)
-                            .background(
-                                Circle()
-                                    .fill(AppColors.appBackground)
-                                    .frame(width: 16, height: 16)
-                            )
-                            .padding(5)
+        VStack(spacing: 4) {
+            // Image area — AppColors.appBackground so image blends seamlessly
+            ZStack(alignment: .topTrailing) {
+                AppColors.appBackground
+                    .overlay {
+                        traitTermImage(term: term)
                     }
-                }
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppRadius.button)
-                        .stroke(isSelected ? AppColors.primaryAmber : Color.clear, lineWidth: 2)
-                )
+                    .frame(height: 90)
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.button))
 
-                // Label
-                Text(term.term)
-                    .font(AppTypography.tagText)
-                    .foregroundStyle(isSelected ? AppColors.primaryAmber : AppColors.textSecondary)
-                    .lineLimit(1)
+                // Selection checkmark badge
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(AppTypography.inter(size: 18))
+                        .foregroundStyle(AppColors.primaryAmber)
+                        .background(
+                            Circle()
+                                .fill(AppColors.appBackground)
+                                .frame(width: 16, height: 16)
+                        )
+                        .padding(5)
+                }
             }
-            .padding(isSelected ? 4 : 0)
-            .background(isSelected ? AppColors.primaryAmber.opacity(0.08) : Color.clear)
-            .clipShape(RoundedRectangle(cornerRadius: isSelected ? 10 : 0))
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.button)
+                    .stroke(isSelected ? AppColors.primaryAmber : Color.clear, lineWidth: 2)
+            )
+
+            // Label
+            Text(term.term)
+                .font(AppTypography.tagText)
+                .foregroundStyle(isSelected ? AppColors.primaryAmber : AppColors.textSecondary)
+                .lineLimit(1)
         }
-        .buttonStyle(.plain)
+        .padding(isSelected ? 4 : 0)
+        .background(isSelected ? AppColors.primaryAmber.opacity(0.08) : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: isSelected ? 10 : 0))
+        .contentShape(Rectangle())
+        .onTapGesture {
+            selectTrait(category: category, value: term.term)
+        }
+        .onLongPressGesture(minimumDuration: 0.5) {
+            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            impactFeedback.impactOccurred()
+            longPressedTerm = term
+        }
     }
 
     // MARK: - Trait Term Image
 
+    /// Prefer line drawing for most organs; prefer color image for Fruit
     @ViewBuilder
     private func traitTermImage(term: BotanyTerm) -> some View {
-        if let imageURL = term.imageURL, let url = URL(string: imageURL) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                case .failure:
-                    traitPlaceholderIcon
-                case .empty:
-                    ProgressView()
-                        .tint(AppColors.textMuted)
-                @unknown default:
-                    traitPlaceholderIcon
-                }
+        let bestURL: URL? = {
+            if selectedOrgan == .fruit {
+                if let c = term.colorImageURL, !c.isEmpty, let u = URL(string: c) { return u }
+                if let d = term.imageURL, !d.isEmpty, let u = URL(string: d) { return u }
+            } else {
+                if let d = term.imageURL, !d.isEmpty, let u = URL(string: d) { return u }
+                if let c = term.colorImageURL, !c.isEmpty, let u = URL(string: c) { return u }
+            }
+            return nil
+        }()
+
+        if let url = bestURL {
+            ThrottledAsyncImage(url: url, contentMode: .fit) {
+                traitPlaceholderIcon
             }
         } else {
             traitPlaceholderIcon
@@ -505,6 +586,69 @@ struct ObserveView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, 16)
         .padding(.vertical, 24)
+    }
+
+    // MARK: - Coach Banner
+
+    private struct CoachTip {
+        let icon: String
+        let text: String
+    }
+
+    private let coachTips: [CoachTip] = [
+        CoachTip(icon: "hand.tap.fill", text: "Pick the plant part you're observing — leaf, flower, fruit, bark, stem, or root."),
+        CoachTip(icon: "checkmark.square.fill", text: "Tap illustrated traits to select what matches your observation. Select as many as you can see."),
+        CoachTip(icon: "hand.press.fill", text: "Hold any trait to learn more about the botanical trait. A detail page will open with definitions and examples."),
+        CoachTip(icon: "sparkle.magnifyingglass", text: "Hit the match counter to see ranked species results. More traits = fewer, better matches.")
+    ]
+
+    private var observeCoachBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: coachTips[coachStep].icon)
+                .font(AppTypography.inter(size: 18))
+                .foregroundStyle(AppColors.primaryAmber)
+                .frame(width: 32)
+
+            Text(coachTips[coachStep].text)
+                .font(AppTypography.tagText)
+                .foregroundStyle(AppColors.textSecondary)
+                .lineLimit(3)
+                .fixedSize(horizontal: false, vertical: true)
+                .id(coachStep)
+
+            Spacer(minLength: 0)
+
+            Button {
+                if coachStep < coachTips.count - 1 {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        coachStep += 1
+                    }
+                } else {
+                    hasSeenObserveCoach = true
+                    withAnimation(.easeIn(duration: 0.3)) {
+                        showCoach = false
+                    }
+                }
+            } label: {
+                Text(coachStep < coachTips.count - 1 ? "Next" : "Memorized")
+                    .font(AppTypography.inter(size: 12, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(AppColors.primaryAmber)
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(AppColors.primaryAmber.opacity(0.08))
+        .overlay(
+            Rectangle()
+                .fill(AppColors.primaryAmber.opacity(0.3))
+                .frame(height: 0.5),
+            alignment: .bottom
+        )
     }
 
     // MARK: - Results Modal
@@ -546,8 +690,6 @@ struct ObserveView: View {
                         .padding(.top, 8)
                     }
                 } else {
-                    let results = computeMatchingPlants()
-
                     ScrollView {
                         VStack(spacing: 0) {
                             // Interactive selected traits collection
@@ -559,7 +701,7 @@ struct ObserveView: View {
                             Divider()
                                 .overlay(AppColors.border)
 
-                            if results.isEmpty {
+                            if matchResults.isEmpty {
                                 // Has traits but no matches
                                 VStack(spacing: 16) {
                                     Spacer().frame(height: 60)
@@ -580,8 +722,8 @@ struct ObserveView: View {
                                 }
                                 .frame(maxWidth: .infinity)
                             } else {
-                                let fullMatches = results.filter { $0.matchPercentage == 100.0 }
-                                let closeMatches = results.filter { $0.matchPercentage < 100.0 }
+                                let fullMatches = matchResults.filter { $0.matchPercentage == 100.0 }
+                                let closeMatches = matchResults.filter { $0.matchPercentage < 100.0 }
 
                                 // Results header
                                 HStack(alignment: .firstTextBaseline) {
@@ -589,7 +731,7 @@ struct ObserveView: View {
                                         .font(AppTypography.inter(size: 13))
                                         .foregroundStyle(AppColors.success)
 
-                                    Text("\(results.count) Matching Species")
+                                    Text("\(matchResults.count) Matching Species")
                                         .font(AppTypography.sectionHeader)
                                         .foregroundStyle(AppColors.textPrimary)
 
@@ -603,9 +745,15 @@ struct ObserveView: View {
                                 .padding(.top, 14)
                                 .padding(.bottom, 8)
 
+                                // Combined plant list for pager (full matches first, then close)
+                                let allResultPlants = (fullMatches + closeMatches).map(\.plant)
+
                                 // Full matches (0 contradictions)
                                 ForEach(fullMatches) { result in
-                                    NavigationLink(destination: PlantDetailView(plant: result.plant)) {
+                                    let index = allResultPlants.firstIndex(where: { $0.id == result.plant.id }) ?? 0
+                                    NavigationLink(destination: CollectionPagerView(items: allResultPlants, startIndex: index) { p in
+                                        PlantDetailView(plant: p)
+                                    }) {
                                         resultRow(result)
                                     }
                                     .buttonStyle(.plain)
@@ -629,7 +777,10 @@ struct ObserveView: View {
                                     .padding(.bottom, 6)
 
                                     ForEach(closeMatches) { result in
-                                        NavigationLink(destination: PlantDetailView(plant: result.plant)) {
+                                        let index = allResultPlants.firstIndex(where: { $0.id == result.plant.id }) ?? 0
+                                        NavigationLink(destination: CollectionPagerView(items: allResultPlants, startIndex: index) { p in
+                                            PlantDetailView(plant: p)
+                                        }) {
                                             resultRow(result)
                                         }
                                         .buttonStyle(.plain)
@@ -730,7 +881,7 @@ struct ObserveView: View {
                     .clipShape(Capsule())
             }
 
-            Text("Tap a trait to remove it and re-match")
+            Text("Tap a trait to remove and re-match")
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColors.textMuted)
 
@@ -826,7 +977,7 @@ struct ObserveView: View {
                     .foregroundStyle(AppColors.textPrimary)
                     .italic()
 
-                Text(result.plant.commonName)
+                Text(result.plant.titleCasedCommonName)
                     .font(AppTypography.bodyText)
                     .foregroundStyle(AppColors.textSecondary)
 
@@ -853,6 +1004,12 @@ struct ObserveView: View {
     }
 
     private func selectTrait(category: String, value: String) {
+        // Auto-dismiss coach on first trait selection
+        if showCoach {
+            hasSeenObserveCoach = true
+            withAnimation(.easeIn(duration: 0.3)) { showCoach = false }
+        }
+
         withAnimation(.easeInOut(duration: 0.2)) {
             var current = selectedTraits[category] ?? Set<String>()
             if current.contains(value) {
@@ -970,8 +1127,9 @@ private struct TraitTermGroup {
 // MARK: - Preview
 
 #Preview {
+    @State var showResults = false
     NavigationStack {
-        ObserveView()
+        ObserveView(showResults: $showResults)
     }
     .environmentObject(StoreManager(preview: true))
     .modelContainer(for: [Plant.self, BotanyTerm.self, JournalNote.self], inMemory: true)

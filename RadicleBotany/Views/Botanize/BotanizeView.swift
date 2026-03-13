@@ -30,8 +30,15 @@ enum BotanizeMode: String, CaseIterable, Identifiable {
 
 struct BotanizeView: View {
     @EnvironmentObject private var storeManager: StoreManager
+    @EnvironmentObject private var navigationState: AppNavigationState
     @State private var selectedMode: BotanizeMode = .observe
     @AppStorage("hasSeenBotanizeOnboarding") private var hasSeenBotanizeOnboarding = false
+
+    // Observe mode Matches pill state (communicated up from ObserveView)
+    @State private var observeShowResults = false
+    @State private var observeMatchCount = 0
+    @State private var observeHasTraits = false
+
     var body: some View {
         VStack(spacing: 0) {
             modeSelector
@@ -46,7 +53,13 @@ struct BotanizeView: View {
             Group {
                 switch selectedMode {
                 case .observe:
-                    ObserveView()
+                    ObserveView(
+                        showResults: $observeShowResults,
+                        onMatchStateChanged: { count, hasTraits in
+                            observeMatchCount = count
+                            observeHasTraits = hasTraits
+                        }
+                    )
 
                 case .capture:
                     CaptureView()
@@ -58,8 +71,35 @@ struct BotanizeView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(AppColors.appBackground)
-        .navigationTitle("Botanize")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .appToolbar(guide: .botanize) {
+            if selectedMode == .observe && observeHasTraits {
+                Button {
+                    observeShowResults = true
+                } label: {
+                    Text("\(observeMatchCount) Matches")
+                        .font(AppTypography.sectionHeader)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 7)
+                        .background(AppColors.success)
+                        .foregroundStyle(.white)
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            } else {
+                Button {
+                    navigationState.showProfile = true
+                } label: {
+                    Image(systemName: "person.crop.circle")
+                        .font(AppTypography.inter(size: 15))
+                        .foregroundColor(AppColors.textMuted)
+                        .frame(width: 32, height: 32)
+                        .background(AppColors.cardElevated)
+                        .clipShape(Circle())
+                }
+            }
+        }
         .sheet(isPresented: Binding(
             get: { !hasSeenBotanizeOnboarding },
             set: { if !$0 { hasSeenBotanizeOnboarding = true } }
@@ -114,5 +154,6 @@ struct BotanizeView: View {
         BotanizeView()
     }
     .environmentObject(StoreManager(preview: true))
+    .environmentObject(AppNavigationState())
     .preferredColorScheme(.dark)
 }

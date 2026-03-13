@@ -111,9 +111,14 @@ struct AppColors {
 }
 
 // MARK: - Typography
-/// Inter 18pt static font system — all UI text uses Inter.
-/// SF Mono retained for GPS/technical data only.
-/// Fonts registered at launch by FontRegistration.registerInter().
+/// Typographic system: Cormorant Garamond (display / titles) + Inter 18pt (UI / body).
+/// Editorial botanical pairing — serif for impact, sans-serif for clarity.
+///
+/// Font registration:
+///   FontRegistration.registerInter()     — called at launch
+///   FontRegistration.registerCormorant() — called at launch
+///
+/// SF Mono retained for GPS / technical data only.
 
 struct AppTypography {
 
@@ -126,11 +131,32 @@ struct AppTypography {
     private static let extraBold = "Inter18pt-ExtraBold"
     private static let black     = "Inter18pt-Black"
 
-    // MARK: Display (Headers & Impact)
+    // MARK: Cormorant Garamond Font Names
 
-    static let displayLarge  = Font.custom(bold, size: 34)
-    static let displayMedium = Font.custom(semiBold, size: 28)
-    static let headerTitle   = Font.custom(bold, size: 20)
+    private static let cgLight           = "CormorantGaramond-Light"
+    private static let cgLightItalic     = "CormorantGaramond-LightItalic"
+    private static let cgRegular         = "CormorantGaramond-Regular"
+    private static let cgItalic          = "CormorantGaramond-Italic"
+    private static let cgSemiBold        = "CormorantGaramond-SemiBold"
+    private static let cgSemiBoldItalic  = "CormorantGaramond-SemiBoldItalic"
+    private static let cgBold            = "CormorantGaramond-Bold"
+    private static let cgBoldItalic      = "CormorantGaramond-BoldItalic"
+
+    // MARK: Display (Headers & Impact) — Cormorant Garamond serif
+
+    /// Large hero heading — Cormorant Garamond Bold 36pt
+    static let displayLarge  = Font.custom(cgBold, size: 36)
+    /// Section / card hero heading — Cormorant Garamond Bold 30pt
+    static let displayMedium = Font.custom(cgBold, size: 30)
+    /// Screen title / major section heading — Cormorant Garamond Bold 22pt
+    static let headerTitle   = Font.custom(cgBold, size: 22)
+
+    // MARK: Wordmark (brand identity — Cormorant Garamond)
+
+    /// App wordmark at nav-bar scale — SemiBold Italic 20pt
+    static let wordmark      = Font.custom(cgSemiBoldItalic, size: 20)
+    /// Large wordmark for splash / onboarding — Bold Italic 32pt
+    static let wordmarkLarge = Font.custom(cgBoldItalic, size: 32)
 
     // MARK: Interface (Navigation & Controls)
 
@@ -195,6 +221,40 @@ extension Font {
             name = "Inter18pt-Black"
         default:
             name = "Inter18pt-Regular"
+        }
+        return .custom(name, size: size)
+    }
+}
+
+// MARK: - Font.cormorant() Convenience
+
+extension Font {
+    /// Returns a Cormorant Garamond font for any size + weight + italic combination.
+    /// Falls back gracefully to system serif if font files are not yet added to the asset catalog.
+    static func cormorant(size: CGFloat, weight: Weight = .regular, italic: Bool = false) -> Font {
+        let name: String
+        if italic {
+            switch weight {
+            case .ultraLight, .thin, .light:
+                name = "CormorantGaramond-LightItalic"
+            case .semibold:
+                name = "CormorantGaramond-SemiBoldItalic"
+            case .bold, .heavy, .black:
+                name = "CormorantGaramond-BoldItalic"
+            default:
+                name = "CormorantGaramond-Italic"
+            }
+        } else {
+            switch weight {
+            case .ultraLight, .thin, .light:
+                name = "CormorantGaramond-Light"
+            case .semibold:
+                name = "CormorantGaramond-SemiBold"
+            case .bold, .heavy, .black:
+                name = "CormorantGaramond-Bold"
+            default:
+                name = "CormorantGaramond-Regular"
+            }
         }
         return .custom(name, size: size)
     }
@@ -612,7 +672,7 @@ extension Color {
     // Semantic aliases
     static let successGreen = Color(hex: "3D8B37")
     static let errorPurple = Color(hex: "4b479d")
-    static let errorRed = Color(hex: "4b479d")  // Backward compat — now purple
+    static let errorRed = Color(hex: "C53030")  // True red for critical/danger states
     static let highConfidence = Color(hex: "3D8B37")
     static let mediumConfidence = Color(hex: "A57810")
     static let lowConfidence = Color(hex: "4b479d")
