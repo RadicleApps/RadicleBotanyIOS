@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RadicleBotany - Botanical Education for iOS</title>
+<meta name="description" content="Botanical education for iOS. 2,300+ species, 180+ families, 460+ botanical terms. Trait-based keying, photo identification, and field journaling.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1e1e1b;
+  --surface:rgba(38,38,33,0.92);
+  --border:rgba(196,185,154,0.07);
+  --border-hover:rgba(196,185,154,0.15);
+  --text:#c4b99a;
+  --text-60:rgba(196,185,154,0.6);
+  --text-30:rgba(196,185,154,0.3);
+  --text-10:rgba(196,185,154,0.1);
+  --accent:#7aad5a;
+  --accent-glow:rgba(122,173,90,0.12);
+  --serif:'Cormorant Garamond',serif;
+  --mono:'SF Mono','Fira Code','Cascadia Code','Menlo',monospace;
+  --ease:cubic-bezier(0.23,1,0.32,1);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);line-height:1.618;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(122,173,90,0.3)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--text-10);border-radius:2px}
+
+canvas#geo{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.5}
+
+nav{position:fixed;top:13px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:34px;
+  background:rgba(30,30,27,0.92);border:1px solid var(--border);border-radius:8px;
+  padding:5px 21px;backdrop-filter:blur(21px);-webkit-backdrop-filter:blur(21px)}
+nav a{color:var(--text-30);text-decoration:none;font-size:9px;letter-spacing:0.8px;text-transform:uppercase;
+  transition:color .3s var(--ease);padding:5px 0}
+nav a:hover{color:var(--text-60)}
+nav .logo{display:flex;align-items:center;gap:8px;color:var(--accent);font-weight:600;letter-spacing:1.5px}
+nav .logo img{height:21px;width:auto;opacity:0.9}
+
+.page{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 34px}
+
+/* Section divider */
+.section-line{display:flex;align-items:center;gap:13px;margin:89px 0 34px}
+.section-line::before,.section-line::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-hover),transparent)}
+.section-line span{font-size:8px;color:var(--text-30);letter-spacing:3px;text-transform:uppercase;white-space:nowrap;font-weight:500}
+
+/* Fade animation */
+.fade{opacity:0;transform:translateY(13px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.fade.v{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}.d6{transition-delay:.6s}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:89px 34px}
+.hero h1{font-family:var(--serif);font-size:clamp(48px,10vw,89px);font-weight:300;letter-spacing:8px;line-height:1.1;color:var(--text);margin-bottom:13px}
+.hero .sub{font-size:10px;color:var(--text-30);letter-spacing:4px;text-transform:uppercase;margin-bottom:13px}
+.hero .tagline{font-family:var(--serif);font-size:clamp(16px,2.5vw,21px);font-weight:400;font-style:italic;color:var(--accent);margin-bottom:34px}
+.hero .desc{font-size:12px;color:var(--text-60);line-height:1.9;max-width:500px;margin:0 auto 34px}
+.hero .cta-btn{display:inline-block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--bg);background:var(--accent);padding:8px 21px;border-radius:5px;
+  text-decoration:none;transition:all .3s var(--ease);font-weight:600}
+.hero .cta-btn:hover{background:#8dbf6a;transform:translateY(-2px)}
+.hero .stats{display:flex;gap:34px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+.hero .stat{text-align:center}
+.hero .stat .stat-num{font-family:var(--serif);font-size:34px;font-weight:300;color:var(--text);line-height:1}
+.hero .stat .stat-label{font-size:8px;color:var(--text-30);letter-spacing:2px;text-transform:uppercase;margin-top:5px}
+.scroll-hint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;animation:breathe 3s ease-in-out infinite}
+.scroll-hint span{font-size:8px;color:var(--text-10);letter-spacing:2px;text-transform:uppercase}
+.scroll-hint .line{width:1px;height:21px;background:linear-gradient(to bottom,var(--text-30),transparent)}
+@keyframes breathe{0%,100%{opacity:.3}50%{opacity:.8}}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:34px 21px 21px;
+  position:relative;overflow:hidden;transition:all .4s var(--ease)}
+.card::before{content:'';position:absolute;top:-1px;left:-1px;right:-1px;height:2px;
+  background:linear-gradient(90deg,transparent 8%,var(--accent) 50%,transparent 92%);opacity:0;transition:opacity .4s}
+.card:hover{border-color:var(--border-hover);transform:translateY(-3px)}
+.card:hover::before{opacity:.5}
+.card .card-num{font-size:34px;font-family:var(--serif);font-weight:300;color:var(--text-10);line-height:1;margin-bottom:13px}
+.card h3{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--text);letter-spacing:1px;margin-bottom:8px}
+.card p{font-size:10px;color:var(--text-60);line-height:1.8}
+
+/* About grid */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-items:start}
+.about-text{font-size:11px;color:var(--text-60);line-height:1.9}
+.about-text p{margin-bottom:13px}
+.about-text strong{color:var(--text);font-weight:500}
+.about-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:21px;
+  position:relative;overflow:hidden}
+.about-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.about-card h3{font-size:8px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:13px}
+.conservation-item{display:flex;align-items:center;gap:13px;padding:8px 0;border-bottom:1px solid var(--border)}
+.conservation-item:last-child{border-bottom:none}
+.conservation-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.conservation-label{font-size:10px;color:var(--text-60)}
+.conservation-count{font-size:9px;color:var(--text-30);margin-left:auto}
+
+/* Modes */
+.modes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.mode{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:34px 21px;
+  text-align:center;position:relative;overflow:hidden;transition:all .4s var(--ease)}
+.mode::before{content:'';position:absolute;top:-1px;left:-1px;right:-1px;height:2px;
+  background:linear-gradient(90deg,transparent 8%,var(--accent) 50%,transparent 92%);opacity:0;transition:opacity .4s}
+.mode:hover{border-color:var(--border-hover);transform:translateY(-3px)}
+.mode:hover::before{opacity:.5}
+.mode .mode-label{font-size:8px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:13px}
+.mode h3{font-family:var(--serif);font-size:18px;font-weight:400;color:var(--text);letter-spacing:1px;margin-bottom:8px}
+.mode p{font-size:10px;color:var(--text-60);line-height:1.8}
+
+/* CTA */
+.cta{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:55px 34px;
+  text-align:center;position:relative;overflow:hidden}
+.cta::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.cta h2{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:300;letter-spacing:3px;margin-bottom:13px}
+.cta h2 em{font-style:italic;color:var(--accent)}
+.cta p{font-size:11px;color:var(--text-60);margin-bottom:34px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.8}
+.cta-btn{display:inline-block;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--bg);background:var(--accent);padding:8px 21px;border-radius:5px;
+  text-decoration:none;transition:all .3s var(--ease);font-weight:600}
+.cta-btn:hover{background:#8dbf6a;transform:translateY(-2px)}
+.cta-price{font-size:9px;color:var(--text-30);margin-top:13px;letter-spacing:1px}
+
+/* Newsletter */
+.nl-box{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:34px;
+  position:relative;overflow:hidden}
+.nl-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.nl-box h3{font-family:var(--serif);font-size:24px;font-weight:300;letter-spacing:2px;margin-bottom:8px}
+.nl-box .nl-desc{font-size:10px;color:var(--text-60);margin-bottom:21px;max-width:400px;line-height:1.8}
+.nl-form{display:flex;gap:8px;max-width:400px}
+.nl-form input{flex:1;padding:8px 13px;background:rgba(30,30,27,0.8);border:1px solid var(--border);border-radius:5px;
+  color:var(--text);font-family:var(--mono);font-size:10px;outline:none;transition:border-color .3s}
+.nl-form input::placeholder{color:var(--text-30)}
+.nl-form input:focus{border-color:var(--accent)}
+.nl-form button{padding:8px 21px;background:var(--accent);color:var(--bg);border:none;border-radius:5px;
+  font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:all .3s var(--ease);white-space:nowrap}
+.nl-form button:hover{background:#8dbf6a;transform:translateY(-1px)}
+.nl-ok{display:none;padding:13px;background:var(--accent-glow);border:1px solid rgba(122,173,90,0.2);border-radius:5px;max-width:400px}
+.nl-ok p{font-size:10px;color:var(--accent)}
+.nl-ok .sm{font-size:8px;color:var(--text-30);margin-top:5px;letter-spacing:0.5px}
+
+footer{padding:34px;text-align:center;border-top:1px solid var(--border);position:relative;z-index:1}
+footer .links{display:flex;justify-content:center;gap:34px;margin-bottom:13px}
+footer .links a{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--text-30);text-decoration:none;transition:color .3s}
+footer .links a:hover{color:var(--accent)}
+footer p{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text-10)}
+
+@media(max-width:900px){.card-grid{grid-template-columns:1fr}.modes-grid{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .page{padding:0 21px}
+  nav{padding:5px 13px;gap:21px}
+  .card-grid{grid-template-columns:1fr}
+  .modes-grid{grid-template-columns:1fr}
+  .about-grid{grid-template-columns:1fr}
+  .nl-form{flex-direction:column}
+  .cta{padding:34px 21px}
+  .hero h1{letter-spacing:3px}
+  .hero .stats{gap:21px}
+}
+</style>
+</head>
+<body>
+
+<canvas id="geo"></canvas>
+
+<nav>
+  <a href="#" class="logo">
+    <img src="logo.png" alt="RadicleBotany">
+    <span>RadicleBotany</span>
+  </a>
+  <a href="#about">About</a>
+  <a href="#features">Features</a>
+  <a href="#identify">Identify</a>
+  <a href="https://apps.apple.com/us/app/radiclebotany/id6759073523" target="_blank">App Store</a>
+</nav>
+
+<div class="page">
+
+<section class="hero" style="position:relative">
+  <h1 class="fade">RadicleBotany</h1>
+  <div class="sub fade d1">Botanical Education for iOS</div>
+  <div class="tagline fade d2">Observe. Identify. Understand.</div>
+  <a href="https://apps.apple.com/us/app/radiclebotany/id6759073523" target="_blank" class="cta-btn fade d3">Download for iOS</a>
+  <div class="stats fade d4">
+    <div class="stat">
+      <div class="stat-num">2,300+</div>
+      <div class="stat-label">Species</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">180+</div>
+      <div class="stat-label">Families</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">460+</div>
+      <div class="stat-label">Terms</div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>Explore</span><div class="line"></div></div>
+</section>
+
+<div class="section-line" id="about"><span>About</span></div>
+
+<div class="about-grid">
+  <div class="about-text fade d1">
+    <p>RadicleBotany is a <strong>botanical education app for iOS</strong> built for learners who want to understand plants deeply.</p>
+    <p>Three identification modes let you learn at your own pace: <strong>Observe</strong> uses trait-based keying to teach you how botanists identify plants. <strong>Capture</strong> uses photo recognition for quick identification. <strong>Both</strong> combines the two: snap a photo, then verify through traits.</p>
+    <p>Every species entry includes <strong>morphological traits, family context, conservation status, and occurrence mapping</strong>. The goal is understanding.</p>
+  </div>
+  <div class="about-card fade d2">
+    <h3>Conservation Tracking</h3>
+    <div class="conservation-item">
+      <div class="conservation-dot" style="background:#e74c3c"></div>
+      <span class="conservation-label">Critical</span>
+      <span class="conservation-count">8 species</span>
+    </div>
+    <div class="conservation-item">
+      <div class="conservation-dot" style="background:#e67e22"></div>
+      <span class="conservation-label">At-Risk</span>
+      <span class="conservation-count">21 species</span>
+    </div>
+    <div class="conservation-item">
+      <div class="conservation-dot" style="background:#8e44ad"></div>
+      <span class="conservation-label">To-Watch</span>
+      <span class="conservation-count">9 species</span>
+    </div>
+    <div class="conservation-item">
+      <div class="conservation-dot" style="background:var(--accent)"></div>
+      <span class="conservation-label">United Plant Savers Database</span>
+      <span class="conservation-count">38 total</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-line" id="features"><span>Features</span></div>
+
+<div class="card-grid">
+  <div class="card fade d1">
+    <div class="card-num">01</div>
+    <h3>2,300+ Species</h3>
+    <p>Curated botanical database with full morphological profiles, family relationships, habitat data, and conservation status for every entry.</p>
+  </div>
+  <div class="card fade d2">
+    <div class="card-num">02</div>
+    <h3>460+ Botanical Terms</h3>
+    <p>Complete glossary organized by category: leaf morphology, flower anatomy, root systems, growth habits, and beyond. Cross-referenced to species.</p>
+  </div>
+  <div class="card fade d3">
+    <div class="card-num">03</div>
+    <h3>180+ Plant Families</h3>
+    <p>Every family with diagnostic traits, representative genera, and linked species. Understanding families is the key to recognizing patterns across plants.</p>
+  </div>
+  <div class="card fade d1">
+    <div class="card-num">04</div>
+    <h3>Plants Near You</h3>
+    <p>GBIF occurrence data mapped to your location. See which species have been documented nearby and explore regional biodiversity.</p>
+  </div>
+  <div class="card fade d2">
+    <div class="card-num">05</div>
+    <h3>Journal & Collections</h3>
+    <p>Log observations with photos, location, and verified traits. Build collections. Track study streaks and earn achievements as your knowledge grows.</p>
+  </div>
+  <div class="card fade d3">
+    <div class="card-num">06</div>
+    <h3>Flashcards & Scenarios</h3>
+    <p>Spaced repetition flashcards and interactive botanizing scenarios. Learn by doing.</p>
+  </div>
+</div>
+
+<div class="section-line" id="identify"><span>Three Ways to Identify</span></div>
+
+<div class="modes-grid">
+  <div class="mode fade d1">
+    <div class="mode-label">Mode 1</div>
+    <h3>Observe</h3>
+    <p>Trait-based keying. Select leaf shape, flower color, growth habit, and other morphological traits to narrow down species. The same process botanists use in the field.</p>
+  </div>
+  <div class="mode fade d2">
+    <div class="mode-label">Mode 2</div>
+    <h3>Capture</h3>
+    <p>Photo identification powered by PlantNet. Snap a photo of a leaf, flower, fruit, or bark and get species matches with confidence scores.</p>
+  </div>
+  <div class="mode fade d3">
+    <div class="mode-label">Mode 3</div>
+    <h3>Both</h3>
+    <p>The hybrid approach. Start with a photo for a quick match, then verify through trait-based observation. The fastest path to confident identification.</p>
+  </div>
+</div>
+
+<div class="section-line"><span>Download</span></div>
+
+<div class="cta fade">
+  <h2>Download <em>RadicleBotany</em>.</h2>
+  <p>2,300+ species. 180+ families. 460+ terms. Three identification modes. One pocket-sized botanical education.</p>
+  <a href="https://apps.apple.com/us/app/radiclebotany/id6759073523" target="_blank" class="cta-btn">Download for iOS</a>
+  <div class="cta-price">Free trial, then $33.99/year</div>
+</div>
+
+<div class="section-line"><span>Stay Connected</span></div>
+
+<div class="nl-box fade">
+  <h3>Roots and updates.</h3>
+  <p class="nl-desc">New species additions, app updates, botanical deep dives, and seasonal plant observations. For people who want to learn plants properly.</p>
+  <form class="nl-form" id="sf" onsubmit="sub(event)">
+    <input type="email" id="se" placeholder="your@email.com" required>
+    <button type="submit">Subscribe</button>
+  </form>
+  <div class="nl-ok" id="sok">
+    <p>Welcome to the field.</p>
+    <div class="sm">Botanical updates incoming.</div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <div class="links">
+    <a href="https://apps.apple.com/us/app/radiclebotany/id6759073523" target="_blank">App Store</a>
+    <a href="https://www.instagram.com/RadicleSchool/" target="_blank">Instagram</a>
+    <a href="mailto:hello@radiclebotany.app">Contact</a>
+  </div>
+  <p>RadicleBotany / Brooklyn, NY / 2026</p>
+</footer>
+
+<script>
+/* Sacred geometry background */
+var cv=document.getElementById('geo'),cx=cv.getContext('2d'),W,H,t=0,P=[];
+var PHI=1.618033988749895,TAU=Math.PI*2;
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;P=[];
+  var n=Math.floor(W*H/25000);
+  for(var i=0;i<n;i++){var a=i*TAU*PHI;
+    P.push({x:Math.random()*W,y:Math.random()*H,vx:Math.cos(a)*0.12,vy:Math.sin(a)*0.12,
+      r:0.4+Math.random()*1,ph:Math.random()*TAU,fr:0.003+Math.random()*0.004})}}
+function frame(){t++;cx.clearRect(0,0,W,H);
+  /* Hexagonal grid */
+  cx.strokeStyle='rgba(122,173,90,0.008)';cx.lineWidth=0.3;
+  var s=55,h=s*Math.sqrt(3);
+  for(var r=-1;r<H/h+1;r++)for(var c=-1;c<W/(s*1.5)+1;c++){
+    var x=c*s*1.5,y=r*h+(c%2)*h/2;cx.beginPath();
+    for(var i=0;i<6;i++){var a=TAU/6*i-Math.PI/6,px=x+s/2*Math.cos(a),py=y+s/2*Math.sin(a);
+      i===0?cx.moveTo(px,py):cx.lineTo(px,py)}cx.closePath();cx.stroke()}
+  /* Particles */
+  for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;
+    if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;if(p.y<-10)p.y=H+10;if(p.y>H+10)p.y=-10;
+    var b=0.5+0.5*Math.sin(t*p.fr+p.ph),al=0.03+b*0.06,ra=p.r*(0.8+b*0.4);
+    cx.beginPath();cx.arc(p.x,p.y,ra,0,TAU);cx.fillStyle='rgba(122,173,90,'+al+')';cx.fill()}
+  /* Connections */
+  cx.lineWidth=0.3;
+  for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){
+    var dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=dx*dx+dy*dy;
+    if(d<6400){var a=0.02*(1-d/6400);cx.strokeStyle='rgba(122,173,90,'+a+')';
+      cx.beginPath();cx.moveTo(P[i].x,P[i].y);cx.lineTo(P[j].x,P[j].y);cx.stroke()}}
+  requestAnimationFrame(frame)}
+resize();addEventListener('resize',resize);frame();
+/* Scroll parallax */
+addEventListener('scroll',function(){cv.style.transform='translateY('+scrollY*0.15+'px)'});
+/* Fade in */
+var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('v')})},{threshold:0.1,rootMargin:'0px 0px -34px 0px'});
+document.querySelectorAll('.fade').forEach(function(el){obs.observe(el)});
+/* Smooth scroll */
+document.querySelectorAll('nav a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){
+  e.preventDefault();var t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+/* Subscribe */
+function sub(e){e.preventDefault();var em=document.getElementById('se').value,btn=e.target.querySelector('button');
+  btn.textContent='Sending...';btn.disabled=true;
+  fetch('https://script.google.com/macros/s/AKfycbxy5RdXVi6okBL6nY6y0KIJaK5QFpv3t2avNHd9-wHM8hu32g4ufJxFHcN-pEV-t3jN/exec?email='+encodeURIComponent(em)+'&source=radiclebotany',{method:'GET',mode:'no-cors'}).then(function(){
+    document.getElementById('sf').style.display='none';document.getElementById('sok').style.display='block'
+  }).catch(function(){btn.textContent='Try Again';btn.disabled=false})}
+</script>
+</body>
+</html>
